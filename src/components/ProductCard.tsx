@@ -1,0 +1,17 @@
+import type { Product } from '@/models'
+
+interface ProductCardProps {
+  product: Product
+}
+
+export function ProductCard({ product }: ProductCardProps) {
+  return (
+    <div className="rounded-lg border border-neutral-200 p-3">
+      <div className="aspect-square w-full rounded-md bg-neutral-100" />
+      <h3 className="mt-2 text-sm font-medium">{product.title}</h3>
+      <p className="text-sm text-neutral-500">
+        {product.price} AZN / {product.type}
+      </p>
+    </div>
+  )
+}
