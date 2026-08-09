@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader } from '@/components'
-import { Container } from '@/components/layout/Container'
-import type { Order } from '@/models'
+import { Loader } from '@/shared/components'
+import { Container } from '@/shared/components/layout/Container'
+import type { Order } from '@/types'
 import { orderService } from '@/services'
 
 export function OrdersPage() {

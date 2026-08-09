@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader } from '@/components'
-import { Container } from '@/components/layout/Container'
-import { BannerCarousel } from '@/components/landing/BannerCarousel'
-import { SpecialOffers } from '@/components/landing/SpecialOffers'
-import { StatsSection } from '@/components/landing/StatsSection'
-import type { Campaign } from '@/models'
+import { Loader } from '@/shared/components'
+import { Container } from '@/shared/components/layout/Container'
+import { BannerCarousel } from '@/shared/components/landing/BannerCarousel'
+import { SpecialOffers } from '@/shared/components/landing/SpecialOffers'
+import { StatsSection } from '@/shared/components/landing/StatsSection'
+import type { Campaign } from '@/types'
 import { campaignService } from '@/services'
-import campaignsMock from '@/mock/kampaniyalar'
 
 export function HomePage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
@@ -17,8 +16,8 @@ export function HomePage() {
   useEffect(() => {
     campaignService
       .list()
-      .then((res) => setCampaigns(res.data.length > 0 ? res.data : campaignsMock))
-      .catch(() => setCampaigns(campaignsMock))
+      .then((res) => setCampaigns(res.data))
+      .catch(() => setCampaigns([]))
       .finally(() => setLoading(false))
   }, [])
 

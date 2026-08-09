@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader, ProductCard } from '@/components'
-import { Container } from '@/components/layout/Container'
-import type { Product } from '@/models'
+import { Loader, ProductCard } from '@/shared/components'
+import { Container } from '@/shared/components/layout/Container'
+import type { Product } from '@/types'
 import { productService } from '@/services'
 
 export function ProductsPage() {

@@ -7,8 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { authService } from '@/services'
 import { setTokens } from '@/services/httpClient'
-
-type AuthTab = 'login' | 'register'
+import type { AuthPageProps, AuthTab, LoginPayload, SignupPayload } from '@/types'
 
 const PHONE_REGEX = /^\+994\d{9}$/
 const PHONE_GROUP_PLACEHOLDERS = ['__', '___', '__', '__']
@@ -35,9 +34,6 @@ const registerSchema = z.object({
     phone: z.string().regex(PHONE_REGEX, 'Telefon nömrəsini tam daxil edin'),
     password: z.string().min(4, 'Şifrə ən azı 4 simvol olmalıdır'),
 })
-
-type LoginFormValues = z.infer<typeof loginSchema>
-type RegisterFormValues = z.infer<typeof registerSchema>
 
 const inputClasses =
     'w-full border border-neutral-300 px-3 py-2 pr-10 text-sm focus:border-[#92D871] focus:outline-none placeholder:text-neutral-400'
@@ -93,10 +89,6 @@ function EyeOffIcon() {
     )
 }
 
-interface AuthPageProps {
-    initialTab: AuthTab
-}
-
 export function AuthPage({ initialTab }: AuthPageProps) {
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<AuthTab>(initialTab)
@@ -105,12 +97,12 @@ export function AuthPage({ initialTab }: AuthPageProps) {
     const [showLoginPassword, setShowLoginPassword] = useState(false)
     const [showRegisterPassword, setShowRegisterPassword] = useState(false)
 
-    const loginForm = useForm<LoginFormValues>({
+    const loginForm = useForm<LoginPayload>({
         resolver: zodResolver(loginSchema),
         defaultValues: { phone: '', password: '' },
     })
 
-    const registerForm = useForm<RegisterFormValues>({
+    const registerForm = useForm<SignupPayload>({
         resolver: zodResolver(registerSchema),
         defaultValues: { full_name: '', phone: '', password: '' },
     })

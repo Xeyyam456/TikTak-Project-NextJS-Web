@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "uploads.sarkhanrahimli.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "www.tiktak.az",
+      },
     ],
   },
 };

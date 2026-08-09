@@ -1,14 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader } from '@/components'
-import { Container } from '@/components/layout/Container'
-import type { Product } from '@/models'
+import { Loader } from '@/shared/components'
+import { Container } from '@/shared/components/layout/Container'
+import type { Product, ProductDetailPageProps } from '@/types'
 import { productService } from '@/services'
-
-interface ProductDetailPageProps {
-  productId: number
-}
 
 export function ProductDetailPage({ productId }: ProductDetailPageProps) {
   const [product, setProduct] = useState<Product | null>(null)

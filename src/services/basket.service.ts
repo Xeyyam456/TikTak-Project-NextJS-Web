@@ -1,4 +1,4 @@
-import type { ApiResponse, Basket } from '@/models'
+import type { ApiResponse, Basket } from '@/types'
 import httpClient from './httpClient'
 
 export const basketService = {

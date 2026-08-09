@@ -1,10 +1,10 @@
-import type { ApiResponse } from "@/models";
+import type { ApiResponse } from "@/types";
 import type {
   AuthResponseData,
   AuthTokens,
   LoginPayload,
   SignupPayload,
-} from "@/models";
+} from "@/types";
 import httpClient from "../httpClient";
 
 export const authService = {

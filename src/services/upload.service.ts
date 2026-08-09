@@ -1,9 +1,5 @@
-import type { ApiResponse } from '@/models'
+import type { ApiResponse, UploadResponseData } from '@/types'
 import httpClient from './httpClient'
-
-export interface UploadResponseData {
-  url: string
-}
 
 export const uploadService = {
   upload(file: File) {

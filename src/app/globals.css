@@ -24,10 +24,28 @@ body {
   font-family: var(--font-roboto), Arial, Helvetica, sans-serif;
 }
 
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 button,
 a,
 [role="button"],
 input[type="submit"],
 input[type="button"] {
   cursor: pointer;
+}
+
+.header-search-input,
+.header-search-input:focus,
+.header-search-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }

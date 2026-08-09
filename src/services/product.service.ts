@@ -1,4 +1,4 @@
-import type { ApiResponse, ListQueryParams, PaginatedResponse, Product } from '@/models'
+import type { ApiResponse, ListQueryParams, PaginatedResponse, Product } from '@/types'
 import httpClient from './httpClient'
 
 export const productService = {

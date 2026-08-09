@@ -1,4 +1,4 @@
-import type { CheckoutPayload, Order } from '@/models'
+import type { CheckoutPayload, Order } from '@/types'
 import httpClient from './httpClient'
 
 export const orderService = {

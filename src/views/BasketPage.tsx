@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button, Loader } from '@/components'
-import { Container } from '@/components/layout/Container'
-import type { Basket } from '@/models'
+import { Button, Loader } from '@/shared/components'
+import { Container } from '@/shared/components/layout/Container'
+import type { Basket } from '@/types'
 import { basketService } from '@/services'
 
 export function BasketPage() {

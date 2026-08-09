@@ -1,4 +1,4 @@
-import type { ApiResponse, Campaign } from '@/models'
+import type { ApiResponse, Campaign } from '@/types'
 import httpClient from './httpClient'
 
 export const campaignService = {

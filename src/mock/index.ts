@@ -1,6 +1,0 @@
-export { default as categoriesMock } from './kateqoriya'
-export { default as productsMock } from './mehsullar'
-export { default as campaignsMock } from './kampaniyalar'
-export { default as basketMock } from './sebet'
-export { default as ordersMock } from './sifarisler'
-export { default as profileMock } from './profil'
