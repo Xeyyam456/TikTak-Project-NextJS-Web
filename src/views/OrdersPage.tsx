@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Loader } from '@/components'
+import { Container } from '@/components/layout/Container'
 import type { Order } from '@/models'
 import { orderService } from '@/services'
 
@@ -17,10 +18,15 @@ export function OrdersPage() {
   }, [])
 
   if (loading) return <Loader />
-  if (orders.length === 0) return <p className="p-6">Serencam yoxdur.</p>
+  if (orders.length === 0)
+    return (
+      <Container className="py-6">
+        <p>Serencam yoxdur.</p>
+      </Container>
+    )
 
   return (
-    <div className="space-y-3 p-6">
+    <Container className="space-y-3 py-6">
       <h1 className="mb-4 text-xl font-semibold">Serencamlarim</h1>
       {orders.map((order) => (
         <div key={order.id} className="rounded-md border border-neutral-200 p-3">
@@ -30,6 +36,6 @@ export function OrdersPage() {
           </p>
         </div>
       ))}
-    </div>
+    </Container>
   )
 }

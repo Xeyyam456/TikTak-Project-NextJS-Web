@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Container } from './Container'
 
 function UserIcon() {
     return (
@@ -56,30 +57,30 @@ function BasketIcon() {
 
 export function Header() {
     return (
-        <header className="border-b border-neutral-100 bg-white">
-            <div className="mx-auto flex max-w-6xl items-center justify-between pt-[22px] pb-[22px] pl-[29px] pr-[29px]">
+        <header className="sticky top-0 z-50 bg-white">
+            <Container className="flex items-center justify-between pt-[30px] pb-[30px]">
                 <Link
                     href="/"
-                    className="flex items-center text-[36px] font-extrabold leading-none tracking-[0.03em] text-primary"
+                    className="flex items-center text-[40px] font-extrabold leading-none tracking-[0.03em] text-neutral-900"
                 >
                     TIK TAK
                 </Link>
 
                 <nav className="flex items-center gap-6 text-[14px] font-normal leading-none tracking-normal text-foreground">
-                    <Link href="/login" className="flex items-center gap-[10px] hover:text-primary">
+                    <Link href="/login" className="flex items-center gap-[10px] hover:text-[#0A955E]">
                         <UserIcon />
                         Hesabım
                     </Link>
-                    <Link href="/" className="flex items-center gap-[10px] hover:text-primary">
+                    <Link href="/login" className="flex items-center gap-[10px] hover:text-[#0A955E]">
                         <HeartIcon />
                         Siyahılarım
                     </Link>
-                    <Link href="/basket" className="flex items-center gap-[10px] hover:text-primary">
+                    <Link href="/login" className="flex items-center gap-[10px] hover:text-[#0A955E]">
                         <BasketIcon />
                         Səbətim
                     </Link>
                 </nav>
-            </div>
+            </Container>
         </header>
     )
 }

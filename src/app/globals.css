@@ -3,8 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #2b3043;
-  --primary: #2b3043;
-  --primary-dark: #2b3043;
+  --primary: #114F2E;
+  --primary-dark: #0d3c23;
   --muted-foreground: #6b7280;
 }
 
@@ -22,4 +22,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-roboto), Arial, Helvetica, sans-serif;
+}
+
+button,
+a,
+[role="button"],
+input[type="submit"],
+input[type="button"] {
+  cursor: pointer;
 }

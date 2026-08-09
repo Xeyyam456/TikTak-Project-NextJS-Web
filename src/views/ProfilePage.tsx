@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Loader } from '@/components'
+import { Container } from '@/components/layout/Container'
 import type { User } from '@/models'
 import { profileService } from '@/services'
 
@@ -17,14 +18,19 @@ export function ProfilePage() {
   }, [])
 
   if (loading) return <Loader />
-  if (!profile) return <p className="p-6">Profil tapilmadi.</p>
+  if (!profile)
+    return (
+      <Container className="py-6">
+        <p>Profil tapilmadi.</p>
+      </Container>
+    )
 
   return (
-    <div className="p-6">
+    <Container className="py-6">
       <h1 className="mb-4 text-xl font-semibold">Profil</h1>
       <p>{profile.full_name}</p>
       <p className="text-neutral-500">{profile.phone}</p>
       <p className="text-neutral-500">{profile.address ?? 'Unvan yoxdur'}</p>
-    </div>
+    </Container>
   )
 }

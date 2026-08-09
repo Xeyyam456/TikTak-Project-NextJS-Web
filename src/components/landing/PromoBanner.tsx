@@ -21,13 +21,16 @@ export function PromoBanner({ campaign, size = 'lg' }: PromoBannerProps) {
     return (
         <div className={`relative w-full overflow-hidden rounded-xl ${height} bg-gradient-to-br ${gradient}`}>
             {campaign.img_url && (
-                <Image
-                    src={campaign.img_url}
-                    alt={campaign.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 50vw"
-                    className="object-cover"
-                />
+                <>
+                    <Image
+                        src={campaign.img_url}
+                        alt={campaign.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 50vw"
+                        className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                </>
             )}
 
             <div className="relative z-10 flex h-full flex-col justify-between p-5 text-white">
@@ -40,9 +43,9 @@ export function PromoBanner({ campaign, size = 'lg' }: PromoBannerProps) {
 
                 <Link
                     href="/products"
-                    className="inline-flex w-fit items-center rounded-md bg-white/90 px-4 py-1.5 text-sm font-semibold text-neutral-900 transition-colors hover:bg-white"
+                    className="inline-flex w-fit items-center rounded-md bg-[#007057] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#00594a]"
                 >
-                    Ətrafı
+                    Ətraflı
                 </Link>
             </div>
         </div>

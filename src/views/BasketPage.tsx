@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Button, Loader } from '@/components'
+import { Container } from '@/components/layout/Container'
 import type { Basket } from '@/models'
 import { basketService } from '@/services'
 
@@ -25,10 +26,15 @@ export function BasketPage() {
   }, [])
 
   if (loading) return <Loader />
-  if (!basket || basket.items.length === 0) return <p className="p-6">Sebet bosdur.</p>
+  if (!basket || basket.items.length === 0)
+    return (
+      <Container className="py-6">
+        <p>Sebet bosdur.</p>
+      </Container>
+    )
 
   return (
-    <div className="p-6">
+    <Container className="py-6">
       <h1 className="mb-4 text-xl font-semibold">Sebet</h1>
       <div className="space-y-3">
         {basket.items.map((item) => (
@@ -47,6 +53,6 @@ export function BasketPage() {
         <p className="text-lg font-semibold">Cemi: {basket.total} AZN</p>
         <Button onClick={() => basketService.clear().then(loadBasket)}>Sebeti temizle</Button>
       </div>
-    </div>
+    </Container>
   )
 }

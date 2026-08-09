@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Loader, ProductCard } from '@/components'
+import { Container } from '@/components/layout/Container'
 import type { Product } from '@/models'
 import { productService } from '@/services'
 
@@ -19,13 +20,13 @@ export function ProductsPage() {
   if (loading) return <Loader />
 
   return (
-    <div className="p-6">
+    <Container className="py-6">
       <h1 className="mb-4 text-xl font-semibold">Mehsullar</h1>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-[15px] sm:grid-cols-3 md:grid-cols-4">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
-    </div>
+    </Container>
   )
 }

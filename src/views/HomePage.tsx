@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Loader } from '@/components'
+import { Container } from '@/components/layout/Container'
 import { BannerCarousel } from '@/components/landing/BannerCarousel'
 import { SpecialOffers } from '@/components/landing/SpecialOffers'
 import { StatsSection } from '@/components/landing/StatsSection'
@@ -24,11 +25,11 @@ export function HomePage() {
   if (loading) return <Loader />
 
   return (
-    <div className="mx-auto max-w-6xl space-y-14 px-6 py-8">
+    <Container className="space-y-14 py-8">
       <BannerCarousel campaigns={campaigns} />
-      <SpecialOffers campaigns={campaigns.slice(0, 3)} />
+      <SpecialOffers campaigns={campaigns.slice(0, 4)} />
       <StatsSection />
-    </div>
+    </Container>
   )
 }
 
