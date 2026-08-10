@@ -1,12 +1,15 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Container } from './Container'
+import { profileService } from '@/services'
+import { getAccessToken } from '@/services/httpClient'
 
-function LocationIcon() {
+function LocationIcon({ className = 'h-[18px] w-[18px]' }: { className?: string }) {
     return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-[18px] w-[18px]">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className={className}>
             <path d="M12 21s-7-6.5-7-11.5A7 7 0 0 1 19 9.5C19 14.5 12 21 12 21Z" strokeLinejoin="round" />
             <circle cx="12" cy="9.5" r="2.5" />
         </svg>
@@ -79,6 +82,15 @@ function BasketIcon() {
 export function Header() {
     const pathname = usePathname()
     const isLanding = pathname === '/'
+    const [address, setAddress] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!getAccessToken()) return
+        profileService
+            .get()
+            .then((res) => setAddress(res.data.address))
+            .catch(() => {})
+    }, [])
 
     return (
         <header className="sticky top-0 z-50 bg-white">
@@ -92,9 +104,12 @@ export function Header() {
                     </Link>
 
                     {!isLanding && (
-                        <div className="flex items-center gap-[6px] text-[14px] text-neutral-500">
-                            <LocationIcon />
-                            Ünvanınızı seçin
+                        <div className="flex items-center gap-[8px] rounded-[8px] border border-neutral-100 bg-neutral-50 px-3 py-1.5">
+                            <LocationIcon className="h-8 w-8 flex-shrink-0" />
+                            <div className="flex flex-col justify-center gap-[2px]">
+                                <span className="text-[12px] font-medium leading-none text-neutral-400">Ünvan</span>
+                                <span className="text-[14px] leading-none text-neutral-500">{address ?? 'Ünvanınızı seçin'}</span>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -127,6 +142,8 @@ export function Header() {
                     </Link>
                 </nav>
             </Container>
+
+            {!isLanding && <div className="h-3 w-full border-t border-neutral-100 bg-neutral-50" />}
         </header>
     )
 }

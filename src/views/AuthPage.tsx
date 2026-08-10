@@ -10,7 +10,6 @@ import { setTokens } from '@/services/httpClient'
 import type { AuthPageProps, AuthTab, LoginPayload, SignupPayload } from '@/types'
 
 const PHONE_REGEX = /^\+994\d{9}$/
-const PHONE_GROUP_PLACEHOLDERS = ['__', '___', '__', '__']
 
 function digitsFromPhoneValue(value: string) {
     let raw = value.replace(/\D/g, '')
@@ -18,10 +17,10 @@ function digitsFromPhoneValue(value: string) {
     return raw.slice(0, 9)
 }
 
-function maskPhone(digits: string) {
-    const groups = [digits.slice(0, 2), digits.slice(2, 5), digits.slice(5, 7), digits.slice(7, 9)]
-    const parts = groups.map((group, i) => group + PHONE_GROUP_PLACEHOLDERS[i].slice(group.length))
-    return `(+994) ${parts[0]} ${parts[1]} ${parts[2]} ${parts[3]}`
+function formatPhoneValue(digits: string, showPrefix: boolean) {
+    if (!digits) return showPrefix ? '(+994) ' : ''
+    const groups = [digits.slice(0, 2), digits.slice(2, 5), digits.slice(5, 7), digits.slice(7, 9)].filter(Boolean)
+    return `(+994) ${groups.join(' ')}`
 }
 
 const loginSchema = z.object({
@@ -36,10 +35,10 @@ const registerSchema = z.object({
 })
 
 const inputClasses =
-    'w-full border border-neutral-300 px-3 py-2 pr-10 text-sm focus:border-[#92D871] focus:outline-none placeholder:text-neutral-400'
+    'w-full border border-neutral-100 bg-neutral-50 px-4 py-2 pr-10 text-sm text-neutral-800 focus:border-[#92D871] focus:outline-none placeholder:text-neutral-400'
 const inputStyle = {
-    width: '566px',
-    height: '60px',
+    width: '460px',
+    height: '50px',
     borderRadius: '10px',
     opacity: 1,
 }
@@ -47,20 +46,24 @@ const labelClasses = 'mb-1 block text-sm font-medium text-neutral-700'
 const labelStyle = {
     fontFamily: 'var(--font-roboto)',
     fontWeight: 400,
-    fontSize: '22px',
+    fontSize: '18px',
     lineHeight: '100%',
     letterSpacing: '0%',
 }
 const tabTextStyle = {
     fontFamily: 'var(--font-roboto)',
     fontWeight: 400,
-    fontSize: '26px',
+    fontSize: '21px',
     lineHeight: '100%',
     letterSpacing: '0%',
 }
 const errorClasses = 'mt-1 text-xs text-red-600'
 const submitClasses =
-    'mt-2 w-full rounded-md bg-[#92D871] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760] disabled:opacity-50'
+    'mt-2 w-full rounded-[10px] bg-[#92D871] py-3 text-base font-bold text-white transition-colors hover:bg-[#7CB760] disabled:opacity-50'
+const submitStyle = {
+    width: '460px',
+    height: '50px',
+}
 
 function EyeIcon() {
     return (
@@ -96,6 +99,8 @@ export function AuthPage({ initialTab }: AuthPageProps) {
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const [showLoginPassword, setShowLoginPassword] = useState(false)
     const [showRegisterPassword, setShowRegisterPassword] = useState(false)
+    const [loginPhoneFocused, setLoginPhoneFocused] = useState(false)
+    const [registerPhoneFocused, setRegisterPhoneFocused] = useState(false)
 
     const loginForm = useForm<LoginPayload>({
         resolver: zodResolver(loginSchema),
@@ -167,17 +172,17 @@ export function AuthPage({ initialTab }: AuthPageProps) {
             <div className="flex w-full items-center justify-center bg-white p-8 md:w-1/2 md:p-12">
                 <div
                     style={{
-                        width: '566px',
-                        height: '609px',
+                        width: '460px',
+                        height: '495px',
                     }}
                 >
-                    <div className="mb-8 flex border-b border-neutral-200" style={{ gap: '138px' }}>
+                    <div className="mb-[42px] flex w-full border-b border-neutral-200">
                         <button
                             type="button"
                             onClick={() => switchTab('login')}
                             style={tabTextStyle}
-                            className={`pb-3 transition-colors ${activeTab === 'login'
-                                ? 'border-b-2 border-[#92D871] text-[#92D871]'
+                            className={`flex-1 pb-3 text-center transition-colors ${activeTab === 'login'
+                                ? 'border-b-[1.5px] border-[#92D871] text-[#92D871]'
                                 : 'text-neutral-400 hover:text-neutral-600'
                                 }`}
                         >
@@ -187,8 +192,8 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                             type="button"
                             onClick={() => switchTab('register')}
                             style={tabTextStyle}
-                            className={`pb-3 transition-colors ${activeTab === 'register'
-                                ? 'border-b-2 border-[#92D871] text-[#92D871]'
+                            className={`flex-1 pb-3 text-center transition-colors ${activeTab === 'register'
+                                ? 'border-b-[1.5px] border-[#92D871] text-[#92D871]'
                                 : 'text-neutral-400 hover:text-neutral-600'
                                 }`}
                         >
@@ -204,7 +209,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                     )}
 
                     {activeTab === 'login' ? (
-                        <form className="flex flex-col" style={{ gap: '52px' }} onSubmit={onLogin} noValidate>
+                        <form className="flex flex-col" style={{ gap: '38px' }} onSubmit={onLogin} noValidate>
                             <div>
                                 <label className={labelClasses} style={labelStyle}>Telefon nömrəsi</label>
                                 <Controller
@@ -214,13 +219,18 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                         <input
                                             type="tel"
                                             inputMode="numeric"
-                                            value={maskPhone(digitsFromPhoneValue(field.value))}
+                                            value={formatPhoneValue(digitsFromPhoneValue(field.value), loginPhoneFocused)}
                                             onChange={(e) => {
-                                                const digits = digitsFromPhoneValue(e.target.value)
-                                                field.onChange(digits ? `+994${digits}` : '')
+                                                const nextDigits = digitsFromPhoneValue(e.target.value)
+                                                field.onChange(nextDigits ? `+994${nextDigits}` : '')
                                             }}
-                                            placeholder="(+994) __ ___ __ __"
-                                            className={inputClasses}
+                                            onFocus={() => setLoginPhoneFocused(true)}
+                                            onBlur={() => {
+                                                field.onBlur()
+                                                setLoginPhoneFocused(false)
+                                            }}
+                                            placeholder="(+994) __ / ___ / __ / __"
+                                            className={`${inputClasses} text-neutral-800`}
                                             style={inputStyle}
                                         />
                                     )}
@@ -235,7 +245,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                 <div className="relative">
                                     <input
                                         type={showLoginPassword ? 'text' : 'password'}
-                                        placeholder="Şifrə"
+                                        placeholder="********************"
                                         {...loginForm.register('password')}
                                         className={inputClasses}
                                         style={inputStyle}
@@ -254,11 +264,11 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                 )}
                             </div>
 
-                            <button type="submit" disabled={loginForm.formState.isSubmitting} className={submitClasses}>
+                            <button type="submit" disabled={loginForm.formState.isSubmitting} className={submitClasses} style={submitStyle}>
                                 {loginForm.formState.isSubmitting ? 'Göndərilir...' : 'Tamamla'}
                             </button>
 
-                            <p className="mt-2 text-center text-sm text-neutral-500">
+                            <p className="mt-[-28px] text-left text-sm text-neutral-500">
                                 Hesabın yoxdur?{' '}
                                 <button
                                     type="button"
@@ -270,12 +280,12 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                             </p>
                         </form>
                     ) : (
-                        <form className="flex flex-col" style={{ gap: '52px' }} onSubmit={onRegister} noValidate>
+                        <form className="flex flex-col" style={{ gap: '38px' }} onSubmit={onRegister} noValidate>
                             <div>
                                 <label className={labelClasses} style={labelStyle}>Ad</label>
                                 <input
                                     type="text"
-                                    placeholder="Ad Soyad"
+                                    placeholder="Ad, Soyad"
                                     {...registerForm.register('full_name')}
                                     className={inputClasses}
                                     style={inputStyle}
@@ -294,13 +304,18 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                         <input
                                             type="tel"
                                             inputMode="numeric"
-                                            value={maskPhone(digitsFromPhoneValue(field.value))}
+                                            value={formatPhoneValue(digitsFromPhoneValue(field.value), registerPhoneFocused)}
                                             onChange={(e) => {
-                                                const digits = digitsFromPhoneValue(e.target.value)
-                                                field.onChange(digits ? `+994${digits}` : '')
+                                                const nextDigits = digitsFromPhoneValue(e.target.value)
+                                                field.onChange(nextDigits ? `+994${nextDigits}` : '')
                                             }}
-                                            placeholder="(+994) __ ___ __ __"
-                                            className={inputClasses}
+                                            onFocus={() => setRegisterPhoneFocused(true)}
+                                            onBlur={() => {
+                                                field.onBlur()
+                                                setRegisterPhoneFocused(false)
+                                            }}
+                                            placeholder="(+994) __ / ___ / __ / __"
+                                            className={`${inputClasses} text-neutral-800`}
                                             style={inputStyle}
                                         />
                                     )}
@@ -315,7 +330,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                 <div className="relative">
                                     <input
                                         type={showRegisterPassword ? 'text' : 'password'}
-                                        placeholder="Parol"
+                                        placeholder="********************"
                                         {...registerForm.register('password')}
                                         className={inputClasses}
                                         style={inputStyle}
@@ -334,11 +349,11 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                 )}
                             </div>
 
-                            <button type="submit" disabled={registerForm.formState.isSubmitting} className={submitClasses}>
+                            <button type="submit" disabled={registerForm.formState.isSubmitting} className={submitClasses} style={submitStyle}>
                                 {registerForm.formState.isSubmitting ? 'Göndərilir...' : 'Tamamla'}
                             </button>
 
-                            <p className="mt-2 text-center text-sm text-neutral-500">
+                            <p className="mt-[-28px] text-left text-sm text-neutral-500">
                                 Hesabın var?{' '}
                                 <button type="button" onClick={() => switchTab('login')} className="font-semibold text-[#92D871]">
                                     Daxil ol

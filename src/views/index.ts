@@ -1,5 +1,6 @@
 export * from './HomePage'
 export * from './CategoriesPage'
+export * from './CategoryDetailPage'
 export * from './ProductsPage'
 export * from './ProductDetailPage'
 export * from './BasketPage'
