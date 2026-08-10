@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { CategoriesPage } from '@/views'
-import { RequireAuth } from '@/shared/components/auth/RequireAuth'
 
 export const metadata: Metadata = {
   title: 'Kateqoriyalar',
@@ -9,9 +8,5 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return (
-    <RequireAuth>
-      <CategoriesPage />
-    </RequireAuth>
-  )
+  return <CategoriesPage />
 }
