@@ -1,0 +1,37 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { basketService } from '@/services'
+import { getAccessToken } from '@/services/httpClient'
+
+export const basketQueryKey = ['basket']
+
+export function useBasket() {
+    return useQuery({
+        queryKey: basketQueryKey,
+        queryFn: () => basketService.list().then((res) => res.data),
+        enabled: !!getAccessToken(),
+    })
+}
+
+export function useBasketMutations() {
+    const queryClient = useQueryClient()
+    const invalidate = () => queryClient.invalidateQueries({ queryKey: basketQueryKey })
+
+    const add = useMutation({
+        mutationFn: (productId: number) => basketService.add(productId),
+        onSuccess: invalidate,
+    })
+    const remove = useMutation({
+        mutationFn: (productId: number) => basketService.remove(productId),
+        onSuccess: invalidate,
+    })
+    const removeAll = useMutation({
+        mutationFn: (productId: number) => basketService.removeAll(productId),
+        onSuccess: invalidate,
+    })
+    const clear = useMutation({
+        mutationFn: () => basketService.clear(),
+        onSuccess: invalidate,
+    })
+
+    return { add, remove, removeAll, clear }
+}

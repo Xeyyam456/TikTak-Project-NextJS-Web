@@ -5,7 +5,7 @@ export type { Category, CategoryCardProps, CategoryPageParams, CategoryDetailLay
 export { ProductMeasure } from './product'
 export type { Product, ProductCardProps, CategoryProductCardProps, CategoryProductsSectionProps, ProductDetailPageProps, ProductPageParams } from './product'
 export type { Campaign, PromoBannerProps, CampaignCarouselProps } from './campaign'
-export type { BasketItem, Basket } from './basket'
+export type { BasketItem, Basket, BasketSidebarPanelProps } from './basket'
 export { OrderStatus, PaymentMethod } from './order'
 export type { OrderItem, Order, CheckoutPayload } from './order'
 export type { AuthTab, AuthPageProps } from './auth'

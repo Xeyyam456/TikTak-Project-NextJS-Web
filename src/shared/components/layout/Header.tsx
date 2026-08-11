@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation'
 import { Container } from './Container'
 import { profileService } from '@/services'
 import { getAccessToken } from '@/services/httpClient'
+import { useBasket } from '@/shared/hooks/useBasket'
+import { useFavorites } from '@/shared/hooks/useFavorites'
 
 function LocationIcon({ className = 'h-[18px] w-[18px]' }: { className?: string }) {
     return (
@@ -83,6 +85,10 @@ export function Header() {
     const pathname = usePathname()
     const isLanding = pathname === '/'
     const [address, setAddress] = useState<string | null>(null)
+    const { data: basket } = useBasket()
+    const basketCount = basket?.count ?? 0
+    const { data: favorites } = useFavorites()
+    const favoritesCount = favorites?.length ?? 0
 
     useEffect(() => {
         if (!getAccessToken()) return
@@ -128,16 +134,45 @@ export function Header() {
                 )}
 
                 <nav className="flex items-center gap-6 text-[14px] font-normal leading-none tracking-normal text-foreground">
-                    <Link href="/account" className="flex items-center gap-[10px] hover:text-[#0A955E]">
+                    <Link
+                        href="/account"
+                        className={`flex items-center gap-[10px] hover:text-[#0A955E] ${
+                            pathname === '/account' ? 'font-semibold text-[#0A955E]' : ''
+                        }`}
+                    >
                         <UserIcon />
                         Hesabım
                     </Link>
-                    <Link href="/favorites" className="flex items-center gap-[10px] hover:text-[#0A955E]">
-                        <HeartIcon />
+                    <Link
+                        href="/favorites"
+                        className={`relative flex items-center gap-[10px] hover:text-[#0A955E] ${
+                            pathname === '/favorites' ? 'font-semibold text-[#0A955E]' : ''
+                        }`}
+                    >
+                        <span className="relative">
+                            <HeartIcon />
+                            {favoritesCount > 0 && (
+                                <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#92D871] px-1 text-[10px] font-semibold leading-none text-white">
+                                    {favoritesCount}
+                                </span>
+                            )}
+                        </span>
                         Siyahılarım
                     </Link>
-                    <Link href="/basket" className="flex items-center gap-[10px] hover:text-[#0A955E]">
-                        <BasketIcon />
+                    <Link
+                        href="/basket"
+                        className={`relative flex items-center gap-[10px] hover:text-[#0A955E] ${
+                            pathname === '/basket' ? 'font-semibold text-[#0A955E]' : ''
+                        }`}
+                    >
+                        <span className="relative">
+                            <BasketIcon />
+                            {basketCount > 0 && (
+                                <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#92D871] px-1 text-[10px] font-semibold leading-none text-white">
+                                    {basketCount}
+                                </span>
+                            )}
+                        </span>
                         Səbətim
                     </Link>
                 </nav>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/shared/components/layout/SiteChrome";
+import { QueryProvider } from "@/shared/components/providers/QueryProvider";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -40,7 +41,9 @@ export default function RootLayout({
       className={`${roboto.variable} ${poppins.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SiteChrome>{children}</SiteChrome>
+        <QueryProvider>
+          <SiteChrome>{children}</SiteChrome>
+        </QueryProvider>
       </body>
     </html>
   );
