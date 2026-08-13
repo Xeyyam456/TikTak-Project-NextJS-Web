@@ -1,11 +1,15 @@
 'use client'
 
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { Heart } from 'lucide-react'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
 import type { CategoryProductCardProps } from '@/types'
 
 export function CategoryProductCard({ product }: CategoryProductCardProps) {
+    const router = useRouter()
+    const pathname = usePathname()
+    const params = useParams<{ id?: string }>()
     const { data: basket } = useBasket()
     const { add, remove } = useBasketMutations()
     const { data: favorites } = useFavorites()
@@ -14,12 +18,30 @@ export function CategoryProductCard({ product }: CategoryProductCardProps) {
     const quantity = basket?.items.find((item) => item.product.id === product.id)?.quantity ?? 0
     const isFavorite = favorites?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false
 
-    const handleIncrease = () => add.mutate(product.id)
-    const handleDecrease = () => remove.mutate(product.id)
-    const handleToggleFavorite = () => toggleFavorite.mutate(product.id)
+    const handleOpenDetail = () => {
+        const isCategoryDetailPage = pathname.startsWith('/categories/') && !!params.id
+        router.push(
+            isCategoryDetailPage ? `/categories/${params.id}/products/${product.id}` : `/products/${product.id}`,
+        )
+    }
+    const handleIncrease = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        add.mutate(product.id)
+    }
+    const handleDecrease = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        remove.mutate(product.id)
+    }
+    const handleToggleFavorite = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        toggleFavorite.mutate(product.id)
+    }
 
     return (
-        <div className="relative z-10 mx-auto flex w-full max-w-[220px] !cursor-pointer flex-col items-center rounded-2xl bg-white p-4 text-center shadow-sm transition-transform duration-200 hover:z-20 hover:scale-105 hover:shadow-lg">
+        <div
+            onClick={handleOpenDetail}
+            className="relative z-10 mx-auto flex w-full max-w-[220px] !cursor-pointer flex-col items-center rounded-2xl bg-white p-4 text-center shadow-sm transition-transform duration-200 hover:z-20 hover:scale-105 hover:shadow-lg"
+        >
             <button
                 type="button"
                 onClick={handleToggleFavorite}
@@ -45,37 +67,40 @@ export function CategoryProductCard({ product }: CategoryProductCardProps) {
                 )}
             </div>
             <p className="cursor-pointer text-base font-bold text-neutral-900">{product.title}</p>
-            <p className="mt-1 cursor-pointer text-base text-neutral-500">{product.price} AZN</p>
 
-            {quantity === 0 ? (
-                <button
-                    type="button"
-                    onClick={handleIncrease}
-                    className="mt-3 w-full cursor-pointer rounded-full bg-[#92D871] px-2 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
-                >
-                    Səbətə əlavə et
-                </button>
-            ) : (
-                <div className="mt-3 flex w-full items-center gap-1.5">
-                    <button
-                        type="button"
-                        onClick={handleDecrease}
-                        className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#F4A6A6] text-base font-bold text-white transition-colors hover:bg-[#EF8A8A]"
-                    >
-                        −
-                    </button>
-                    <span className="flex h-9 flex-1 items-center justify-center rounded-full bg-[#92D871] text-sm font-semibold text-white">
-                        {quantity} {product.type}
-                    </span>
+            <div className="mt-auto flex w-full flex-col items-center pt-3">
+                <p className="mb-1 cursor-pointer text-base text-neutral-500">{product.price} AZN</p>
+
+                {quantity === 0 ? (
                     <button
                         type="button"
                         onClick={handleIncrease}
-                        className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#92D871] text-base font-bold text-white transition-colors hover:bg-[#7CB760]"
+                        className="flex h-9 w-full cursor-pointer items-center justify-center rounded-full bg-[#92D871] px-2 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
                     >
-                        +
+                        Səbətə əlavə et
                     </button>
-                </div>
-            )}
+                ) : (
+                    <div className="flex w-full items-center gap-1.5">
+                        <button
+                            type="button"
+                            onClick={handleDecrease}
+                            className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#F4A6A6] text-base font-bold text-white transition-colors hover:bg-[#EF8A8A]"
+                        >
+                            −
+                        </button>
+                        <span className="flex h-9 flex-1 items-center justify-center rounded-full bg-[#92D871] text-sm font-semibold text-white">
+                            {quantity} {product.type}
+                        </span>
+                        <button
+                            type="button"
+                            onClick={handleIncrease}
+                            className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#92D871] text-base font-bold text-white transition-colors hover:bg-[#7CB760]"
+                        >
+                            +
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
