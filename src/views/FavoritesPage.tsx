@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { BasketSidebarPanel, CategoryProductCard, Loader, Pagination, ProductDetailContent } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useFavorites } from '@/shared/hooks/useFavorites'
@@ -16,9 +17,12 @@ const VIEWPORT_RESERVED = 180
 const clampToViewport = (px: number) => `min(${px}px, calc(100vh - ${VIEWPORT_RESERVED}px))`
 
 export function FavoritesPage() {
+  const router = useRouter()
+  const params = useParams<{ id?: string }>()
+  const selectedProductId = params.id ? Number(params.id) : null
+
   const { data: favorites, isLoading } = useFavorites()
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null)
 
   const totalPages = getTotalPages(favorites?.length ?? 0, PAGE_SIZE)
   const pagedFavorites = paginate(favorites ?? [], currentPage, PAGE_SIZE)
@@ -36,12 +40,14 @@ export function FavoritesPage() {
       <div className="mt-[-15px] flex items-start gap-4">
         <div className="flex-1">
           {selectedProductId ? (
-            <ProductDetailContent
-              productId={selectedProductId}
-              height={clampToViewport(BASKET_PANEL_HEIGHT)}
-              className="p-6"
-              onBack={() => setSelectedProductId(null)}
-            />
+            <div className="mt-[14px]">
+              <ProductDetailContent
+                productId={selectedProductId}
+                height={clampToViewport(BASKET_PANEL_HEIGHT - 14)}
+                className="p-6"
+                onBack={() => router.push('/favorites')}
+              />
+            </div>
           ) : !favorites || favorites.length === 0 ? (
             <div
               style={{ height: clampToViewport(PANEL_HEIGHT) }}
@@ -54,7 +60,11 @@ export function FavoritesPage() {
             <div style={{ height: clampToViewport(BASKET_PANEL_HEIGHT) }} className="flex flex-col">
               <div className="grid grid-cols-5 gap-x-[15px] gap-y-[11px] px-[10px] pt-[15px] [&>*]:!mx-0">
                 {pagedFavorites.map((product) => (
-                  <CategoryProductCard key={product.id} product={product} onSelect={setSelectedProductId} />
+                  <CategoryProductCard
+                    key={product.id}
+                    product={product}
+                    onSelect={(id) => router.push(`/favorites/${id}`)}
+                  />
                 ))}
               </div>
 

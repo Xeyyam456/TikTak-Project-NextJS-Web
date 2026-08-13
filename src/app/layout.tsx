@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto, Poppins, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { SiteChrome } from "@/shared/components/layout/SiteChrome";
 import { QueryProvider } from "@/shared/components/providers/QueryProvider";
@@ -43,6 +44,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <SiteChrome>{children}</SiteChrome>
+          <Toaster position="top-right" richColors />
         </QueryProvider>
       </body>
     </html>

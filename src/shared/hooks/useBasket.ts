@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { basketService } from '@/services'
 import { getAccessToken } from '@/services/httpClient'
 
@@ -18,19 +19,31 @@ export function useBasketMutations() {
 
     const add = useMutation({
         mutationFn: (productId: number) => basketService.add(productId),
-        onSuccess: invalidate,
+        onSuccess: () => {
+            invalidate()
+            toast.success('Məhsul səbətə əlavə edildi')
+        },
     })
     const remove = useMutation({
         mutationFn: (productId: number) => basketService.remove(productId),
-        onSuccess: invalidate,
+        onSuccess: () => {
+            invalidate()
+            toast.success('Məhsulun sayı azaldıldı')
+        },
     })
     const removeAll = useMutation({
         mutationFn: (productId: number) => basketService.removeAll(productId),
-        onSuccess: invalidate,
+        onSuccess: () => {
+            invalidate()
+            toast.success('Məhsul səbətdən silindi')
+        },
     })
     const clear = useMutation({
         mutationFn: () => basketService.clear(),
-        onSuccess: invalidate,
+        onSuccess: () => {
+            invalidate()
+            toast.success('Səbət təmizləndi')
+        },
     })
 
     return { add, remove, removeAll, clear }

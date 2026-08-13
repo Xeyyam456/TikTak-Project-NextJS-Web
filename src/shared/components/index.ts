@@ -1,6 +1,7 @@
 export * from './ui/Button'
 export * from './ui/Loader'
 export * from './ui/Pagination'
+export * from './ui/ConfirmModal'
 export * from './ProductCard'
 export * from './CategoryCard'
 export * from './CategoryProductCard'

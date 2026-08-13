@@ -1,14 +1,23 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
+import { ConfirmModal } from './ui/ConfirmModal'
 import type { BasketSidebarPanelProps } from '@/types'
 import basketEmpty from '@/assets/images/basket-empty.svg'
 
 export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSidebarPanelProps) {
     const { data: basket } = useBasket()
     const { add, remove, removeAll } = useBasketMutations()
+    const [pendingRemove, setPendingRemove] = useState<{ id: number; title: string } | null>(null)
+
+    const handleConfirmRemove = () => {
+        if (!pendingRemove) return
+        removeAll.mutate(pendingRemove.id)
+        setPendingRemove(null)
+    }
 
     return (
         <div className="relative w-[320px] flex-shrink-0">
@@ -32,7 +41,7 @@ export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSideba
                                     <div key={item.id} className="relative rounded-2xl bg-neutral-100 p-3">
                                         <button
                                             type="button"
-                                            onClick={() => removeAll.mutate(item.product.id)}
+                                            onClick={() => setPendingRemove({ id: item.product.id, title: item.product.title })}
                                             className="absolute right-2 top-2 cursor-pointer text-red-400 transition-colors hover:text-red-600"
                                         >
                                             <Trash2 size={16} />
@@ -104,6 +113,14 @@ export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSideba
                     </>
                 )}
             </div>
+
+            <ConfirmModal
+                open={!!pendingRemove}
+                title="Məhsulu səbətdən silmək istəyirsiniz?"
+                description={pendingRemove?.title}
+                onConfirm={handleConfirmRemove}
+                onCancel={() => setPendingRemove(null)}
+            />
         </div>
     )
 }

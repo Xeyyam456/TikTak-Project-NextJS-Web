@@ -1,14 +1,22 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { Minus, Plus, Trash2 } from 'lucide-react'
-import { Loader } from '@/shared/components'
+import { ConfirmModal, Loader } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 
 export function BasketPage() {
   const { data: basket, isLoading } = useBasket()
   const { add, remove, removeAll, clear } = useBasketMutations()
+  const [pendingRemove, setPendingRemove] = useState<{ id: number; title: string } | null>(null)
+
+  const handleConfirmRemove = () => {
+    if (!pendingRemove) return
+    removeAll.mutate(pendingRemove.id)
+    setPendingRemove(null)
+  }
 
   if (isLoading) return <Loader />
 
@@ -63,7 +71,9 @@ export function BasketPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          item.quantity > 1 ? remove.mutate(item.product.id) : removeAll.mutate(item.product.id)
+                          item.quantity > 1
+                            ? remove.mutate(item.product.id)
+                            : setPendingRemove({ id: item.product.id, title: item.product.title })
                         }
                         className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] bg-[#F4A6A6] text-white transition-colors hover:bg-[#EF8A8A]"
                       >
@@ -111,6 +121,14 @@ export function BasketPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={!!pendingRemove}
+        title="Məhsulu səbətdən silmək istəyirsiniz?"
+        description={pendingRemove?.title}
+        onConfirm={handleConfirmRemove}
+        onCancel={() => setPendingRemove(null)}
+      />
     </Container>
   )
 }

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { productService } from '@/services'
 import { getAccessToken } from '@/services/httpClient'
 
@@ -17,6 +18,10 @@ export function useToggleFavorite() {
 
     return useMutation({
         mutationFn: (productId: number) => productService.toggleFavorite(productId),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: favoritesQueryKey }),
+        onSuccess: (res) => {
+            queryClient.invalidateQueries({ queryKey: favoritesQueryKey })
+            const wasAdded = res.message.toLowerCase().includes('added')
+            toast.success(wasAdded ? 'Seçilmişlərə əlavə edildi' : 'Seçilmişlərdən silindi')
+        },
     })
 }
