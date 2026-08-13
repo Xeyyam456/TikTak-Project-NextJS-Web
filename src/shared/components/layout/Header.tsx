@@ -4,11 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Container } from './Container'
-import { profileService } from '@/services'
-import { getAccessToken } from '@/services/httpClient'
 import { useBasket } from '@/shared/hooks/useBasket'
 import { useFavorites } from '@/shared/hooks/useFavorites'
 import { useProducts } from '@/shared/hooks/useProducts'
+import { useProfile } from '@/shared/hooks/useProfile'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 
 function LocationIcon({ className = 'h-[18px] w-[18px]' }: { className?: string }) {
@@ -87,7 +86,7 @@ export function Header() {
     const pathname = usePathname()
     const router = useRouter()
     const isLanding = pathname === '/'
-    const [address, setAddress] = useState<string | null>(null)
+    const { data: profile } = useProfile()
     const { data: basket } = useBasket()
     const basketCount = basket?.count ?? 0
     const { data: favorites } = useFavorites()
@@ -98,14 +97,6 @@ export function Header() {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [prevPathname, setPrevPathname] = useState(pathname)
     const searchRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (!getAccessToken()) return
-        profileService
-            .get()
-            .then((res) => setAddress(res.data.address))
-            .catch(() => {})
-    }, [])
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -154,7 +145,7 @@ export function Header() {
                             <LocationIcon className="h-8 w-8 flex-shrink-0" />
                             <div className="flex flex-col justify-center gap-[2px]">
                                 <span className="text-[12px] font-medium leading-none text-neutral-400">Ünvan</span>
-                                <span className="text-[14px] leading-none text-neutral-500">{address ?? 'Ünvanınızı seçin'}</span>
+                                <span className="text-[14px] leading-none text-neutral-500">{profile?.address ?? 'Ünvanınızı seçin'}</span>
                             </div>
                         </div>
                     )}
