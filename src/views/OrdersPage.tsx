@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Loader } from '@/shared/components'
-import { Container } from '@/shared/components/layout/Container'
 import type { Order } from '@/types'
 import { orderService } from '@/services'
 
@@ -17,25 +16,26 @@ export function OrdersPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <Loader />
-  if (orders.length === 0)
-    return (
-      <Container className="py-6">
-        <p>Serencam yoxdur.</p>
-      </Container>
-    )
-
   return (
-    <Container className="space-y-3 py-6">
-      <h1 className="mb-4 text-xl font-semibold">Serencamlarim</h1>
-      {orders.map((order) => (
-        <div key={order.id} className="rounded-md border border-neutral-200 p-3">
-          <p className="font-medium">{order.orderNumber}</p>
-          <p className="text-sm text-neutral-500">
-            {order.status} · {order.total} AZN
-          </p>
+    <>
+      <h2 className="mb-6 text-lg font-semibold text-neutral-900">Sifarişlərim</h2>
+
+      {loading ? (
+        <Loader />
+      ) : orders.length === 0 ? (
+        <p className="text-sm text-neutral-500">Sifarişiniz yoxdur.</p>
+      ) : (
+        <div className="space-y-3">
+          {orders.map((order) => (
+            <div key={order.id} className="rounded-[8px] border border-neutral-200 p-3">
+              <p className="font-medium text-neutral-900">{order.orderNumber}</p>
+              <p className="text-sm text-neutral-500">
+                {order.status} · {order.total} AZN
+              </p>
+            </div>
+          ))}
         </div>
-      ))}
-    </Container>
+      )}
+    </>
   )
 }

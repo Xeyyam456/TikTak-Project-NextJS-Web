@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Input } from '@/shared/components'
 import { authService } from '@/services'
 import { setTokens } from '@/services/httpClient'
 import type { AuthPageProps, AuthTab, LoginPayload, SignupPayload } from '@/types'
@@ -34,14 +35,7 @@ const registerSchema = z.object({
     password: z.string().min(4, 'Şifrə ən azı 4 simvol olmalıdır'),
 })
 
-const inputClasses =
-    'w-full border border-neutral-100 bg-neutral-50 px-4 py-2 pr-10 text-sm text-neutral-800 focus:border-[#92D871] focus:outline-none placeholder:text-neutral-400'
-const inputStyle = {
-    width: '460px',
-    height: '50px',
-    borderRadius: '10px',
-    opacity: 1,
-}
+const inputClasses = 'w-[460px] pr-10'
 const labelClasses = 'mb-1 block text-sm font-medium text-neutral-700'
 const labelStyle = {
     fontFamily: 'var(--font-roboto)',
@@ -216,7 +210,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                     control={loginForm.control}
                                     name="phone"
                                     render={({ field }) => (
-                                        <input
+                                        <Input
                                             type="tel"
                                             inputMode="numeric"
                                             value={formatPhoneValue(digitsFromPhoneValue(field.value), loginPhoneFocused)}
@@ -230,8 +224,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                                 setLoginPhoneFocused(false)
                                             }}
                                             placeholder="(+994) __ / ___ / __ / __"
-                                            className={`${inputClasses} text-neutral-800`}
-                                            style={inputStyle}
+                                            className={inputClasses}
                                         />
                                     )}
                                 />
@@ -243,12 +236,11 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                             <div>
                                 <label className={labelClasses} style={labelStyle}>Şifrə</label>
                                 <div className="relative">
-                                    <input
+                                    <Input
                                         type={showLoginPassword ? 'text' : 'password'}
                                         placeholder="********************"
                                         {...loginForm.register('password')}
                                         className={inputClasses}
-                                        style={inputStyle}
                                     />
                                     <button
                                         type="button"
@@ -283,12 +275,11 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                         <form className="flex flex-col" style={{ gap: '38px' }} onSubmit={onRegister} noValidate>
                             <div>
                                 <label className={labelClasses} style={labelStyle}>Ad</label>
-                                <input
+                                <Input
                                     type="text"
                                     placeholder="Ad, Soyad"
                                     {...registerForm.register('full_name')}
                                     className={inputClasses}
-                                    style={inputStyle}
                                 />
                                 {registerForm.formState.errors.full_name && (
                                     <p className={errorClasses}>{registerForm.formState.errors.full_name.message}</p>
@@ -301,7 +292,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                     control={registerForm.control}
                                     name="phone"
                                     render={({ field }) => (
-                                        <input
+                                        <Input
                                             type="tel"
                                             inputMode="numeric"
                                             value={formatPhoneValue(digitsFromPhoneValue(field.value), registerPhoneFocused)}
@@ -315,8 +306,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                                                 setRegisterPhoneFocused(false)
                                             }}
                                             placeholder="(+994) __ / ___ / __ / __"
-                                            className={`${inputClasses} text-neutral-800`}
-                                            style={inputStyle}
+                                            className={inputClasses}
                                         />
                                     )}
                                 />
@@ -328,12 +318,11 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                             <div>
                                 <label className={labelClasses} style={labelStyle}>Parol</label>
                                 <div className="relative">
-                                    <input
+                                    <Input
                                         type={showRegisterPassword ? 'text' : 'password'}
                                         placeholder="********************"
                                         {...registerForm.register('password')}
                                         className={inputClasses}
-                                        style={inputStyle}
                                     />
                                     <button
                                         type="button"

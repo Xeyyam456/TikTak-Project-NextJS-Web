@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { OrdersPage } from '@/views'
-import { RequireAuth } from '@/shared/components/auth/RequireAuth'
 
 export const metadata: Metadata = {
   title: 'Sifarişlərim',
@@ -8,9 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return (
-    <RequireAuth>
-      <OrdersPage />
-    </RequireAuth>
-  )
+  return <OrdersPage />
 }

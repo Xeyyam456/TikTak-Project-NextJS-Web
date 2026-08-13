@@ -140,7 +140,7 @@ export function CheckoutPage() {
             .then(() => {
                 queryClient.invalidateQueries({ queryKey: basketQueryKey })
                 setModalStep('success')
-                setTimeout(() => router.push('/orders'), 2000)
+                setTimeout(() => router.push('/account/orders'), 2000)
             })
             .catch(() => {
                 setModalStep('idle')
