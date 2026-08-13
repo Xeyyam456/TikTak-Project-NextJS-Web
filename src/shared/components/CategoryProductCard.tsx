@@ -6,7 +6,7 @@ import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
 import type { CategoryProductCardProps } from '@/types'
 
-export function CategoryProductCard({ product }: CategoryProductCardProps) {
+export function CategoryProductCard({ product, onSelect }: CategoryProductCardProps) {
     const router = useRouter()
     const pathname = usePathname()
     const params = useParams<{ id?: string }>()
@@ -19,6 +19,10 @@ export function CategoryProductCard({ product }: CategoryProductCardProps) {
     const isFavorite = favorites?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false
 
     const handleOpenDetail = () => {
+        if (onSelect) {
+            onSelect(product.id)
+            return
+        }
         const isCategoryDetailPage = pathname.startsWith('/categories/') && !!params.id
         router.push(
             isCategoryDetailPage ? `/categories/${params.id}/products/${product.id}` : `/products/${product.id}`,

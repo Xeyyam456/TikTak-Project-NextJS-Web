@@ -9,7 +9,7 @@ import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
 import type { Product, ProductDetailContentProps } from '@/types'
 import { productService } from '@/services'
 
-export function ProductDetailContent({ productId, height, className = '' }: ProductDetailContentProps) {
+export function ProductDetailContent({ productId, height, className = '', onBack }: ProductDetailContentProps) {
     const router = useRouter()
     const [product, setProduct] = useState<Product | null>(null)
     const [loading, setLoading] = useState(true)
@@ -55,7 +55,7 @@ export function ProductDetailContent({ productId, height, className = '' }: Prod
             <div className="flex items-center justify-between">
                 <button
                     type="button"
-                    onClick={() => router.back()}
+                    onClick={onBack ?? (() => router.back())}
                     className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200"
                 >
                     <ArrowLeft size={18} />
