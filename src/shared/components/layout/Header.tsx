@@ -116,11 +116,7 @@ export function Header() {
 
     const trimmedQuery = query.trim().toLowerCase()
     const searchResults = trimmedQuery
-        ? (products ?? []).filter(
-              (product) =>
-                  product.title.toLowerCase().includes(trimmedQuery) ||
-                  product.description?.toLowerCase().includes(trimmedQuery),
-          )
+        ? (products ?? []).filter((product) => product.title.toLowerCase().includes(trimmedQuery))
         : []
 
     const handleSelectProduct = (productId: number) => {
