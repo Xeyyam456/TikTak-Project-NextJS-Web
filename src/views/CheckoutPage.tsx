@@ -7,6 +7,7 @@ import { Banknote, Check, Clock, CreditCard } from 'lucide-react'
 import { Loader } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { basketQueryKey, useBasket } from '@/shared/hooks/useBasket'
+import { ordersQueryKey } from '@/shared/hooks/useOrders'
 import { profileService, orderService } from '@/services'
 import { PaymentMethod } from '@/types'
 import type { User } from '@/types'
@@ -139,6 +140,7 @@ export function CheckoutPage() {
             .checkout({ paymentMethod, note: note || undefined, address: profile.address, phone: profile.phone })
             .then(() => {
                 queryClient.invalidateQueries({ queryKey: basketQueryKey })
+                queryClient.invalidateQueries({ queryKey: ordersQueryKey })
                 setModalStep('success')
                 setTimeout(() => router.push('/account/orders'), 2000)
             })

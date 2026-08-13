@@ -22,7 +22,7 @@ export function AccountLayout({ children }: AccountLayoutProps) {
                 <div className="w-[280px] flex-shrink-0 rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">
                     <nav className="space-y-1">
                         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-                            const isActive = pathname === href
+                            const isActive = href === '/account' ? pathname === '/account' : pathname.startsWith(href)
                             return (
                                 <Link
                                     key={href}

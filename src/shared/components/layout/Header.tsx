@@ -127,7 +127,8 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-50 bg-white">
-            <Container className="flex items-center justify-between gap-6 pt-[30px] pb-[30px]">
+            <Container className="pt-[30px] pb-[30px]">
+                <div className="flex h-10 items-center justify-between gap-6">
                 <div className="flex items-center gap-6">
                     <Link
                         href="/"
@@ -200,7 +201,7 @@ export function Header() {
                     <Link
                         href="/account"
                         className={`flex items-center gap-[10px] hover:text-[#0A955E] ${
-                            pathname === '/account' ? 'font-semibold text-[#0A955E]' : ''
+                            pathname.startsWith('/account') ? 'font-semibold text-[#0A955E]' : ''
                         }`}
                     >
                         {profile?.img_url ? (
@@ -244,6 +245,7 @@ export function Header() {
                         Səbətim
                     </Link>
                 </nav>
+                </div>
             </Container>
 
             {!isLanding && <div className="h-3 w-full border-t border-neutral-100 bg-neutral-50" />}

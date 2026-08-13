@@ -7,7 +7,7 @@ export type { Product, ProductCardProps, CategoryProductCardProps, CategoryProdu
 export type { Campaign, PromoBannerProps, CampaignCarouselProps } from './campaign'
 export type { BasketItem, Basket, BasketSidebarPanelProps } from './basket'
 export { OrderStatus, PaymentMethod } from './order'
-export type { OrderItem, Order, CheckoutPayload } from './order'
+export type { OrderItem, Order, CheckoutPayload, OrderDetailSectionProps, OrderPageParams } from './order'
 export type { AuthTab, AuthPageProps } from './auth'
 export type { UploadResponseData } from './upload'
 export type { ButtonProps, ContainerProps, StatCardProps, RequireAuthProps, RedirectIfAuthProps, PaginationProps, ConfirmModalProps, InputProps } from './shared'
