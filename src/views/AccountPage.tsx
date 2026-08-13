@@ -1,12 +1,14 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import { Camera, User as UserIcon } from 'lucide-react'
 import { Input, Loader } from '@/shared/components'
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile'
+import { uploadService } from '@/services'
 
 const updateSchema = z
   .object({
@@ -30,6 +32,11 @@ export function AccountPage() {
   const { data: profile, isLoading } = useProfile()
   const updateProfile = useUpdateProfile()
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [lastSyncedImgUrl, setLastSyncedImgUrl] = useState<string | null>()
+
   const {
     register,
     handleSubmit,
@@ -40,10 +47,39 @@ export function AccountPage() {
     defaultValues: { full_name: '', address: '', password: '', password_repeat: '' },
   })
 
+  if (profile && profile.img_url !== lastSyncedImgUrl) {
+    setLastSyncedImgUrl(profile.img_url)
+    setAvatarPreview(profile.img_url)
+  }
+
   useEffect(() => {
     if (!profile) return
     reset({ full_name: profile.full_name, address: profile.address ?? '', password: '', password_repeat: '' })
   }, [profile, reset])
+
+  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+
+    const objectUrl = URL.createObjectURL(file)
+    setAvatarPreview(objectUrl)
+    setUploadingAvatar(true)
+    try {
+      const uploadRes = await uploadService.upload(file)
+      await updateProfile.mutateAsync({
+        img_url: uploadRes.data.url,
+        full_name: profile?.full_name,
+        address: profile?.address ?? undefined,
+      })
+      toast.success('Profil şəkli yeniləndi')
+    } catch {
+      toast.error('Şəkil yüklənmədi, yenidən cəhd edin')
+      setAvatarPreview(profile?.img_url ?? null)
+    } finally {
+      setUploadingAvatar(false)
+    }
+  }
 
   const onSubmit = handleSubmit(async (values) => {
     try {
@@ -65,7 +101,36 @@ export function AccountPage() {
   return (
     <form className="space-y-8" onSubmit={onSubmit} noValidate>
       <div className="space-y-6">
-        <h2 className="text-lg font-semibold text-neutral-900">Əlaqə məlumatlarınız</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-neutral-900">Əlaqə məlumatlarınız</h2>
+
+          <div className="relative h-12 w-12 flex-shrink-0">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-neutral-100">
+              {avatarPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarPreview} alt="Avatar" className="h-full w-full object-cover" />
+              ) : (
+                <UserIcon size={20} className="text-neutral-400" />
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              aria-label="Şəkli dəyiş"
+              className="absolute -bottom-1 -right-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-[#92D871] text-white shadow-sm transition-colors hover:bg-[#7CB760] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Camera size={10} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarSelect}
+              className="hidden"
+            />
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-6">
           <div>
@@ -79,7 +144,14 @@ export function AccountPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-neutral-700">E-mail</label>
-            <Input type="email" placeholder="E-mail məlumatı mövcud deyil" disabled readOnly className="w-full" />
+            <Input
+              type="email"
+              value={profile?.email ?? ''}
+              placeholder="E-mail məlumatı mövcud deyil"
+              disabled
+              readOnly
+              className="w-full"
+            />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-neutral-700">Ünvan</label>
@@ -111,7 +183,7 @@ export function AccountPage() {
       <div className="flex justify-center pt-2">
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || uploadingAvatar}
           className="w-full max-w-md cursor-pointer rounded-[8px] bg-[#92D871] py-3 text-base font-semibold text-white transition-colors hover:bg-[#7CB760] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? 'Göndərilir...' : 'Məlumatları yenilə'}

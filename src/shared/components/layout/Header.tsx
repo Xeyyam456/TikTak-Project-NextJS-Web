@@ -207,7 +207,12 @@ export function Header() {
                             pathname === '/account' ? 'font-semibold text-[#0A955E]' : ''
                         }`}
                     >
-                        <UserIcon />
+                        {profile?.img_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={profile.img_url} alt="" className="h-[30px] w-[30px] rounded-full object-cover" />
+                        ) : (
+                            <UserIcon />
+                        )}
                         Hesabım
                     </Link>
                     <Link

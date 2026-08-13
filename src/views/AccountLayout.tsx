@@ -15,7 +15,7 @@ export function AccountLayout({ children }: AccountLayoutProps) {
     const pathname = usePathname()
 
     return (
-        <Container className="py-6">
+        <Container className="-mt-[15px] py-6">
             <h1 className="mb-4 text-xl font-semibold text-neutral-900">Hesabım</h1>
 
             <div className="flex items-start gap-4">
