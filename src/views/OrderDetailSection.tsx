@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Loader } from '@/shared/components'
@@ -26,6 +27,10 @@ function formatDateTime(iso: string) {
 export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
     const router = useRouter()
     const { data: order, isLoading } = useOrder(orderId)
+
+    useEffect(() => {
+        if (order) document.title = `Sifariş #${order.orderNumber} | TIK TAK`
+    }, [order])
 
     if (isLoading) return <Loader />
     if (!order) return <p className="text-sm text-neutral-500">Sifariş tapılmadı.</p>

@@ -30,6 +30,10 @@ export function ProductDetailContent({ productId, height, className = '', onBack
             .finally(() => setLoading(false))
     }, [productId])
 
+    useEffect(() => {
+        if (product) document.title = `${product.title} | TIK TAK`
+    }, [product])
+
     if (loading)
         return (
             <div style={{ height }} className={`flex items-center justify-center rounded-2xl bg-white shadow-sm ${className}`}>

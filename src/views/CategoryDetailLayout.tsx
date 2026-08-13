@@ -59,7 +59,7 @@ export function CategoryDetailLayout({ children }: CategoryDetailLayoutProps) {
 
             <div className="flex items-start gap-4">
                 <div className="relative w-[280px] flex-shrink-0">
-                    <h1 className="absolute -top-8 left-0 text-xl font-semibold text-neutral-900">Kateqoriyalar</h1>
+                    <h2 className="absolute -top-8 left-0 text-xl font-semibold text-neutral-900">Kateqoriyalar</h2>
                     <div ref={sidebarRef} className="overflow-hidden">
                         <div className="rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">
                             <ul>

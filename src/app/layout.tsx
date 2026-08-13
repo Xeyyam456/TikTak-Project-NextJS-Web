@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { SiteChrome } from "@/shared/components/layout/SiteChrome";
 import { QueryProvider } from "@/shared/components/providers/QueryProvider";
+import { SITE_NAME, SITE_URL } from "@/shared/utils/seo";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -23,12 +24,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "TIK TAK | Onlayn Supermarket",
     template: "%s | TIK TAK",
   },
   description:
     "TIK TAK ilə gündəlik ehtiyaclarınızı ən sərfəli qiymətlərlə onlayn sifariş edin.",
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "az_AZ",
+    title: "TIK TAK | Onlayn Supermarket",
+    description:
+      "TIK TAK ilə gündəlik ehtiyaclarınızı ən sərfəli qiymətlərlə onlayn sifariş edin.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TIK TAK | Onlayn Supermarket",
+    description:
+      "TIK TAK ilə gündəlik ehtiyaclarınızı ən sərfəli qiymətlərlə onlayn sifariş edin.",
+  },
 };
 
 export default function RootLayout({

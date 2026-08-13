@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { CategoriesPage } from '@/views'
+import { buildMetadata } from '@/shared/utils/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Kateqoriyalar',
   description: 'TIK TAK-da bütün kateqoriyaları kəşf edin.',
-  robots: { index: false, follow: false },
-}
+  path: '/categories',
+})
 
 export default function Page() {
   return <CategoriesPage />

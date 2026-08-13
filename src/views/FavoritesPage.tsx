@@ -38,7 +38,7 @@ export function FavoritesPage() {
 
   return (
     <Container className="-mt-[20px] overflow-hidden py-6">
-      <h1 className="mb-4 ml-[10px] text-xl font-semibold text-neutral-900">Siyahılarım</h1>
+      <h2 className="mb-4 ml-[10px] text-xl font-semibold text-neutral-900">Siyahılarım</h2>
 
       <div className="mt-[-15px] flex items-start gap-4">
         <div className="flex-1">

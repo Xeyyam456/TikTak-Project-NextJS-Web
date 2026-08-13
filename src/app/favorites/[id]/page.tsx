@@ -5,19 +5,20 @@ import { RequireAuth } from '@/shared/components/auth/RequireAuth'
 import { Loader } from '@/shared/components'
 import { productService } from '@/services'
 import type { ProductPageParams } from '@/types'
+import { buildMetadata } from '@/shared/utils/seo'
 
 export async function generateMetadata({ params }: ProductPageParams): Promise<Metadata> {
   const { id } = await params
-  const robots = { index: false, follow: false }
+  const path = `/favorites/${id}`
   try {
     const { data: product } = await productService.getById(Number(id))
-    return {
+    return buildMetadata({
       title: product.title,
-      description: product.description || undefined,
-      robots,
-    }
+      description: product.description || 'TIK TAK-da məhsul detalları.',
+      path,
+    })
   } catch {
-    return { title: 'Siyahılarım', robots }
+    return buildMetadata({ title: 'Siyahılarım', description: 'TIK TAK-da seçdiyiniz məhsulları burada görün.', path })
   }
 }
 

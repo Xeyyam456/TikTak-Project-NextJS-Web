@@ -3,11 +3,13 @@ import { Suspense } from 'react'
 import { FavoritesPage } from '@/views'
 import { RequireAuth } from '@/shared/components/auth/RequireAuth'
 import { Loader } from '@/shared/components'
+import { buildMetadata } from '@/shared/utils/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Siyahılarım',
-  robots: { index: false, follow: false },
-}
+  description: 'TIK TAK-da seçdiyiniz məhsulları burada görün.',
+  path: '/favorites',
+})
 
 export default function Page() {
   return (
