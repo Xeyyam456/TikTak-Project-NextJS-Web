@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { BasketSidebarPanel, CategoryProductCard, Loader, Pagination, ProductDetailContent } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useFavorites } from '@/shared/hooks/useFavorites'
@@ -19,17 +19,20 @@ const clampToViewport = (px: number) => `min(${px}px, calc(100vh - ${VIEWPORT_RE
 export function FavoritesPage() {
   const router = useRouter()
   const params = useParams<{ id?: string }>()
+  const searchParams = useSearchParams()
   const selectedProductId = params.id ? Number(params.id) : null
+  const currentPage = Math.max(1, Number(searchParams.get('page')) || 1)
 
   const { data: favorites, isLoading } = useFavorites()
-  const [currentPage, setCurrentPage] = useState(1)
 
   const totalPages = getTotalPages(favorites?.length ?? 0, PAGE_SIZE)
   const pagedFavorites = paginate(favorites ?? [], currentPage, PAGE_SIZE)
 
   useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages)
-  }, [currentPage, totalPages])
+    if (!selectedProductId && currentPage > totalPages) {
+      router.replace(`/favorites?page=${totalPages}`)
+    }
+  }, [selectedProductId, currentPage, totalPages, router])
 
   if (isLoading) return <Loader />
 
@@ -45,7 +48,7 @@ export function FavoritesPage() {
                 productId={selectedProductId}
                 height={clampToViewport(BASKET_PANEL_HEIGHT - 14)}
                 className="p-6"
-                onBack={() => router.push('/favorites')}
+                onBack={() => router.push(`/favorites?page=${currentPage}`)}
               />
             </div>
           ) : !favorites || favorites.length === 0 ? (
@@ -57,13 +60,13 @@ export function FavoritesPage() {
               <p className="mt-2 text-sm text-neutral-500">Bəyəndiyiniz məhsulları buraya əlavə edin</p>
             </div>
           ) : (
-            <div style={{ height: clampToViewport(BASKET_PANEL_HEIGHT) }} className="flex flex-col">
-              <div className="grid grid-cols-5 gap-x-[15px] gap-y-[11px] px-[10px] pt-[15px] [&>*]:!mx-0">
+            <div style={{ minHeight: clampToViewport(BASKET_PANEL_HEIGHT) }} className="flex flex-col">
+              <div className="grid grid-cols-5 gap-x-[15px] gap-y-[24px] px-[10px] pb-[16px] pt-[15px] [&>*]:!mx-0">
                 {pagedFavorites.map((product) => (
                   <CategoryProductCard
                     key={product.id}
                     product={product}
-                    onSelect={(id) => router.push(`/favorites/${id}`)}
+                    onSelect={(id) => router.push(`/favorites/${id}?page=${currentPage}`)}
                   />
                 ))}
               </div>
@@ -71,7 +74,7 @@ export function FavoritesPage() {
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                onPageChange={(page) => router.replace(`/favorites?page=${page}`)}
                 total={favorites.length}
                 pageSize={PAGE_SIZE}
                 className="mt-auto pb-[10px]"

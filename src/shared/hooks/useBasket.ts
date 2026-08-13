@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { basketService } from '@/services'
 import { getAccessToken } from '@/services/httpClient'
+import type { Basket } from '@/types'
 
 export const basketQueryKey = ['basket']
 
@@ -19,9 +20,14 @@ export function useBasketMutations() {
 
     const add = useMutation({
         mutationFn: (productId: number) => basketService.add(productId),
-        onSuccess: () => {
+        onMutate: (productId: number) => {
+            const basket = queryClient.getQueryData<Basket>(basketQueryKey)
+            const alreadyInBasket = basket?.items.some((item) => item.product.id === productId) ?? false
+            return { alreadyInBasket }
+        },
+        onSuccess: (_data, _productId, context) => {
             invalidate()
-            toast.success('Məhsul səbətə əlavə edildi')
+            toast.success(context?.alreadyInBasket ? 'Məhsulun sayı artırıldı' : 'Məhsul səbətə əlavə edildi')
         },
     })
     const remove = useMutation({

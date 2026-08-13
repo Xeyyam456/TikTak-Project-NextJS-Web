@@ -4,6 +4,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation'
 import { Heart } from 'lucide-react'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
+import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 import type { CategoryProductCardProps } from '@/types'
 
 export function CategoryProductCard({ product, onSelect }: CategoryProductCardProps) {
@@ -11,7 +12,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
     const pathname = usePathname()
     const params = useParams<{ id?: string }>()
     const { data: basket } = useBasket()
-    const { add, remove } = useBasketMutations()
+    const { add, remove, removeAll } = useBasketMutations()
     const { data: favorites } = useFavorites()
     const toggleFavorite = useToggleFavorite()
 
@@ -34,7 +35,11 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
     }
     const handleDecrease = (e: React.MouseEvent) => {
         e.stopPropagation()
-        remove.mutate(product.id)
+        if (quantity > 1) {
+            remove.mutate(product.id)
+        } else {
+            removeAll.mutate(product.id)
+        }
     }
     const handleToggleFavorite = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -44,7 +49,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
     return (
         <div
             onClick={handleOpenDetail}
-            className="relative z-10 mx-auto flex w-full max-w-[220px] !cursor-pointer flex-col items-center rounded-2xl bg-white p-4 text-center shadow-sm transition-transform duration-200 hover:z-20 hover:scale-105 hover:shadow-lg"
+            className="relative z-10 mx-auto flex h-[244px] w-full max-w-[220px] !cursor-pointer flex-col items-center rounded-2xl bg-white p-3 text-center shadow-sm transition-transform duration-200 hover:z-20 hover:scale-105 hover:shadow-lg"
         >
             <button
                 type="button"
@@ -64,22 +69,26 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
                     }`}
                 />
             </button>
-            <div className="relative mb-3 flex h-[112px] w-full cursor-pointer items-center justify-center">
-                {product.img_url && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={product.img_url} alt={product.title} className="max-h-full max-w-full object-contain" />
-                )}
+            <div className="relative mb-2 flex h-[100px] w-full cursor-pointer items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                    src={product.img_url || PRODUCT_IMAGE_FALLBACK}
+                    alt={product.title}
+                    className="max-h-full max-w-full object-contain"
+                />
             </div>
-            <p className="cursor-pointer text-base font-bold text-neutral-900">{product.title}</p>
+            <p className="line-clamp-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center text-base font-bold text-neutral-900">
+                {product.title}
+            </p>
 
-            <div className="mt-auto flex w-full flex-col items-center pt-3">
+            <div className="mt-auto flex w-full flex-col items-center pt-2">
                 <p className="mb-1 cursor-pointer text-base text-neutral-500">{product.price} AZN</p>
 
                 {quantity === 0 ? (
                     <button
                         type="button"
                         onClick={handleIncrease}
-                        className="flex h-9 w-full cursor-pointer items-center justify-center rounded-full bg-[#92D871] px-2 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
+                        className="flex h-8 w-full cursor-pointer items-center justify-center rounded-full bg-[#92D871] px-2 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
                     >
                         Səbətə əlavə et
                     </button>
@@ -88,17 +97,17 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
                         <button
                             type="button"
                             onClick={handleDecrease}
-                            className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#F4A6A6] text-base font-bold text-white transition-colors hover:bg-[#EF8A8A]"
+                            className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#F4A6A6] text-base font-bold text-white transition-colors hover:bg-[#EF8A8A]"
                         >
                             −
                         </button>
-                        <span className="flex h-9 flex-1 items-center justify-center rounded-full bg-[#92D871] text-sm font-semibold text-white">
+                        <span className="flex h-8 flex-1 items-center justify-center rounded-full bg-[#92D871] text-sm font-semibold text-white">
                             {quantity} {product.type}
                         </span>
                         <button
                             type="button"
                             onClick={handleIncrease}
-                            className="flex h-9 w-9 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#92D871] text-base font-bold text-white transition-colors hover:bg-[#7CB760]"
+                            className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#92D871] text-base font-bold text-white transition-colors hover:bg-[#7CB760]"
                         >
                             +
                         </button>

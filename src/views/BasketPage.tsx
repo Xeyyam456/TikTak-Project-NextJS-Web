@@ -6,6 +6,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react'
 import { ConfirmModal, Loader } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
+import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 
 export function BasketPage() {
   const { data: basket, isLoading } = useBasket()
@@ -52,14 +53,12 @@ export function BasketPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center">
-                        {item.product.img_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={item.product.img_url}
-                            alt={item.product.title}
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.product.img_url || PRODUCT_IMAGE_FALLBACK}
+                          alt={item.product.title}
+                          className="max-h-full max-w-full object-contain"
+                        />
                       </div>
                       <div>
                         <p className="font-semibold text-neutral-900">{item.product.title}</p>

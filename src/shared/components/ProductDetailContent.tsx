@@ -8,6 +8,7 @@ import { Loader } from './ui/Loader'
 import { ConfirmModal } from './ui/ConfirmModal'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
+import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 import type { Product, ProductDetailContentProps } from '@/types'
 import { productService } from '@/services'
 
@@ -91,10 +92,12 @@ export function ProductDetailContent({ productId, height, className = '', onBack
             <div className="mt-8 flex flex-1 items-center">
                 <div className="flex w-full flex-col gap-10 md:flex-row md:items-center">
                     <div className="flex flex-1 items-center justify-center">
-                        {product.img_url && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={product.img_url} alt={product.title} className="max-h-[300px] max-w-full w-auto object-contain" />
-                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={product.img_url || PRODUCT_IMAGE_FALLBACK}
+                            alt={product.title}
+                            className="max-h-[300px] max-w-full w-auto object-contain"
+                        />
                     </div>
 
                     <div className="flex-1">

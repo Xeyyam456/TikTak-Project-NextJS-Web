@@ -15,7 +15,10 @@ export function ConfirmModal({
 
     return (
         <div
-            onClick={onCancel}
+            onClick={(e) => {
+                e.stopPropagation()
+                onCancel()
+            }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
         >
             <div
@@ -29,7 +32,7 @@ export function ConfirmModal({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="flex-1 cursor-pointer rounded-full bg-[#F4A6A6] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#EF8A8A]"
+                        className="flex-1 cursor-pointer rounded-full bg-neutral-100 py-2.5 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-200"
                     >
                         {cancelLabel}
                     </button>

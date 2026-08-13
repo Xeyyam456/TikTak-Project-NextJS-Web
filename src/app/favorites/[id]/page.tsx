@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { FavoritesPage } from '@/views'
 import { RequireAuth } from '@/shared/components/auth/RequireAuth'
+import { Loader } from '@/shared/components'
 import { productService } from '@/services'
 import type { ProductPageParams } from '@/types'
 
@@ -22,7 +24,9 @@ export async function generateMetadata({ params }: ProductPageParams): Promise<M
 export default function Page() {
   return (
     <RequireAuth>
-      <FavoritesPage />
+      <Suspense fallback={<Loader />}>
+        <FavoritesPage />
+      </Suspense>
     </RequireAuth>
   )
 }

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { ConfirmModal } from './ui/ConfirmModal'
+import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 import type { BasketSidebarPanelProps } from '@/types'
 import basketEmpty from '@/assets/images/basket-empty.svg'
 
@@ -49,14 +50,12 @@ export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSideba
 
                                         <div className="flex gap-3">
                                             <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl bg-white">
-                                                {item.product.img_url && (
-                                                    // eslint-disable-next-line @next/next/no-img-element
-                                                    <img
-                                                        src={item.product.img_url}
-                                                        alt={item.product.title}
-                                                        className="max-h-full max-w-full object-contain"
-                                                    />
-                                                )}
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img
+                                                    src={item.product.img_url || PRODUCT_IMAGE_FALLBACK}
+                                                    alt={item.product.title}
+                                                    className="max-h-full max-w-full object-contain"
+                                                />
                                             </div>
                                             <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
                                                 <p className="truncate pr-5 text-sm font-semibold text-neutral-900">
@@ -66,7 +65,11 @@ export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSideba
                                                     <div className="flex h-8 items-center gap-1.5 rounded-[8px] bg-[#C0E8AD] px-1">
                                                         <button
                                                             type="button"
-                                                            onClick={() => remove.mutate(item.product.id)}
+                                                            onClick={() =>
+                                                                item.quantity > 1
+                                                                    ? remove.mutate(item.product.id)
+                                                                    : removeAll.mutate(item.product.id)
+                                                            }
                                                             className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-[8px] bg-[#F4A6A6] text-white transition-colors hover:bg-[#EF8A8A]"
                                                         >
                                                             <Minus size={12} />
