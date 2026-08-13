@@ -69,7 +69,7 @@ export function ProductDetailContent({ productId, height, className = '', onBack
                 <button
                     type="button"
                     onClick={onBack ?? (() => router.back())}
-                    className="flex cursor-pointer items-center gap-2 rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200"
+                    className="flex cursor-pointer items-center gap-2 rounded-[8px] bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200"
                 >
                     <ArrowLeft size={18} />
                     geri qayıt
@@ -110,7 +110,7 @@ export function ProductDetailContent({ productId, height, className = '', onBack
                                 <button
                                     type="button"
                                     onClick={handleAddToBasket}
-                                    className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-[#92D871] py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#7CB760]"
+                                    className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-[#92D871] py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#7CB760]"
                                 >
                                     <Check size={18} />
                                     Səbətdədir
@@ -119,7 +119,7 @@ export function ProductDetailContent({ productId, height, className = '', onBack
                                     type="button"
                                     onClick={() => setConfirmRemoveOpen(true)}
                                     aria-label="Səbətdən sil"
-                                    className="flex flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#F4A6A6] px-4 py-3.5 text-white transition-colors hover:bg-[#EF8A8A]"
+                                    className="flex flex-shrink-0 cursor-pointer items-center justify-center rounded-[8px] bg-[#F4A6A6] px-4 py-3.5 text-white transition-colors hover:bg-[#EF8A8A]"
                                 >
                                     <Trash2 size={18} />
                                 </button>
@@ -128,7 +128,7 @@ export function ProductDetailContent({ productId, height, className = '', onBack
                             <button
                                 type="button"
                                 onClick={handleAddToBasket}
-                                className="mt-6 w-full max-w-xs cursor-pointer rounded-full bg-[#92D871] py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#7CB760]"
+                                className="mt-6 w-full max-w-xs cursor-pointer rounded-[8px] bg-[#92D871] py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#7CB760]"
                             >
                                 Səbətə əlavə et
                             </button>

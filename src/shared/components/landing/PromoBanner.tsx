@@ -54,7 +54,7 @@ export function PromoBanner({ campaign, size = 'lg', hideButton = false }: Promo
                 {!hideButton && (
                     <Link
                         href="/categories"
-                        className="inline-flex w-fit items-center rounded-md bg-[#007057] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#00594a]"
+                        className="inline-flex w-fit items-center rounded-[8px] bg-[#007057] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[#00594a]"
                     >
                         Ətraflı
                     </Link>

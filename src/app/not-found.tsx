@@ -8,7 +8,7 @@ export default function NotFound() {
             <p className="text-sm text-neutral-500">Axtardığınız səhifə mövcud deyil və ya silinib.</p>
             <Link
                 href="/"
-                className="mt-2 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
+                className="mt-2 inline-flex items-center rounded-[8px] bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
             >
                 Ana səhifəyə qayıt
             </Link>

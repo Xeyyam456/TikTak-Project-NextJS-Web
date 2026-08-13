@@ -33,7 +33,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, total, pageS
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     aria-label="Əvvəlki səhifə"
-                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-neutral-200 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-[8px] text-neutral-500 transition-colors hover:bg-neutral-200 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
                 >
                     <ChevronLeft size={16} />
                 </button>
@@ -49,7 +49,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, total, pageS
                             type="button"
                             onClick={() => onPageChange(page)}
                             aria-current={page === currentPage ? 'page' : undefined}
-                            className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border text-xs font-medium transition-colors ${
+                            className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-[8px] border text-xs font-medium transition-colors ${
                                 page === currentPage
                                     ? 'border-[#92D871] text-[#92D871] hover:bg-transparent'
                                     : 'border-transparent text-neutral-700 hover:bg-neutral-200'
@@ -65,7 +65,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, total, pageS
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     aria-label="Növbəti səhifə"
-                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-neutral-500 transition-colors hover:bg-neutral-200 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-[8px] text-neutral-500 transition-colors hover:bg-neutral-200 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
                 >
                     <ChevronRight size={16} />
                 </button>

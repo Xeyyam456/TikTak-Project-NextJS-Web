@@ -21,7 +21,7 @@ export default function Error({
             <button
                 type="button"
                 onClick={() => unstable_retry()}
-                className="mt-2 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
+                className="mt-2 inline-flex items-center rounded-[8px] bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark"
             >
                 Yenidən cəhd et
             </button>

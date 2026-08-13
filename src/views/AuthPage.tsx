@@ -59,7 +59,7 @@ const tabTextStyle = {
 }
 const errorClasses = 'mt-1 text-xs text-red-600'
 const submitClasses =
-    'mt-2 w-full rounded-[10px] bg-[#92D871] py-3 text-base font-bold text-white transition-colors hover:bg-[#7CB760] disabled:opacity-50'
+    'mt-2 w-full rounded-[8px] bg-[#92D871] py-3 text-base font-bold text-white transition-colors hover:bg-[#7CB760] disabled:opacity-50'
 const submitStyle = {
     width: '460px',
     height: '50px',

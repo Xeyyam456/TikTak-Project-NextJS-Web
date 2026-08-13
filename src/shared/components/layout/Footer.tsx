@@ -80,7 +80,7 @@ export function Footer() {
 
                     <div>
                         <h3 className="text-[22px] font-semibold text-primary">Yeniliklərə abunə olun</h3>
-                        <form onSubmit={handleSubscribe} className="mt-3 flex gap-2 rounded-md border border-neutral-200 p-1 focus-within:border-primary">
+                        <form onSubmit={handleSubscribe} className="mt-3 flex gap-2 rounded-[8px] border border-neutral-200 p-1 focus-within:border-primary">
                             <input
                                 type="email"
                                 required
@@ -91,7 +91,7 @@ export function Footer() {
                             />
                             <button
                                 type="submit"
-                                className="shrink-0 rounded-md bg-[#0A955E] px-4 py-2 text-sm font-medium text-white hover:bg-[#087a4b]"
+                                className="shrink-0 rounded-[8px] bg-[#0A955E] px-4 py-2 text-sm font-medium text-white hover:bg-[#087a4b]"
                             >
                                 Gönder
                             </button>

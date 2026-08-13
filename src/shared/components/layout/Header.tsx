@@ -187,7 +187,7 @@ export function Header() {
                                             key={product.id}
                                             type="button"
                                             onClick={() => handleSelectProduct(product.id)}
-                                            className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors hover:bg-neutral-50"
+                                            className="flex w-full cursor-pointer items-center gap-3 rounded-[8px] px-3 py-2 text-left transition-colors hover:bg-neutral-50"
                                         >
                                             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-50">
                                                 {/* eslint-disable-next-line @next/next/no-img-element */}

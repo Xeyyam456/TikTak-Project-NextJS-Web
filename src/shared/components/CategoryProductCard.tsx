@@ -55,7 +55,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
                 type="button"
                 onClick={handleToggleFavorite}
                 aria-label={isFavorite ? 'Seçilmişlərdən sil' : 'Seçilmişlərə əlavə et'}
-                className={`absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200 ease-out hover:scale-110 active:scale-90 ${
+                className={`absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-[8px] backdrop-blur-sm transition-all duration-200 ease-out hover:scale-110 active:scale-90 ${
                     isFavorite
                         ? 'bg-[#F4A6A6]/15 shadow-[0_2px_10px_rgba(244,166,166,0.45)]'
                         : 'bg-white/70 shadow-sm hover:bg-white/90'
@@ -69,7 +69,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
                     }`}
                 />
             </button>
-            <div className="relative mb-2 flex h-[100px] w-full cursor-pointer items-center justify-center">
+            <div className="relative mb-2 flex h-[100px] w-full shrink-0 cursor-pointer items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={product.img_url || PRODUCT_IMAGE_FALLBACK}
@@ -77,9 +77,9 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
                     className="max-h-full max-w-full object-contain"
                 />
             </div>
-            <p className="line-clamp-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center text-base font-bold text-neutral-900">
-                {product.title}
-            </p>
+            <div className="flex h-[48px] min-h-0 w-full shrink-0 cursor-pointer items-center justify-center overflow-hidden">
+                <p className="line-clamp-2 text-base font-bold leading-6 text-neutral-900">{product.title}</p>
+            </div>
 
             <div className="mt-auto flex w-full flex-col items-center pt-2">
                 <p className="mb-1 cursor-pointer text-base text-neutral-500">{product.price} AZN</p>
@@ -88,7 +88,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
                     <button
                         type="button"
                         onClick={handleIncrease}
-                        className="flex h-8 w-full cursor-pointer items-center justify-center rounded-full bg-[#92D871] px-2 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
+                        className="flex h-8 w-full cursor-pointer items-center justify-center rounded-[8px] bg-[#92D871] px-2 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
                     >
                         Səbətə əlavə et
                     </button>
@@ -97,17 +97,17 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
                         <button
                             type="button"
                             onClick={handleDecrease}
-                            className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#F4A6A6] text-base font-bold text-white transition-colors hover:bg-[#EF8A8A]"
+                            className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-[8px] bg-[#F4A6A6] text-base font-bold text-white transition-colors hover:bg-[#EF8A8A]"
                         >
                             −
                         </button>
-                        <span className="flex h-8 flex-1 items-center justify-center rounded-full bg-[#92D871] text-sm font-semibold text-white">
+                        <span className="flex h-8 flex-1 items-center justify-center rounded-[8px] bg-[#92D871] text-sm font-semibold text-white">
                             {quantity} {product.type}
                         </span>
                         <button
                             type="button"
                             onClick={handleIncrease}
-                            className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#92D871] text-base font-bold text-white transition-colors hover:bg-[#7CB760]"
+                            className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-[8px] bg-[#92D871] text-base font-bold text-white transition-colors hover:bg-[#7CB760]"
                         >
                             +
                         </button>
