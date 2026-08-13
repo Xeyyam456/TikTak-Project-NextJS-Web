@@ -22,6 +22,7 @@ export function CategoriesPage() {
 
     return (
         <Container className="py-6">
+            <h1 className="sr-only">Kateqoriyalar</h1>
             <div className="flex items-start gap-4">
                 <div className="relative hidden h-[485px] w-[280px] flex-shrink-0 rounded-2xl bg-[#76CB4F] sm:block">
                     <img
