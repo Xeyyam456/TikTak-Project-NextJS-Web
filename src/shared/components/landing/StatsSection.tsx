@@ -59,7 +59,7 @@ export function StatsSection() {
     ]
 
     return (
-        <section>
+        <section className="rounded-2xl bg-white p-8">
             <h2 className="text-2xl font-bold text-primary">Bizim göstəricilər</h2>
             <p className="mt-1 text-sm text-primary">
                 Biz yeni imkanlar axtarırıq və digərlərinin bilmədikləri yerlərə getməyə hazırıq.

@@ -1,35 +1,30 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { BasketSidebarPanel, CategoryProductCard, Loader } from '@/shared/components'
+import { useEffect, useState } from 'react'
+import { BasketSidebarPanel, CategoryProductCard, Loader, Pagination } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useFavorites } from '@/shared/hooks/useFavorites'
+import { getTotalPages, paginate } from '@/shared/utils/pagination'
 
 const PANEL_HEIGHT = 697
 const BASKET_PANEL_HEIGHT = 594
 const COLUMNS = 5
 const VISIBLE_ROWS = 2
+const PAGE_SIZE = COLUMNS * VISIBLE_ROWS
 const VIEWPORT_RESERVED = 180
 
 const clampToViewport = (px: number) => `min(${px}px, calc(100vh - ${VIEWPORT_RESERVED}px))`
 
 export function FavoritesPage() {
   const { data: favorites, isLoading } = useFavorites()
-  const gridRef = useRef<HTMLDivElement>(null)
-  const [gridMaxHeight, setGridMaxHeight] = useState<number>()
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const totalPages = getTotalPages(favorites?.length ?? 0, PAGE_SIZE)
+  const pagedFavorites = paginate(favorites ?? [], currentPage, PAGE_SIZE)
 
   useEffect(() => {
-    if (!gridRef.current) return
-    const cards = gridRef.current.children
-    const visibleCount = COLUMNS * VISIBLE_ROWS
-    if (cards.length <= visibleCount) {
-      setGridMaxHeight(undefined)
-      return
-    }
-    const gridTop = gridRef.current.getBoundingClientRect().top
-    const lastVisibleCardBottom = cards[visibleCount - 1].getBoundingClientRect().bottom
-    setGridMaxHeight(lastVisibleCardBottom - gridTop + 97)
-  }, [favorites])
+    if (currentPage > totalPages) setCurrentPage(totalPages)
+  }, [currentPage, totalPages])
 
   if (isLoading) return <Loader />
 
@@ -48,14 +43,21 @@ export function FavoritesPage() {
               <p className="mt-2 text-sm text-neutral-500">Bəyəndiyiniz məhsulları buraya əlavə edin</p>
             </div>
           ) : (
-            <div
-              ref={gridRef}
-              style={{ maxHeight: gridMaxHeight ? clampToViewport(gridMaxHeight) : undefined }}
-              className="scrollbar-hide grid grid-cols-5 gap-x-[15px] gap-y-[11px] overflow-y-auto px-[10px] pt-[15px] pb-[20px] [&>*]:!mx-0 [&>*]:mb-[50px]"
-            >
-              {favorites.map((product) => (
-                <CategoryProductCard key={product.id} product={product} />
-              ))}
+            <div style={{ height: clampToViewport(BASKET_PANEL_HEIGHT) }} className="flex flex-col">
+              <div className="grid grid-cols-5 gap-x-[15px] gap-y-[11px] px-[10px] pt-[15px] [&>*]:!mx-0">
+                {pagedFavorites.map((product) => (
+                  <CategoryProductCard key={product.id} product={product} />
+                ))}
+              </div>
+
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                total={favorites.length}
+                pageSize={PAGE_SIZE}
+                className="mt-auto pb-[10px]"
+              />
             </div>
           )}
         </div>

@@ -10,7 +10,8 @@ const NO_CHROME_ROUTES = ['/login', '/register']
 export function SiteChrome({ children }: { children: ReactNode }) {
     const pathname = usePathname()
     const hideChrome = NO_CHROME_ROUTES.includes(pathname)
-    const showFooter = pathname === '/'
+    const isLanding = pathname === '/'
+    const showFooter = isLanding
 
     if (hideChrome) {
         return <main className="flex-1">{children}</main>
@@ -19,7 +20,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
     return (
         <>
             <Header />
-            <main className="flex-1 bg-neutral-50">{children}</main>
+            <main className={`flex-1 ${isLanding ? 'bg-white' : 'bg-neutral-50'}`}>{children}</main>
             {showFooter && <Footer />}
         </>
     )
