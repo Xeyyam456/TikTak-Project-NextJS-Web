@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { CategoryCard, Loader } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { categoryService } from '@/services'
@@ -25,9 +26,10 @@ export function CategoriesPage() {
             <h1 className="sr-only">Kateqoriyalar</h1>
             <div className="flex items-start gap-4">
                 <div className="relative hidden h-[485px] w-[280px] flex-shrink-0 rounded-2xl bg-[#76CB4F] sm:block">
-                    <img
-                        src={categoryBanner.src}
+                    <Image
+                        src={categoryBanner}
                         alt=""
+                        priority
                         className="absolute top-0 left-1/2 z-50 h-[300px] w-auto max-w-none -translate-x-[38%]"
                     />
                     <div

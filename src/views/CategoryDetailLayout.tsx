@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useParams } from 'next/navigation'
 import { BasketSidebarPanel, Loader } from '@/shared/components'
@@ -83,12 +84,9 @@ export function CategoryDetailLayout({ children }: CategoryDetailLayoutProps) {
                             </ul>
                         </div>
 
-                        <img
-                            src={categoryBanner.src}
-                            alt=""
-                            style={{ height: '318px' }}
-                            className="mt-[16px] w-full max-w-full rounded-2xl object-cover"
-                        />
+                        <div className="relative mt-[16px] h-[318px] w-full max-w-full overflow-hidden rounded-2xl">
+                            <Image src={categoryBanner} alt="" fill sizes="280px" className="object-cover" />
+                        </div>
                     </div>
                 </div>
 

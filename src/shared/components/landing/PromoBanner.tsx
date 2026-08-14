@@ -22,7 +22,7 @@ function formatDateRange(isoDate: string) {
     return `${formatDate(start)} - ${formatDate(end)}`
 }
 
-export function PromoBanner({ campaign, size = 'lg', hideButton = false }: PromoBannerProps) {
+export function PromoBanner({ campaign, size = 'lg', hideButton = false, priority = false }: PromoBannerProps) {
     const gradient = GRADIENTS[campaign.id % GRADIENTS.length]
     const height = size === 'lg' ? 'h-[396px]' : 'h-44'
     const dateRange = formatDateRange(campaign.created_at)
@@ -35,6 +35,7 @@ export function PromoBanner({ campaign, size = 'lg', hideButton = false }: Promo
                         src={campaign.img_url}
                         alt={campaign.title}
                         fill
+                        priority={priority}
                         sizes="(max-width: 640px) 100vw, 50vw"
                         className="object-cover"
                     />

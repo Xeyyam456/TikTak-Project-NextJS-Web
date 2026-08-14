@@ -4,4 +4,5 @@ export interface PromoBannerProps {
   campaign: Campaign
   size?: 'lg' | 'md'
   hideButton?: boolean
+  priority?: boolean
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -156,10 +157,13 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                 >
                     TIK TAK
                 </p>
-                <img
+                <Image
                     src="/images/auth-illustration.svg"
                     alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
+                    fill
+                    priority
+                    sizes="50vw"
+                    className="object-cover"
                 />
             </div>
 
