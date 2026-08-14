@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { basketService } from '@/services'
 import { getAccessToken } from '@/services/httpClient'
@@ -16,10 +17,20 @@ export function useBasket() {
 
 export function useBasketMutations() {
     const queryClient = useQueryClient()
+    const router = useRouter()
     const invalidate = () => queryClient.invalidateQueries({ queryKey: basketQueryKey })
 
+    const requireAuth = () => {
+        if (getAccessToken()) return true
+        router.push('/login')
+        return false
+    }
+
     const add = useMutation({
-        mutationFn: (productId: number) => basketService.add(productId),
+        mutationFn: (productId: number) => {
+            if (!requireAuth()) return Promise.reject(new Error('AUTH_REQUIRED'))
+            return basketService.add(productId)
+        },
         onMutate: (productId: number) => {
             const basket = queryClient.getQueryData<Basket>(basketQueryKey)
             const alreadyInBasket = basket?.items.some((item) => item.product.id === productId) ?? false
@@ -31,21 +42,30 @@ export function useBasketMutations() {
         },
     })
     const remove = useMutation({
-        mutationFn: (productId: number) => basketService.remove(productId),
+        mutationFn: (productId: number) => {
+            if (!requireAuth()) return Promise.reject(new Error('AUTH_REQUIRED'))
+            return basketService.remove(productId)
+        },
         onSuccess: () => {
             invalidate()
             toast.success('Məhsulun sayı azaldıldı')
         },
     })
     const removeAll = useMutation({
-        mutationFn: (productId: number) => basketService.removeAll(productId),
+        mutationFn: (productId: number) => {
+            if (!requireAuth()) return Promise.reject(new Error('AUTH_REQUIRED'))
+            return basketService.removeAll(productId)
+        },
         onSuccess: () => {
             invalidate()
             toast.success('Məhsul səbətdən silindi')
         },
     })
     const clear = useMutation({
-        mutationFn: () => basketService.clear(),
+        mutationFn: () => {
+            if (!requireAuth()) return Promise.reject(new Error('AUTH_REQUIRED'))
+            return basketService.clear()
+        },
         onSuccess: () => {
             invalidate()
             toast.success('Səbət təmizləndi')

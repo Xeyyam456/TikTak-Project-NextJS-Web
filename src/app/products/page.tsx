@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { ProductsPage } from '@/views'
-import { RequireAuth } from '@/shared/components/auth/RequireAuth'
 import { buildMetadata } from '@/shared/utils/seo'
+
+export const revalidate = 300
 
 export const metadata: Metadata = buildMetadata({
   title: 'Məhsullar',
@@ -10,9 +11,5 @@ export const metadata: Metadata = buildMetadata({
 })
 
 export default function Page() {
-  return (
-    <RequireAuth>
-      <ProductsPage />
-    </RequireAuth>
-  )
+  return <ProductsPage />
 }

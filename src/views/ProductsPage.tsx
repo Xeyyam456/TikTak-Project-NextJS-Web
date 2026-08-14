@@ -1,23 +1,12 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { Loader, ProductCard } from '@/shared/components'
+import { ProductCard } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
-import type { Product } from '@/types'
-import { productService } from '@/services'
+import type { PaginatedResponse, Product } from '@/types'
+import { serviceGet } from '@/services/serviceAccount'
 
-export function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    productService
-      .list()
-      .then((res) => setProducts(res.data))
-      .finally(() => setLoading(false))
-  }, [])
-
-  if (loading) return <Loader />
+export async function ProductsPage() {
+  const products: Product[] = await serviceGet<PaginatedResponse<Product>>('/products')
+    .then((res) => res.data)
+    .catch(() => [])
 
   return (
     <Container className="py-6">

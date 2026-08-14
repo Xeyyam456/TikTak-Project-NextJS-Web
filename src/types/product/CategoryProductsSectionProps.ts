@@ -1,3 +1,5 @@
+import type { Product } from './Product'
+
 export interface CategoryProductsSectionProps {
-  categoryId: number
+  products: Product[]
 }

@@ -1,25 +1,14 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { CategoryCard, Loader } from '@/shared/components'
+import { CategoryCard } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
-import { categoryService } from '@/services'
-import type { Category } from '@/types'
+import { serviceGet } from '@/services/serviceAccount'
+import type { ApiResponse, Category } from '@/types'
 import categoryBanner from '@/assets/images/tiktak-login.webp'
 
-export function CategoriesPage() {
-    const [categories, setCategories] = useState<Category[]>([])
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        categoryService
-            .list()
-            .then((res) => setCategories(res.data))
-            .finally(() => setLoading(false))
-    }, [])
-
-    if (loading) return <Loader />
+export async function CategoriesPage() {
+    const categories: Category[] = await serviceGet<ApiResponse<Category[]>>('/categories')
+        .then((res) => res.data)
+        .catch(() => [])
 
     return (
         <Container className="py-6">

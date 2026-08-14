@@ -4,6 +4,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation'
 import { Heart } from 'lucide-react'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
+import { useHasMounted } from '@/shared/hooks/useHasMounted'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 import type { CategoryProductCardProps } from '@/types'
 
@@ -11,13 +12,16 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
     const router = useRouter()
     const pathname = usePathname()
     const params = useParams<{ id?: string }>()
+    const hasMounted = useHasMounted()
     const { data: basket } = useBasket()
     const { add, remove, removeAll } = useBasketMutations()
     const { data: favorites } = useFavorites()
     const toggleFavorite = useToggleFavorite()
 
-    const quantity = basket?.items.find((item) => item.product.id === product.id)?.quantity ?? 0
-    const isFavorite = favorites?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false
+    const quantity = hasMounted ? (basket?.items.find((item) => item.product.id === product.id)?.quantity ?? 0) : 0
+    const isFavorite = hasMounted
+        ? (favorites?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false)
+        : false
 
     const handleOpenDetail = () => {
         if (onSelect) {

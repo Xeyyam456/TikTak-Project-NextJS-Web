@@ -4,12 +4,14 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
+import { useHasMounted } from '@/shared/hooks/useHasMounted'
 import { ConfirmModal } from './ui/ConfirmModal'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 import type { BasketSidebarPanelProps } from '@/types'
 import basketEmpty from '@/assets/images/basket-empty.svg'
 
-export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSidebarPanelProps) {
+export function BasketSidebarPanel({ height, headingOffset = -32, fill = false }: BasketSidebarPanelProps) {
+    const hasMounted = useHasMounted()
     const { data: basket } = useBasket()
     const { add, remove, removeAll } = useBasketMutations()
     const [pendingRemove, setPendingRemove] = useState<{ id: number; title: string } | null>(null)
@@ -25,8 +27,13 @@ export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSideba
             <h2 style={{ top: headingOffset }} className="absolute left-0 text-lg font-semibold text-neutral-900">
                 Səbətim
             </h2>
-            <div style={{ height }} className="flex flex-col rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">
-                {!basket || basket.items.length === 0 ? (
+            <div
+                style={fill ? undefined : { height }}
+                className={`flex flex-col rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm ${
+                    fill ? 'absolute inset-0' : ''
+                }`}
+            >
+                {!hasMounted || !basket || basket.items.length === 0 ? (
                     <div className="flex flex-1 flex-col items-center justify-center text-center">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={basketEmpty.src} alt="" className="h-[300px] w-auto" />
@@ -35,7 +42,7 @@ export function BasketSidebarPanel({ height, headingOffset = -32 }: BasketSideba
                     </div>
                 ) : (
                     <>
-                        <div className="scrollbar-hide flex-1 space-y-[10px] overflow-y-auto">
+                        <div className="scrollbar-hide min-h-0 flex-1 space-y-[10px] overflow-y-auto">
                             {[...basket.items]
                                 .sort((a, b) => a.id - b.id)
                                 .map((item) => (

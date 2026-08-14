@@ -1,41 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { CategoryProductCard, Loader } from '@/shared/components'
-import { productService } from '@/services'
-import type { CategoryProductsSectionProps, Product } from '@/types'
-import { useCategorySidebarHeight } from './CategoryDetailLayout'
+import { CategoryProductCard } from '@/shared/components'
+import type { CategoryProductsSectionProps } from '@/types'
 
-export function CategoryProductsSection({ categoryId }: CategoryProductsSectionProps) {
-    const [products, setProducts] = useState<Product[]>([])
-    const [loading, setLoading] = useState(true)
-    const sidebarHeight = useCategorySidebarHeight()
-
-    useEffect(() => {
-        productService
-            .list()
-            .then((res) => setProducts(res.data.filter((product) => product.category.id === categoryId)))
-            .catch(() => setProducts([]))
-            .finally(() => setLoading(false))
-    }, [categoryId])
-
-    if (loading) {
-        return (
-            <div
-                style={{ height: sidebarHeight }}
-                className="flex flex-1 items-center justify-center rounded-2xl border border-neutral-100 bg-white shadow-sm"
-            >
-                <Loader />
-            </div>
-        )
-    }
-
+export function CategoryProductsSection({ products }: CategoryProductsSectionProps) {
+    // `h-full` fills the layout's stretched wrapper (which is sized to the sidebar via CSS),
+    // so no JS-measured height is needed anymore.
     if (products.length === 0) {
         return (
-            <div
-                style={{ height: sidebarHeight }}
-                className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white px-6 text-center shadow-sm"
-            >
+            <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white px-6 text-center shadow-sm">
                 <svg viewBox="0 0 64 64" className="h-16 w-16 text-neutral-300">
                     <circle cx="27" cy="27" r="16" fill="none" stroke="currentColor" strokeWidth="4" />
                     <line x1="38.5" y1="38.5" x2="52" y2="52" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
@@ -48,10 +21,7 @@ export function CategoryProductsSection({ categoryId }: CategoryProductsSectionP
     }
 
     return (
-        <div
-            style={{ height: sidebarHeight }}
-            className="grid flex-1 grid-cols-2 content-between gap-x-[12px] sm:grid-cols-3 md:grid-cols-4"
-        >
+        <div className="grid h-full grid-cols-2 content-between gap-x-[12px] sm:grid-cols-3 md:grid-cols-4">
             {products.map((product) => (
                 <CategoryProductCard key={product.id} product={product} />
             ))}

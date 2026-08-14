@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { productService } from '@/services'
 import { getAccessToken } from '@/services/httpClient'
@@ -15,9 +16,16 @@ export function useFavorites() {
 
 export function useToggleFavorite() {
     const queryClient = useQueryClient()
+    const router = useRouter()
 
     return useMutation({
-        mutationFn: (productId: number) => productService.toggleFavorite(productId),
+        mutationFn: (productId: number) => {
+            if (!getAccessToken()) {
+                router.push('/login')
+                return Promise.reject(new Error('AUTH_REQUIRED'))
+            }
+            return productService.toggleFavorite(productId)
+        },
         onSuccess: (res) => {
             queryClient.invalidateQueries({ queryKey: favoritesQueryKey })
             const wasAdded = res.message.toLowerCase().includes('added')

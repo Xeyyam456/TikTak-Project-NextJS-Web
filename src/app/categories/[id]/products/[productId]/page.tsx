@@ -1,14 +1,16 @@
 import type { Metadata } from 'next'
 import { CategoryProductDetailSection } from '@/views'
-import { productService } from '@/services'
-import type { CategoryProductDetailPageParams } from '@/types'
+import { serviceGet } from '@/services/serviceAccount'
+import type { ApiResponse, CategoryProductDetailPageParams, Product } from '@/types'
 import { buildMetadata } from '@/shared/utils/seo'
+
+export const revalidate = 300
 
 export async function generateMetadata({ params }: CategoryProductDetailPageParams): Promise<Metadata> {
   const { id, productId } = await params
   const path = `/categories/${id}/products/${productId}`
   try {
-    const { data: product } = await productService.getById(Number(productId))
+    const product = await serviceGet<ApiResponse<Product>>(`/products/${productId}`).then((res) => res.data)
     return buildMetadata({
       title: product.title,
       description: product.description || 'TIK TAK-da məhsul detalları.',
@@ -21,5 +23,9 @@ export async function generateMetadata({ params }: CategoryProductDetailPagePara
 
 export default async function Page({ params }: CategoryProductDetailPageParams) {
   const { productId } = await params
-  return <CategoryProductDetailSection productId={Number(productId)} />
+  const product = await serviceGet<ApiResponse<Product>>(`/products/${productId}`)
+    .then((res) => res.data)
+    .catch(() => null)
+
+  return <CategoryProductDetailSection productId={Number(productId)} initialProduct={product} />
 }

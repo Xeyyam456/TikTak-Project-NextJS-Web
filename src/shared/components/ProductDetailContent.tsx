@@ -8,14 +8,22 @@ import { Loader } from './ui/Loader'
 import { ConfirmModal } from './ui/ConfirmModal'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
+import { useHasMounted } from '@/shared/hooks/useHasMounted'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 import type { Product, ProductDetailContentProps } from '@/types'
 import { productService } from '@/services'
 
-export function ProductDetailContent({ productId, height, className = '', onBack }: ProductDetailContentProps) {
+export function ProductDetailContent({
+    productId,
+    initialProduct = null,
+    height,
+    className = '',
+    onBack,
+}: ProductDetailContentProps) {
     const router = useRouter()
-    const [product, setProduct] = useState<Product | null>(null)
-    const [loading, setLoading] = useState(true)
+    const hasMounted = useHasMounted()
+    const [product, setProduct] = useState<Product | null>(initialProduct)
+    const [loading, setLoading] = useState(!initialProduct)
 
     const { data: basket } = useBasket()
     const { add, removeAll } = useBasketMutations()
@@ -24,11 +32,13 @@ export function ProductDetailContent({ productId, height, className = '', onBack
     const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false)
 
     useEffect(() => {
+        if (initialProduct) return
         productService
             .getById(productId)
             .then((res) => setProduct(res.data))
+            .catch(() => setProduct(null))
             .finally(() => setLoading(false))
-    }, [productId])
+    }, [productId, initialProduct])
 
     useEffect(() => {
         if (product) document.title = `${product.title} | TIK TAK`
@@ -51,8 +61,10 @@ export function ProductDetailContent({ productId, height, className = '', onBack
             </div>
         )
 
-    const quantity = basket?.items.find((item) => item.product.id === product.id)?.quantity ?? 0
-    const isFavorite = favorites?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false
+    const quantity = hasMounted ? (basket?.items.find((item) => item.product.id === product.id)?.quantity ?? 0) : 0
+    const isFavorite = hasMounted
+        ? (favorites?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false)
+        : false
 
     const handleAddToBasket = () => {
         if (quantity > 0) {

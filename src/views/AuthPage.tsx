@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { toast } from 'sonner'
 import { Input } from '@/shared/components'
 import { authService } from '@/services'
 import { setTokens } from '@/services/httpClient'
@@ -118,6 +119,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
         try {
             const res = await authService.login(values)
             setTokens(res.data.tokens.access_token, res.data.tokens.refresh_token)
+            toast.success('Uğurla daxil oldunuz')
             router.push('/')
         } catch {
             setServerError('Telefon nömrəsi və ya şifrə yanlışdır.')

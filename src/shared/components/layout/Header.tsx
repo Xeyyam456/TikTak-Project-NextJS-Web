@@ -3,11 +3,17 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { LogOut } from 'lucide-react'
+import { toast } from 'sonner'
 import { Container } from './Container'
+import { ConfirmModal } from '@/shared/components/ui/ConfirmModal'
 import { useBasket } from '@/shared/hooks/useBasket'
 import { useFavorites } from '@/shared/hooks/useFavorites'
 import { useProducts } from '@/shared/hooks/useProducts'
 import { useProfile } from '@/shared/hooks/useProfile'
+import { useHasMounted } from '@/shared/hooks/useHasMounted'
+import { clearTokens } from '@/services/httpClient'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 
 function LocationIcon({ className = 'h-[18px] w-[18px]' }: { className?: string }) {
@@ -85,17 +91,20 @@ function BasketIcon() {
 export function Header() {
     const pathname = usePathname()
     const router = useRouter()
+    const queryClient = useQueryClient()
     const isLanding = pathname === '/'
+    const hasMounted = useHasMounted()
     const { data: profile } = useProfile()
     const { data: basket } = useBasket()
-    const basketCount = basket?.count ?? 0
+    const basketCount = hasMounted ? (basket?.count ?? 0) : 0
     const { data: favorites } = useFavorites()
-    const favoritesCount = favorites?.length ?? 0
+    const favoritesCount = hasMounted ? (favorites?.length ?? 0) : 0
     const { data: products } = useProducts()
 
     const [query, setQuery] = useState('')
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [prevPathname, setPrevPathname] = useState(pathname)
+    const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false)
     const searchRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -125,6 +134,14 @@ export function Header() {
         setIsSearchOpen(false)
     }
 
+    const handleConfirmLogout = () => {
+        clearTokens()
+        queryClient.clear()
+        setConfirmLogoutOpen(false)
+        toast.success('Hesabdan uğurla çıxdınız')
+        router.push('/')
+    }
+
     return (
         <header className="sticky top-0 z-50 bg-white">
             <Container className="pt-[30px] pb-[30px]">
@@ -142,7 +159,9 @@ export function Header() {
                             <LocationIcon className="h-8 w-8 flex-shrink-0" />
                             <div className="flex flex-col justify-center gap-[2px]">
                                 <span className="text-[12px] font-medium leading-none text-neutral-400">Ünvan</span>
-                                <span className="text-[14px] leading-none text-neutral-500">{profile?.address ?? 'Ünvanınızı seçin'}</span>
+                                <span className="text-[14px] leading-none text-neutral-500">
+                                    {(hasMounted && profile?.address) || 'Ünvanınızı seçin'}
+                                </span>
                             </div>
                         </div>
                     )}
@@ -160,6 +179,7 @@ export function Header() {
                             onFocus={() => setIsSearchOpen(true)}
                             placeholder="Axtar..."
                             className="header-search-input w-full appearance-none rounded-[8px] border border-neutral-200 py-2 pl-10 pr-4 text-sm focus:border-primary"
+                            suppressHydrationWarning
                         />
                         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
                             <SearchIcon />
@@ -204,7 +224,7 @@ export function Header() {
                             pathname.startsWith('/account') ? 'font-semibold text-[#0A955E]' : ''
                         }`}
                     >
-                        {profile?.img_url ? (
+                        {hasMounted && profile?.img_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={profile.img_url} alt="" className="h-[30px] w-[30px] rounded-full object-cover" />
                         ) : (
@@ -244,11 +264,30 @@ export function Header() {
                         </span>
                         Səbətim
                     </Link>
+                    {hasMounted && profile && (
+                        <button
+                            type="button"
+                            onClick={() => setConfirmLogoutOpen(true)}
+                            className="flex cursor-pointer items-center gap-[10px] hover:text-[#0A955E]"
+                        >
+                            <LogOut size={17} />
+                            Çıxış
+                        </button>
+                    )}
                 </nav>
                 </div>
             </Container>
 
             {!isLanding && <div className="h-3 w-full border-t border-neutral-100 bg-neutral-50" />}
+
+            <ConfirmModal
+                open={confirmLogoutOpen}
+                title="Hesabdan çıxmaq istəyirsiniz?"
+                confirmLabel="Bəli, çıx"
+                cancelLabel="İmtina"
+                onConfirm={handleConfirmLogout}
+                onCancel={() => setConfirmLogoutOpen(false)}
+            />
         </header>
     )
 }

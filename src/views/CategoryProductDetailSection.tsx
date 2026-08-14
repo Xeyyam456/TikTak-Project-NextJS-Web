@@ -2,16 +2,15 @@
 
 import { ProductDetailContent } from '@/shared/components'
 import type { CategoryProductDetailSectionProps } from '@/types'
-import { useCategorySidebarHeight } from './CategoryDetailLayout'
 
-export function CategoryProductDetailSection({ productId }: CategoryProductDetailSectionProps) {
-    const sidebarHeight = useCategorySidebarHeight()
-
+export function CategoryProductDetailSection({ productId, initialProduct }: CategoryProductDetailSectionProps) {
+    // `height="100%"` fills the layout's stretched wrapper (sized to the sidebar via CSS).
     return (
         <ProductDetailContent
             productId={productId}
-            height={sidebarHeight}
-            className="scrollbar-hide flex-1 overflow-y-auto border border-neutral-100 p-6"
+            initialProduct={initialProduct}
+            height="100%"
+            className="scrollbar-hide min-h-0 overflow-y-auto border border-neutral-100 p-6"
         />
     )
 }
