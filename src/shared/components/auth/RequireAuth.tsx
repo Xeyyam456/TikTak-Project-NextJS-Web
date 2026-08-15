@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { getAccessToken } from '@/services/httpClient'
 import { Loader } from '@/shared/components'
 import { useIsomorphicLayoutEffect } from '@/shared/hooks/useIsomorphicLayoutEffect'
+import { useAuthSync } from '@/shared/hooks/useAuthSync'
 import type { RequireAuthProps } from '@/types'
 
 export function RequireAuth({ children }: RequireAuthProps) {
@@ -16,6 +17,12 @@ export function RequireAuth({ children }: RequireAuthProps) {
     useIsomorphicLayoutEffect(() => {
         if (!getAccessToken()) router.replace('/login')
     }, [router])
+
+    // Cross-tab: another tab logged out — this tab must bail out too, not just
+    // silently keep rendering gated content on a now-stale token.
+    useAuthSync(() => {
+        if (!getAccessToken()) router.replace('/login')
+    })
 
     // Regular (post-paint) effect: reveals children once confirmed authenticated.
     // Kept separate from the redirect check above so an authenticated visit still

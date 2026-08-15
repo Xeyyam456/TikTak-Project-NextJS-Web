@@ -12,6 +12,7 @@ import { useBasket } from '@/shared/hooks/useBasket'
 import { useFavorites } from '@/shared/hooks/useFavorites'
 import { useProfile } from '@/shared/hooks/useProfile'
 import { useHasMounted } from '@/shared/hooks/useHasMounted'
+import { useAuthSync } from '@/shared/hooks/useAuthSync'
 import { clearTokens } from '@/services/httpClient'
 import { UserIcon, HeartIcon, BasketIcon } from '../icons'
 
@@ -24,6 +25,11 @@ export function NavLinks() {
     const { data: basket } = useBasket()
     const { data: favorites } = useFavorites()
     const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false)
+
+    // Cross-tab: another tab logged in/out — clear the stale profile/basket/
+    // favorites cache here too, so the header badges/avatar/logout button
+    // reflect it on every route, not just the auth-gated ones.
+    useAuthSync()
 
     const basketCount = hasMounted ? (basket?.count ?? 0) : 0
     const favoritesCount = hasMounted ? (favorites?.length ?? 0) : 0
