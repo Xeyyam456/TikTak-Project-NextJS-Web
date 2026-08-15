@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/shared/components'
 
 export function NewsletterForm() {
     const [email, setEmail] = useState('')
@@ -28,12 +29,13 @@ export function NewsletterForm() {
                     placeholder="E-mail daxil edin"
                     className="w-full px-2 text-sm outline-none"
                 />
-                <button
+                <Button
                     type="submit"
-                    className="shrink-0 rounded-[8px] bg-[#0A955E] px-4 py-2 text-sm font-medium text-white hover:bg-[#087a4b]"
+                    variant="ghost"
+                    className="shrink-0 rounded-[8px] bg-[#0A955E] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#087a4b]"
                 >
                     Gönder
-                </button>
+                </Button>
             </form>
             {subscribed && <p className="mt-2 text-xs text-primary">Abunəliyiniz qeydə alındı!</p>}
         </div>

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
+import { Button } from '@/shared/components/Button'
 import { ConfirmModal } from '@/shared/components/ConfirmModal'
 import { useBasket } from '@/shared/hooks/useBasket'
 import { useFavorites } from '@/shared/hooks/useFavorites'
@@ -84,14 +85,15 @@ export function NavLinks() {
                 Səbətim
             </Link>
             {hasMounted && profile && (
-                <button
+                <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => setConfirmLogoutOpen(true)}
-                    className="flex cursor-pointer items-center gap-[10px] hover:text-[#0A955E]"
+                    className="flex items-center gap-[10px] hover:text-[#0A955E]"
                 >
                     <LogOut size={17} />
                     Çıxış
-                </button>
+                </Button>
             )}
 
             <ConfirmModal

@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { Camera, User as UserIcon } from 'lucide-react'
+import { Button } from '@/shared/components'
 import type { AvatarUploaderProps } from '@/types'
 
 export function AvatarUploader({ avatarPreview, uploading, onFileSelect }: AvatarUploaderProps) {
@@ -23,15 +24,16 @@ export function AvatarUploader({ avatarPreview, uploading, onFileSelect }: Avata
                     <UserIcon size={20} className="text-neutral-400" />
                 )}
             </div>
-            <button
+            <Button
                 type="button"
+                variant="ghost"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
                 aria-label="Şəkli dəyiş"
-                className="absolute -bottom-1 -right-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-[#92D871] text-white shadow-sm transition-colors hover:bg-[#7CB760] disabled:cursor-not-allowed disabled:opacity-50"
+                className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#92D871] text-white shadow-sm transition-colors hover:bg-[#7CB760]"
             >
                 <Camera size={10} />
-            </button>
+            </Button>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleChange} className="hidden" />
         </div>
     )

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Input } from '@/shared/components'
+import { Button, Input } from '@/shared/components'
 import { authService } from '@/services'
 import type { RegisterFormProps, SignupPayload } from '@/types'
 import { registerSchema, inputClasses, labelClasses, labelStyle, errorClasses, submitClasses, submitStyle } from '../constants'
@@ -50,29 +50,30 @@ export function RegisterForm({ onSuccess, onError, onSwitchToLogin }: RegisterFo
                         {...form.register('password')}
                         className={inputClasses}
                     />
-                    <button
+                    <Button
                         type="button"
+                        variant="ghost"
                         tabIndex={-1}
                         onClick={() => setShowPassword((v) => !v)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
                     >
                         <PasswordVisibilityIcon visible={showPassword} />
-                    </button>
+                    </Button>
                 </div>
                 {form.formState.errors.password && (
                     <p className={errorClasses}>{form.formState.errors.password.message}</p>
                 )}
             </div>
 
-            <button type="submit" disabled={form.formState.isSubmitting} className={submitClasses} style={submitStyle}>
+            <Button type="submit" disabled={form.formState.isSubmitting} className={submitClasses} style={submitStyle}>
                 {form.formState.isSubmitting ? 'Göndərilir...' : 'Tamamla'}
-            </button>
+            </Button>
 
             <p className="mt-[-28px] text-left text-sm text-neutral-500">
                 Hesabın var?{' '}
-                <button type="button" onClick={onSwitchToLogin} className="font-semibold text-[#92D871]">
+                <Button type="button" variant="link" onClick={onSwitchToLogin} className="font-semibold">
                     Daxil ol
-                </button>
+                </Button>
             </p>
         </form>
     )

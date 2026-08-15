@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Clock } from 'lucide-react'
+import { Button } from '@/shared/components'
 import type { ConfirmOrderModalProps } from '@/types'
 import { CONFIRM_SECONDS } from '../constants'
 
@@ -31,22 +32,18 @@ export function ConfirmOrderModal({ onConfirm, onCancel, onTimeout, submitting }
                     vaxtın bitməsinə {minutes}:{String(seconds).padStart(2, '0')} qaldı
                 </p>
                 <div className="mt-7 flex gap-3">
-                    <button
-                        type="button"
-                        onClick={onConfirm}
-                        disabled={submitting}
-                        className="flex-1 cursor-pointer rounded-[8px] bg-[#92D871] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
+                    <Button type="button" onClick={onConfirm} disabled={submitting} className="flex-1 py-3 text-sm font-semibold">
                         Təsdiqlə
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="button"
+                        variant="secondary"
                         onClick={onCancel}
                         disabled={submitting}
-                        className="flex-1 cursor-pointer rounded-[8px] border border-neutral-200 py-3 text-sm font-semibold text-neutral-400 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex-1 py-3 text-sm font-semibold"
                     >
                         İndi yox
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

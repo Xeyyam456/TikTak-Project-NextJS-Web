@@ -1,37 +1,39 @@
+import { Button } from '@/shared/components'
 import type { QuantityStepperProps } from '@/types'
 
 export function QuantityStepper({ quantity, type, onIncrease, onDecrease }: QuantityStepperProps) {
     if (quantity === 0) {
         return (
-            <button
+            <Button
                 type="button"
                 onClick={onIncrease}
-                className="flex h-8 w-full cursor-pointer items-center justify-center rounded-[8px] bg-[#92D871] px-2 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
+                className="flex h-8 w-full items-center justify-center px-2 text-sm font-semibold"
             >
                 Səbətə əlavə et
-            </button>
+            </Button>
         )
     }
 
     return (
         <div className="flex w-full items-center gap-1.5">
-            <button
+            <Button
                 type="button"
+                variant="danger"
                 onClick={onDecrease}
-                className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-[8px] bg-[#F4A6A6] text-base font-bold text-white transition-colors hover:bg-[#EF8A8A]"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center text-base font-bold"
             >
                 −
-            </button>
+            </Button>
             <span className="flex h-8 flex-1 items-center justify-center rounded-[8px] bg-[#92D871] text-sm font-semibold text-white">
                 {quantity} {type}
             </span>
-            <button
+            <Button
                 type="button"
                 onClick={onIncrease}
-                className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-[8px] bg-[#92D871] text-base font-bold text-white transition-colors hover:bg-[#7CB760]"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center text-base font-bold"
             >
                 +
-            </button>
+            </Button>
         </div>
     )
 }

@@ -1,4 +1,5 @@
 import { Minus, Plus, Trash2 } from 'lucide-react'
+import { Button } from '@/shared/components'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 import type { BasketPageItemRowProps } from '@/types'
 
@@ -21,21 +22,22 @@ export function BasketPageItemRow({ item, onIncrease, onDecreaseOrRemove }: Bask
             </div>
 
             <div className="flex h-11 items-center gap-3 rounded-[8px] bg-[#C0E8AD] px-2">
-                <button
+                <Button
                     type="button"
+                    variant="danger"
                     onClick={onDecreaseOrRemove}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] bg-[#F4A6A6] text-white transition-colors hover:bg-[#EF8A8A]"
+                    className="flex h-8 w-8 items-center justify-center"
                 >
                     {item.quantity > 1 ? <Minus size={16} /> : <Trash2 size={16} />}
-                </button>
+                </Button>
                 <span className="min-w-[1ch] text-base font-semibold text-white">{item.quantity}</span>
-                <button
+                <Button
                     type="button"
                     onClick={onIncrease}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] bg-[#92D871] text-white transition-colors hover:bg-[#7CB760]"
+                    className="flex h-8 w-8 items-center justify-center"
                 >
                     <Plus size={16} />
-                </button>
+                </Button>
             </div>
         </div>
     )

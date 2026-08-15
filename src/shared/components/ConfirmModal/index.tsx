@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '../Button'
 import type { ConfirmModalProps } from '@/types'
 
 export function ConfirmModal({
@@ -29,20 +30,12 @@ export function ConfirmModal({
                 {description && <p className="mt-2 text-sm text-neutral-500">{description}</p>}
 
                 <div className="mt-6 flex items-center gap-3">
-                    <button
-                        type="button"
-                        onClick={onCancel}
-                        className="flex-1 cursor-pointer rounded-[8px] bg-neutral-100 py-2.5 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-200"
-                    >
+                    <Button type="button" variant="secondary" onClick={onCancel} className="flex-1 py-2.5 text-sm font-semibold">
                         {cancelLabel}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={onConfirm}
-                        className="flex-1 cursor-pointer rounded-[8px] bg-[#92D871] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#7CB760]"
-                    >
+                    </Button>
+                    <Button type="button" onClick={onConfirm} className="flex-1 py-2.5 text-sm font-semibold">
                         {confirmLabel}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

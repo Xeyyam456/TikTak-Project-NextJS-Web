@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/shared/components'
 import type { CampaignCarouselProps } from '@/types'
 import { ChevronIcon } from './ChevronIcon'
 import { PromoBanner } from './PromoBanner'
@@ -34,24 +35,26 @@ export function SpecialOffers({ campaigns, perPage = 2 }: CampaignCarouselProps)
                 </div>
 
                 {canPrev && (
-                    <button
+                    <Button
                         type="button"
+                        variant="ghost"
                         aria-label="Evvelki"
                         onClick={prev}
                         className="absolute z-20 left-0 top-1/2 -translate-x-3 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-700 shadow ring-1 ring-neutral-200 hover:bg-neutral-50"
                     >
                         <ChevronIcon direction="left" />
-                    </button>
+                    </Button>
                 )}
                 {canNext && (
-                    <button
+                    <Button
                         type="button"
+                        variant="ghost"
                         aria-label="Novbeti"
                         onClick={next}
                         className="absolute z-20 right-0 top-1/2 translate-x-3 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-700 shadow ring-1 ring-neutral-200 hover:bg-neutral-50"
                     >
                         <ChevronIcon direction="right" />
-                    </button>
+                    </Button>
                 )}
             </div>
         </section>

@@ -30,8 +30,7 @@ export const tabTextStyle = {
     letterSpacing: '0%',
 }
 export const errorClasses = 'mt-1 text-xs text-red-600'
-export const submitClasses =
-    'mt-2 w-full rounded-[8px] bg-[#92D871] py-3 text-base font-bold text-white transition-colors hover:bg-[#7CB760] disabled:opacity-50'
+export const submitClasses = 'mt-2 w-full py-3 text-base font-bold'
 export const submitStyle = {
     width: '460px',
     height: '50px',

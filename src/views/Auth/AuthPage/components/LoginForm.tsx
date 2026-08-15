@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { Input } from '@/shared/components'
+import { Button, Input } from '@/shared/components'
 import { authService } from '@/services'
 import { setTokens } from '@/services/httpClient'
 import type { LoginFormProps, LoginPayload } from '@/types'
@@ -48,29 +48,30 @@ export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormP
                         {...form.register('password')}
                         className={inputClasses}
                     />
-                    <button
+                    <Button
                         type="button"
+                        variant="ghost"
                         tabIndex={-1}
                         onClick={() => setShowPassword((v) => !v)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
                     >
                         <PasswordVisibilityIcon visible={showPassword} />
-                    </button>
+                    </Button>
                 </div>
                 {form.formState.errors.password && (
                     <p className={errorClasses}>{form.formState.errors.password.message}</p>
                 )}
             </div>
 
-            <button type="submit" disabled={form.formState.isSubmitting} className={submitClasses} style={submitStyle}>
+            <Button type="submit" disabled={form.formState.isSubmitting} className={submitClasses} style={submitStyle}>
                 {form.formState.isSubmitting ? 'Göndərilir...' : 'Tamamla'}
-            </button>
+            </Button>
 
             <p className="mt-[-28px] text-left text-sm text-neutral-500">
                 Hesabın yoxdur?{' '}
-                <button type="button" onClick={onSwitchToRegister} className="font-semibold text-[#92D871]">
+                <Button type="button" variant="link" onClick={onSwitchToRegister} className="font-semibold">
                     Qeydiyyatdan keç
-                </button>
+                </Button>
             </p>
         </form>
     )

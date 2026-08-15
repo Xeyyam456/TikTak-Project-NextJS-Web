@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { Loader } from '@/shared/components'
+import { Button, Loader } from '@/shared/components'
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile'
 import { uploadService } from '@/services'
 import type { AccountFormValues } from '@/types'
@@ -101,13 +101,13 @@ export function AccountPage() {
             <PasswordFields register={register} errors={errors} />
 
             <div className="flex justify-center pt-2">
-                <button
+                <Button
                     type="submit"
                     disabled={isSubmitting || uploadingAvatar}
-                    className="w-full max-w-md cursor-pointer rounded-[8px] bg-[#92D871] py-3 text-base font-semibold text-white transition-colors hover:bg-[#7CB760] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full max-w-md py-3 text-base font-semibold"
                 >
                     {isSubmitting ? 'Göndərilir...' : 'Məlumatları yenilə'}
-                </button>
+                </Button>
             </div>
         </form>
     )

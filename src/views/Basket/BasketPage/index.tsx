@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ConfirmModal, Loader } from '@/shared/components'
+import { Button, ConfirmModal, Loader } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { BasketPageItemRow } from './components/BasketPageItemRow'
@@ -32,13 +32,14 @@ export function BasketPage() {
                     <div className="flex-1">
                         <div className="mb-4 flex items-center justify-between">
                             <h1 className="text-xl font-semibold text-neutral-900">Səbətim</h1>
-                            <button
+                            <Button
                                 type="button"
+                                variant="ghost"
                                 onClick={() => clear.mutate()}
-                                className="cursor-pointer text-sm text-neutral-400 hover:text-neutral-600"
+                                className="text-sm text-neutral-400 hover:text-neutral-600"
                             >
                                 Səbəti təmizlə
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">

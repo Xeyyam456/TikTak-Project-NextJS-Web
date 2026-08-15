@@ -1,4 +1,5 @@
 import { Banknote, CreditCard } from 'lucide-react'
+import { Button } from '@/shared/components'
 import { PaymentMethod } from '@/types'
 import type { OrderDetailsCardProps } from '@/types'
 import { PaymentMethodOption } from './PaymentMethodOption'
@@ -66,14 +67,15 @@ export function OrderDetailsCard({
 
             {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
 
-            <button
+            <Button
                 type="button"
+                variant="dark"
                 onClick={onSubmit}
                 disabled={submitting}
-                className="mt-6 w-full cursor-pointer rounded-[8px] bg-[#2B3043] py-3 text-base font-semibold text-white transition-colors hover:bg-[#1F2333] disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-6 w-full py-3 text-base font-semibold"
             >
                 Sifarişi tamamla
-            </button>
+            </Button>
         </div>
     )
 }
