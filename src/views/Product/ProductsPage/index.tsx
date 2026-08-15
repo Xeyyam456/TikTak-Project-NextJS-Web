@@ -1,5 +1,5 @@
 import { Container } from '@/shared/components/layout/Container'
-import { ProductsGrid } from './ProductsGrid'
+import { ProductsGrid } from '../ProductsGrid'
 import type { PaginatedResponse, Product } from '@/types'
 import { serviceGet } from '@/services/serviceAccount'
 

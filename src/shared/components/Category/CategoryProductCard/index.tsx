@@ -5,8 +5,8 @@ import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
 import { useHasMounted } from '@/shared/hooks/useHasMounted'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
+import { HeartToggle } from '@/shared/components/HeartToggle'
 import type { CategoryProductCardProps } from '@/types'
-import { FavoriteButton } from './components/FavoriteButton'
 import { QuantityStepper } from './components/QuantityStepper'
 
 export function CategoryProductCard({ product, onSelect }: CategoryProductCardProps) {
@@ -56,7 +56,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
             onClick={handleOpenDetail}
             className="relative z-10 mx-auto flex h-[244px] w-full max-w-[220px] !cursor-pointer flex-col items-center rounded-2xl bg-white p-3 text-center shadow-sm transition-transform duration-200 hover:z-20 hover:scale-105 hover:shadow-lg"
         >
-            <FavoriteButton isFavorite={isFavorite} onToggle={handleToggleFavorite} />
+            <HeartToggle isFavorite={isFavorite} onToggle={handleToggleFavorite} variant="card" />
 
             <div className="relative mb-2 flex h-[100px] w-full shrink-0 cursor-pointer items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

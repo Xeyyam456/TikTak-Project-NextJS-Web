@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useHasMounted } from '@/shared/hooks/useHasMounted'
-import { ConfirmModal } from '../ui/ConfirmModal'
+import { ConfirmModal } from '../ConfirmModal'
 import type { BasketSidebarPanelProps } from '@/types'
 import { EmptyBasketState } from './components/EmptyBasketState'
 import { BasketItemRow } from './components/BasketItemRow'

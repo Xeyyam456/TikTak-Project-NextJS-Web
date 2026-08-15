@@ -1,13 +1,13 @@
 'use client'
 
-import type { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
-import { Header } from './Header'
-import { Footer } from './Footer'
+import { Header } from '../Header'
+import { Footer } from '../Footer'
+import type { SiteChromeProps } from '@/types'
 
 const NO_CHROME_ROUTES = ['/login', '/register']
 
-export function SiteChrome({ children }: { children: ReactNode }) {
+export function SiteChrome({ children }: SiteChromeProps) {
     const pathname = usePathname()
     const hideChrome = NO_CHROME_ROUTES.includes(pathname)
     const isLanding = pathname === '/'

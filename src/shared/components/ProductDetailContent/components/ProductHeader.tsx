@@ -1,4 +1,5 @@
-import { ArrowLeft, Heart } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { HeartToggle } from '@/shared/components/HeartToggle'
 import type { ProductHeaderProps } from '@/types'
 
 export function ProductHeader({ isFavorite, onBack, onToggleFavorite }: ProductHeaderProps) {
@@ -13,18 +14,7 @@ export function ProductHeader({ isFavorite, onBack, onToggleFavorite }: ProductH
                 geri qayıt
             </button>
 
-            <button
-                type="button"
-                onClick={onToggleFavorite}
-                aria-label={isFavorite ? 'Seçilmişlərdən sil' : 'Seçilmişlərə əlavə et'}
-                className="cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-90"
-            >
-                <Heart
-                    size={24}
-                    strokeWidth={2}
-                    className={isFavorite ? 'fill-[#F4A6A6] text-[#F4A6A6]' : 'text-neutral-700'}
-                />
-            </button>
+            <HeartToggle isFavorite={isFavorite} onToggle={onToggleFavorite} variant="header" />
         </div>
     )
 }
