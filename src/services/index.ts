@@ -1,9 +1,9 @@
 export { default as httpClient } from "./httpClient";
 export * from "./Auth/auth.service";
-export * from "./profile.service";
-export * from "./product.service";
-export * from "./category.service";
-export * from "./campaign.service";
-export * from "./basket.service";
-export * from "./order.service";
-export * from "./upload.service";
+export * from "./Profile/profile.service";
+export * from "./Product/product.service";
+export * from "./Category/category.service";
+export * from "./Campaign/campaign.service";
+export * from "./Basket/basket.service";
+export * from "./Order/order.service";
+export * from "./Upload/upload.service";

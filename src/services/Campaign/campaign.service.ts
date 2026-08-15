@@ -1,5 +1,5 @@
 import type { ApiResponse, Campaign } from '@/types'
-import httpClient from './httpClient'
+import httpClient from '../httpClient'
 
 export const campaignService = {
   list() {

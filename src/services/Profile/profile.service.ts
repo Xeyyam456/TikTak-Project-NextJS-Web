@@ -1,5 +1,5 @@
 import type { ApiResponse, UpdateProfilePayload, User } from '@/types'
-import httpClient from './httpClient'
+import httpClient from '../httpClient'
 
 export const profileService = {
   get() {

@@ -1,5 +1,5 @@
 import type { ApiResponse, CheckoutPayload, Order } from '@/types'
-import httpClient from './httpClient'
+import httpClient from '../httpClient'
 
 export const orderService = {
   checkout(payload: CheckoutPayload) {

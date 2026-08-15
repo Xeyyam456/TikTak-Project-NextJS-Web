@@ -1,5 +1,5 @@
 import type { ApiResponse, UploadResponseData } from '@/types'
-import httpClient from './httpClient'
+import httpClient from '../httpClient'
 
 export const uploadService = {
   upload(file: File) {
