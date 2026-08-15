@@ -1,3 +1,7 @@
 export type { BasketItem } from './BasketItem'
 export type { Basket } from './Basket'
 export type { BasketSidebarPanelProps } from './BasketSidebarPanelProps'
+export type { BasketItemRowProps } from './BasketItemRowProps'
+export type { BasketSummaryProps } from './BasketSummaryProps'
+export type { BasketPageItemRowProps } from './BasketPageItemRowProps'
+export type { BasketTotalCardProps } from './BasketTotalCardProps'

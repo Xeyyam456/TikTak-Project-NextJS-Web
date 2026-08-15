@@ -1,5 +1,5 @@
-import { ProductCard } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
+import { ProductsGrid } from './ProductsGrid'
 import type { PaginatedResponse, Product } from '@/types'
 import { serviceGet } from '@/services/serviceAccount'
 
@@ -10,12 +10,8 @@ export async function ProductsPage() {
 
   return (
     <Container className="py-6">
-      <h1 className="mb-4 text-xl font-semibold">Mehsullar</h1>
-      <div className="grid grid-cols-2 gap-[15px] sm:grid-cols-3 md:grid-cols-4">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      <h1 className="mb-4 text-xl font-semibold text-neutral-900">Məhsullar</h1>
+      <ProductsGrid products={products} />
     </Container>
   )
 }

@@ -1,1 +1,5 @@
 export type { AccountLayoutProps } from './AccountLayoutProps'
+export type { AccountFormValues } from './AccountFormValues'
+export type { AvatarUploaderProps } from './AvatarUploaderProps'
+export type { PersonalInfoFieldsProps } from './PersonalInfoFieldsProps'
+export type { PasswordFieldsProps } from './PasswordFieldsProps'

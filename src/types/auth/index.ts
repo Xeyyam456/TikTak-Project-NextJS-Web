@@ -1,2 +1,6 @@
 export type { AuthTab } from './AuthTab'
 export type { AuthPageProps } from './AuthPageProps'
+export type { LoginFormProps } from './LoginFormProps'
+export type { RegisterFormProps } from './RegisterFormProps'
+export type { PasswordVisibilityIconProps } from './PasswordVisibilityIconProps'
+export type { PhoneFieldProps } from './PhoneFieldProps'

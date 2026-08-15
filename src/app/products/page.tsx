@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { ProductsPage } from '@/views'
+import { Loader } from '@/shared/components'
 import { buildMetadata } from '@/shared/utils/seo'
 
 export const revalidate = 300
@@ -11,5 +13,9 @@ export const metadata: Metadata = buildMetadata({
 })
 
 export default function Page() {
-  return <ProductsPage />
+  return (
+    <Suspense fallback={<Loader />}>
+      <ProductsPage />
+    </Suspense>
+  )
 }
