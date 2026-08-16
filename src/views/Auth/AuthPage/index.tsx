@@ -40,7 +40,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                     TIK TAK
                 </p>
                 <Image
-                    src="/images/auth-illustration.svg"
+                    src="/images/auth-illustration.webp"
                     alt=""
                     fill
                     priority
