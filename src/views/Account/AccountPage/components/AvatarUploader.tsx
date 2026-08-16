@@ -30,7 +30,7 @@ export function AvatarUploader({ avatarPreview, uploading, onFileSelect }: Avata
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
                 aria-label="Şəkli dəyiş"
-                className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#92D871] text-white shadow-sm transition-colors hover:bg-[#7CB760]"
+                className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-mint text-white shadow-sm transition-colors hover:bg-mint-dark"
             >
                 <Camera size={10} />
             </Button>

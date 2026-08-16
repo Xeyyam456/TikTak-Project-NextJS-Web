@@ -24,8 +24,8 @@ export function ConfirmOrderModal({ onConfirm, onCancel, onTimeout, submitting }
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
             <div className="w-full max-w-md rounded-2xl bg-white p-10 text-center shadow-lg">
-                <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-[#EFF9EA]">
-                    <Clock className="h-16 w-16 text-[#92D871]" strokeWidth={1.5} />
+                <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-emerald-pale">
+                    <Clock className="h-16 w-16 text-mint" strokeWidth={1.5} />
                 </div>
                 <p className="mt-7 text-xl font-bold text-neutral-900">Sifarişinizi tesdiqləyiniz</p>
                 <p className={`mt-2 text-sm ${secondsLeft <= 10 ? 'font-semibold text-red-500' : 'text-neutral-500'}`}>

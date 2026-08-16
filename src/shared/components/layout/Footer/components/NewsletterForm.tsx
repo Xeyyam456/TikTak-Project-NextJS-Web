@@ -32,7 +32,7 @@ export function NewsletterForm() {
                 <Button
                     type="submit"
                     variant="ghost"
-                    className="shrink-0 rounded-[8px] bg-[#0A955E] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#087a4b]"
+                    className="shrink-0 rounded-[8px] bg-emerald px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-dark"
                 >
                     Gönder
                 </Button>

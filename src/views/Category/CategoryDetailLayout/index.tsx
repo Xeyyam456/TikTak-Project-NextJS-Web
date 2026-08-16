@@ -47,7 +47,7 @@ export function CategoryDetailLayout({ children, categories }: CategoryDetailLay
                                                 href={`/categories/${category.id}`}
                                                 className={
                                                     isActive
-                                                        ? 'block px-2 py-2 text-sm font-semibold text-[#0A955E]'
+                                                        ? 'block px-2 py-2 text-sm font-semibold text-emerald'
                                                         : 'block px-2 py-2 text-sm text-neutral-500 hover:text-neutral-700'
                                                 }
                                             >

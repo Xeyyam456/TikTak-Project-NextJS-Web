@@ -21,7 +21,7 @@ export function BasketPageItemRow({ item, onIncrease, onDecreaseOrRemove }: Bask
                 </div>
             </div>
 
-            <div className="flex h-11 items-center gap-3 rounded-[8px] bg-[#C0E8AD] px-2">
+            <div className="flex h-11 items-center gap-3 rounded-[8px] bg-mint-pale px-2">
                 <Button
                     type="button"
                     variant="danger"

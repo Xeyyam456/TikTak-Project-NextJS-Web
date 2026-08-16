@@ -46,8 +46,8 @@ export function NavLinks() {
         <nav className="flex items-center gap-6 text-[14px] font-normal leading-none tracking-normal text-foreground">
             <Link
                 href="/account"
-                className={`flex items-center gap-[10px] hover:text-[#0A955E] ${
-                    pathname.startsWith('/account') ? 'font-semibold text-[#0A955E]' : ''
+                className={`flex items-center gap-[10px] hover:text-emerald ${
+                    pathname.startsWith('/account') ? 'font-semibold text-emerald' : ''
                 }`}
             >
                 {hasMounted && profile?.img_url ? (
@@ -60,14 +60,14 @@ export function NavLinks() {
             </Link>
             <Link
                 href="/favorites"
-                className={`relative flex items-center gap-[10px] hover:text-[#0A955E] ${
-                    pathname === '/favorites' ? 'font-semibold text-[#0A955E]' : ''
+                className={`relative flex items-center gap-[10px] hover:text-emerald ${
+                    pathname === '/favorites' ? 'font-semibold text-emerald' : ''
                 }`}
             >
                 <span className="relative">
                     <HeartIcon />
                     {favoritesCount > 0 && (
-                        <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#92D871] px-1 text-[10px] font-semibold leading-none text-white">
+                        <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-mint px-1 text-[10px] font-semibold leading-none text-white">
                             {favoritesCount}
                         </span>
                     )}
@@ -76,14 +76,14 @@ export function NavLinks() {
             </Link>
             <Link
                 href="/basket"
-                className={`relative flex items-center gap-[10px] hover:text-[#0A955E] ${
-                    pathname === '/basket' ? 'font-semibold text-[#0A955E]' : ''
+                className={`relative flex items-center gap-[10px] hover:text-emerald ${
+                    pathname === '/basket' ? 'font-semibold text-emerald' : ''
                 }`}
             >
                 <span className="relative">
                     <BasketIcon />
                     {basketCount > 0 && (
-                        <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#92D871] px-1 text-[10px] font-semibold leading-none text-white">
+                        <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-mint px-1 text-[10px] font-semibold leading-none text-white">
                             {basketCount}
                         </span>
                     )}
@@ -95,7 +95,7 @@ export function NavLinks() {
                     type="button"
                     variant="ghost"
                     onClick={() => setConfirmLogoutOpen(true)}
-                    className="flex items-center gap-[10px] hover:text-[#0A955E]"
+                    className="flex items-center gap-[10px] hover:text-emerald"
                 >
                     <LogOut size={17} />
                     Çıxış

@@ -13,8 +13,8 @@ export function SpecialOffers({ campaigns, perPage = 2 }: CampaignCarouselProps)
 
     return (
         <section>
-            <h2 className="text-[40px] font-bold text-[#114F2E]">Xüsusi təkliflər!</h2>
-            <p className="mt-1 text-[26px] text-[#114F2E]">Sizin üçün seçilmiş ən sərfəli kampaniyalar</p>
+            <h2 className="text-[40px] font-bold text-primary">Xüsusi təkliflər!</h2>
+            <p className="mt-1 text-[26px] text-primary">Sizin üçün seçilmiş ən sərfəli kampaniyalar</p>
 
             <div className="relative mt-5 h-[396px]">
                 <div

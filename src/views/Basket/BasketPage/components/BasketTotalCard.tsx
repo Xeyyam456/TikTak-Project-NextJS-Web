@@ -22,7 +22,7 @@ export function BasketTotalCard({ total }: BasketTotalCardProps) {
 
                 <Link
                     href="/checkout"
-                    className="mt-4 block w-full cursor-pointer rounded-[8px] bg-[#92D871] py-3 text-center text-base leading-5 font-semibold text-white transition-colors hover:bg-[#7CB760]"
+                    className="mt-4 block w-full cursor-pointer rounded-[8px] bg-mint py-3 text-center text-base leading-5 font-semibold text-white transition-colors hover:bg-mint-dark"
                 >
                     Sifarişi tamamla
                 </Link>

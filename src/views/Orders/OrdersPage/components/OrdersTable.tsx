@@ -10,7 +10,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead>
-                        <tr className="bg-[#0A955E] text-white">
+                        <tr className="bg-emerald text-white">
                             <th className="whitespace-nowrap px-4 py-3 font-semibold">No</th>
                             <th className="whitespace-nowrap px-4 py-3 font-semibold">Tarix</th>
                             <th className="whitespace-nowrap px-4 py-3 font-semibold">Çatdırılma ünvanı</th>

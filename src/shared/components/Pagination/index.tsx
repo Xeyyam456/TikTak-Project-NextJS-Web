@@ -51,7 +51,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, total, pageS
                             aria-current={page === currentPage ? 'page' : undefined}
                             className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-[8px] border text-xs font-medium transition-colors ${
                                 page === currentPage
-                                    ? 'border-[#92D871] text-[#92D871] hover:bg-transparent'
+                                    ? 'border-mint text-mint hover:bg-transparent'
                                     : 'border-transparent text-neutral-700 hover:bg-neutral-200'
                             }`}
                         >

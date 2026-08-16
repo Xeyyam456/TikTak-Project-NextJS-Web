@@ -24,7 +24,7 @@ export function QuantityStepper({ quantity, type, onIncrease, onDecrease }: Quan
             >
                 −
             </Button>
-            <span className="flex h-8 flex-1 items-center justify-center rounded-[8px] bg-[#92D871] text-sm font-semibold text-white">
+            <span className="flex h-8 flex-1 items-center justify-center rounded-[8px] bg-mint text-sm font-semibold text-white">
                 {quantity} {type}
             </span>
             <Button

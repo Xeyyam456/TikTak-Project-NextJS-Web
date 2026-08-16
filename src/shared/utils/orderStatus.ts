@@ -14,6 +14,6 @@ export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
     [OrderStatus.CONFIRMED]: 'text-blue-600',
     [OrderStatus.PREPARING]: 'text-amber-600',
     [OrderStatus.READY]: 'text-blue-600',
-    [OrderStatus.DELIVERED]: 'text-[#0A955E]',
+    [OrderStatus.DELIVERED]: 'text-emerald',
     [OrderStatus.CANCELLED]: 'text-red-500',
 }

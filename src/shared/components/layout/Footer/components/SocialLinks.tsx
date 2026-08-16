@@ -8,7 +8,7 @@ export function SocialLinks() {
                     key={label}
                     href="#"
                     aria-label={label}
-                    className="flex h-12 w-12 items-center justify-center rounded-[50%] bg-[#F4FAF5] text-[#0A955E] hover:bg-[#e3f3e8]"
+                    className="flex h-12 w-12 items-center justify-center rounded-[50%] bg-social-bg text-emerald hover:bg-social-bg-hover"
                 >
                     <Icon className="h-5 w-5" />
                 </a>

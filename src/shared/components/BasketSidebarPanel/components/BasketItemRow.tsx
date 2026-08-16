@@ -27,7 +27,7 @@ export function BasketItemRow({ item, onRemoveClick, onIncrease, onDecrease }: B
                 <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
                     <p className="truncate pr-5 text-sm font-semibold text-neutral-900">{item.product.title}</p>
                     <div className="flex items-center justify-between">
-                        <div className="flex h-8 items-center gap-1.5 rounded-[8px] bg-[#C0E8AD] px-1">
+                        <div className="flex h-8 items-center gap-1.5 rounded-[8px] bg-mint-pale px-1">
                             <Button
                                 type="button"
                                 variant="danger"

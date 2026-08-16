@@ -3,17 +3,52 @@
 :root {
   --background: #ffffff;
   --foreground: #2b3043;
+  --foreground-dark: #1F2333;
   --primary: #114F2E;
   --primary-dark: #0d3c23;
   --muted-foreground: #6b7280;
+
+  --mint: #92D871;
+  --mint-dark: #7CB760;
+  --mint-pale: #C0E8AD;
+  --emerald: #0A955E;
+  --emerald-dark: #087a4b;
+  --emerald-pale: #EFF9EA;
+  --danger: #F4A6A6;
+  --danger-dark: #EF8A8A;
+  --fern: #76CB4F;
+  --lime: #78BC1E;
+  --teal: #007057;
+  --teal-dark: #00594a;
+  --social-bg: #F4FAF5;
+  --social-bg-hover: #e3f3e8;
+  --badge: #F5C518;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-dark: var(--foreground-dark);
   --color-primary: var(--primary);
   --color-primary-dark: var(--primary-dark);
   --color-muted-foreground: var(--muted-foreground);
+
+  --color-mint: var(--mint);
+  --color-mint-dark: var(--mint-dark);
+  --color-mint-pale: var(--mint-pale);
+  --color-emerald: var(--emerald);
+  --color-emerald-dark: var(--emerald-dark);
+  --color-emerald-pale: var(--emerald-pale);
+  --color-danger: var(--danger);
+  --color-danger-dark: var(--danger-dark);
+  --color-fern: var(--fern);
+  --color-lime: var(--lime);
+  --color-teal: var(--teal);
+  --color-teal-dark: var(--teal-dark);
+  --color-social-bg: var(--social-bg);
+  --color-social-bg-hover: var(--social-bg-hover);
+  --color-badge: var(--badge);
+
   --font-sans: var(--font-roboto);
   --font-mono: var(--font-geist-mono);
 }
@@ -28,6 +63,7 @@ html,
 body {
   scrollbar-width: none;
   -ms-overflow-style: none;
+  overflow-anchor: none;
 }
 
 html::-webkit-scrollbar,

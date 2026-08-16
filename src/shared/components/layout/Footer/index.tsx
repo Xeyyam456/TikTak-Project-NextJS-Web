@@ -25,7 +25,7 @@ export function Footer() {
 
                     <p className="flex items-center gap-1.5 text-xs text-neutral-500">
                         Site by
-                        <span className="flex h-5 w-5 items-center justify-center rounded bg-[#F5C518] text-black">
+                        <span className="flex h-5 w-5 items-center justify-center rounded bg-badge text-black">
                             <Magnet className="h-3 w-3" />
                         </span>
                         <span className="font-semibold text-neutral-900">JIS</span>

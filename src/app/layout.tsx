@@ -57,6 +57,13 @@ export default function RootLayout({
       lang="az"
       className={`${roboto.variable} ${poppins.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "if ('scrollRestoration' in history) { history.scrollRestoration = 'manual' }",
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <SiteChrome>{children}</SiteChrome>

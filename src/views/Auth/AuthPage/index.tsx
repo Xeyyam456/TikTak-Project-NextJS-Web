@@ -20,7 +20,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
 
     return (
         <div className="flex min-h-screen w-full">
-            <div className="relative hidden w-1/2 flex-shrink-0 overflow-hidden bg-[#76CB4F] text-white md:block">
+            <div className="relative hidden w-1/2 flex-shrink-0 overflow-hidden bg-fern text-white md:block">
                 <p
                     className="absolute z-10"
                     style={{
@@ -34,7 +34,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                         fontSize: '80px',
                         lineHeight: '100%',
                         letterSpacing: '0.03em',
-                        color: '#2B3043',
+                        color: 'var(--foreground)',
                     }}
                 >
                     TIK TAK
@@ -57,7 +57,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                             onClick={() => switchTab('login')}
                             style={tabTextStyle}
                             className={`flex-1 pb-3 text-center transition-colors ${activeTab === 'login'
-                                ? 'border-b-[1.5px] border-[#92D871] text-[#92D871]'
+                                ? 'border-b-[1.5px] border-mint text-mint'
                                 : 'text-neutral-400 hover:text-neutral-600'
                                 }`}
                         >
@@ -68,7 +68,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                             onClick={() => switchTab('register')}
                             style={tabTextStyle}
                             className={`flex-1 pb-3 text-center transition-colors ${activeTab === 'register'
-                                ? 'border-b-[1.5px] border-[#92D871] text-[#92D871]'
+                                ? 'border-b-[1.5px] border-mint text-mint'
                                 : 'text-neutral-400 hover:text-neutral-600'
                                 }`}
                         >

@@ -17,7 +17,7 @@ export function AccountSidebarNav() {
                             key={href}
                             href={href}
                             className={`flex items-center gap-2 rounded-[8px] px-3 py-2 text-sm transition-colors ${
-                                isActive ? 'font-semibold text-[#92D871]' : 'text-neutral-700 hover:text-neutral-900'
+                                isActive ? 'font-semibold text-mint' : 'text-neutral-700 hover:text-neutral-900'
                             }`}
                         >
                             <Icon size={18} />
