@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { BasketSidebarPanel, CategoryProductCard, Pagination } from '@/shared/components'
+import { BasketSidebarPanel, CategoryProductCard, EmptyStateCard, Pagination } from '@/shared/components'
 import type { ProductsGridProps } from '@/types'
 import { getTotalPages, paginate } from '@/shared/utils/pagination'
 
@@ -25,13 +25,11 @@ export function ProductsGrid({ products }: ProductsGridProps) {
     <div className="flex items-start gap-4">
       <div className="flex-1">
         {products.length === 0 ? (
-          <div
-            style={{ height: clampToViewport(BASKET_PANEL_HEIGHT) }}
-            className="flex flex-col items-center justify-center rounded-2xl border border-neutral-100 bg-white p-12 text-center shadow-sm"
-          >
-            <p className="text-lg font-semibold text-neutral-900">Hazırda məhsul yoxdur</p>
-            <p className="mt-2 text-sm text-neutral-500">Zəhmət olmasa daha sonra yenidən yoxlayın</p>
-          </div>
+          <EmptyStateCard
+            height={clampToViewport(BASKET_PANEL_HEIGHT)}
+            title="Hazırda məhsul yoxdur"
+            subtitle="Zəhmət olmasa daha sonra yenidən yoxlayın"
+          />
         ) : (
           <div style={{ minHeight: clampToViewport(BASKET_PANEL_HEIGHT) }} className="flex flex-col">
             <div className="grid grid-cols-2 gap-x-[15px] gap-y-[24px] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">

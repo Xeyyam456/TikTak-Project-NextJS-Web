@@ -1,7 +1,6 @@
 'use client'
 
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '@/shared/components'
+import { CarouselNavButton } from '@/shared/components'
 import type { CampaignCarouselProps } from '@/types'
 import { PromoBanner } from './PromoBanner'
 import { useCardCarousel } from '@/shared/hooks/useCardCarousel'
@@ -30,28 +29,8 @@ export function BannerCarousel({ campaigns, perPage = 2 }: CampaignCarouselProps
                 ))}
             </div>
 
-            {canPrev && (
-                <Button
-                    type="button"
-                    variant="ghost"
-                    aria-label="Evvelki"
-                    onClick={prev}
-                    className="absolute z-20 left-0 top-1/2 -translate-x-[18px] -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-700 shadow ring-1 ring-neutral-200 hover:bg-neutral-50"
-                >
-                    <ChevronLeft className="h-7 w-7" strokeWidth={2} />
-                </Button>
-            )}
-            {canNext && (
-                <Button
-                    type="button"
-                    variant="ghost"
-                    aria-label="Novbeti"
-                    onClick={next}
-                    className="absolute z-20 right-0 top-1/2 translate-x-[18px] -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-700 shadow ring-1 ring-neutral-200 hover:bg-neutral-50"
-                >
-                    <ChevronRight className="h-7 w-7" strokeWidth={2} />
-                </Button>
-            )}
+            {canPrev && <CarouselNavButton direction="left" onClick={prev} />}
+            {canNext && <CarouselNavButton direction="right" onClick={next} />}
         </div>
     )
 }

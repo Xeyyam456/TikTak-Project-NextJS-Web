@@ -8,8 +8,8 @@ import { ConfirmModal } from '../ConfirmModal'
 import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
 import { useHasMounted } from '@/shared/hooks/useHasMounted'
-import type { Product, ProductDetailContentProps } from '@/types'
-import { productService } from '@/services'
+import { useProduct } from '@/shared/hooks/useProducts'
+import type { ProductDetailContentProps } from '@/types'
 import { ProductHeader } from './components/ProductHeader'
 import { ProductImage } from './components/ProductImage'
 import { AddToBasketControl } from './components/AddToBasketControl'
@@ -23,23 +23,13 @@ export function ProductDetailContent({
 }: ProductDetailContentProps) {
     const router = useRouter()
     const hasMounted = useHasMounted()
-    const [product, setProduct] = useState<Product | null>(initialProduct)
-    const [loading, setLoading] = useState(!initialProduct)
+    const { data: product, isLoading: loading } = useProduct(productId, initialProduct)
 
     const { data: basket } = useBasket()
     const { add, removeAll } = useBasketMutations()
     const { data: favorites } = useFavorites()
     const toggleFavorite = useToggleFavorite()
     const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false)
-
-    useEffect(() => {
-        if (initialProduct) return
-        productService
-            .getById(productId)
-            .then((res) => setProduct(res.data))
-            .catch(() => setProduct(null))
-            .finally(() => setLoading(false))
-    }, [productId, initialProduct])
 
     useEffect(() => {
         if (product) document.title = `${product.title} | TIK TAK`

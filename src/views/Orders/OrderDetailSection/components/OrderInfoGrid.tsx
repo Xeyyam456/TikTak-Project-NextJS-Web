@@ -1,7 +1,7 @@
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '@/shared/utils/orderStatus'
 import type { OrderInfoGridProps } from '@/types'
 import { PAYMENT_METHOD_LABELS } from '../constants'
-import { formatDateTime } from '../utils'
+import { formatDateTime } from '@/shared/utils/date'
 
 export function OrderInfoGrid({ order }: OrderInfoGridProps) {
     return (

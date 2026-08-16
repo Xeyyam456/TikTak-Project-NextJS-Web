@@ -2,13 +2,12 @@
 
 import { useEffect } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { BasketSidebarPanel, Loader, ProductDetailContent } from '@/shared/components'
+import { BasketSidebarPanel, EmptyStateCard, Loader, ProductDetailContent } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useFavorites } from '@/shared/hooks/useFavorites'
 import { getTotalPages, paginate } from '@/shared/utils/pagination'
-import { BASKET_PANEL_HEIGHT, PAGE_SIZE } from './constants'
+import { BASKET_PANEL_HEIGHT, PAGE_SIZE, PANEL_HEIGHT } from './constants'
 import { clampToViewport } from './utils'
-import { EmptyFavoritesState } from './components/EmptyFavoritesState'
 import { FavoritesGrid } from './components/FavoritesGrid'
 
 export function FavoritesPage() {
@@ -47,7 +46,11 @@ export function FavoritesPage() {
                             />
                         </div>
                     ) : !favorites || favorites.length === 0 ? (
-                        <EmptyFavoritesState />
+                        <EmptyStateCard
+                            height={clampToViewport(PANEL_HEIGHT)}
+                            title="Seçilmişlər boşdur"
+                            subtitle="Bəyəndiyiniz məhsulları buraya əlavə edin"
+                        />
                     ) : (
                         <FavoritesGrid
                             products={pagedFavorites}

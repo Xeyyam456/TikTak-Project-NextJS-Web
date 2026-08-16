@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from '@/shared/utils/orderStatus'
 import type { OrdersTableProps } from '@/types'
-import { formatDate } from '../utils'
+import { formatDate } from '@/shared/utils/date'
 
 export function OrdersTable({ orders }: OrdersTableProps) {
     return (

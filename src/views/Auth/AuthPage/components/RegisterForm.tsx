@@ -7,7 +7,7 @@ import { Button, Input } from '@/shared/components'
 import { authService } from '@/services'
 import type { RegisterFormProps, SignupPayload } from '@/types'
 import { registerSchema, inputClasses, labelClasses, labelStyle, errorClasses, submitClasses, submitStyle } from '../constants'
-import { PasswordVisibilityIcon } from './PasswordVisibilityIcon'
+import { PasswordVisibilityToggle } from './PasswordVisibilityToggle'
 import { PhoneField } from './PhoneField'
 
 export function RegisterForm({ onSuccess, onError, onSwitchToLogin }: RegisterFormProps) {
@@ -50,15 +50,7 @@ export function RegisterForm({ onSuccess, onError, onSwitchToLogin }: RegisterFo
                         {...form.register('password')}
                         className={inputClasses}
                     />
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        tabIndex={-1}
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
-                    >
-                        <PasswordVisibilityIcon visible={showPassword} />
-                    </Button>
+                    <PasswordVisibilityToggle visible={showPassword} onToggle={() => setShowPassword((v) => !v)} />
                 </div>
                 {form.formState.errors.password && (
                     <p className={errorClasses}>{form.formState.errors.password.message}</p>

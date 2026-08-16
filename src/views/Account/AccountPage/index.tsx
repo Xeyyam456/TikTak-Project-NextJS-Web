@@ -45,16 +45,24 @@ export function AccountPage() {
         const objectUrl = URL.createObjectURL(file)
         setAvatarPreview(objectUrl)
         setUploadingAvatar(true)
+
+        let uploadedUrl: string
         try {
-            const uploadRes = await uploadService.upload(file)
+            uploadedUrl = (await uploadService.upload(file)).data.url
+        } catch {
+            toast.error('Şəkil yüklənmədi, yenidən cəhd edin')
+            setAvatarPreview(profile?.img_url ?? null)
+            setUploadingAvatar(false)
+            return
+        }
+
+        try {
             await updateProfile.mutateAsync({
-                img_url: uploadRes.data.url,
+                img_url: uploadedUrl,
                 full_name: profile?.full_name,
                 address: profile?.address ?? undefined,
             })
-            toast.success('Profil şəkli yeniləndi')
         } catch {
-            toast.error('Şəkil yüklənmədi, yenidən cəhd edin')
             setAvatarPreview(profile?.img_url ?? null)
         } finally {
             setUploadingAvatar(false)
@@ -70,9 +78,8 @@ export function AccountPage() {
                 password_repeat: values.password_repeat || undefined,
             })
             reset({ full_name: values.full_name, address: values.address ?? '', password: '', password_repeat: '' })
-            toast.success('Məlumatlarınız yeniləndi')
         } catch {
-            toast.error('Məlumatlar yenilənmədi, yenidən cəhd edin')
+            // error toast handled by useUpdateProfile's onError
         }
     })
 

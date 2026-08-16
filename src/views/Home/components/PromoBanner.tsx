@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { formatDate } from '@/shared/utils/date'
 import type { PromoBannerProps } from '@/types'
 
 const GRADIENTS = [
@@ -8,12 +9,6 @@ const GRADIENTS = [
     'from-neutral-800 to-neutral-600',
     'from-primary-dark to-primary',
 ]
-
-function formatDate(date: Date) {
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    return `${day}.${month}.${date.getFullYear()}`
-}
 
 function formatDateRange(isoDate: string) {
     const start = new Date(isoDate)

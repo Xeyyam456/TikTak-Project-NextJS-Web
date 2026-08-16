@@ -10,7 +10,7 @@ import { authService } from '@/services'
 import { setTokens } from '@/services/httpClient'
 import type { LoginFormProps, LoginPayload } from '@/types'
 import { loginSchema, inputClasses, labelClasses, labelStyle, errorClasses, submitClasses, submitStyle } from '../constants'
-import { PasswordVisibilityIcon } from './PasswordVisibilityIcon'
+import { PasswordVisibilityToggle } from './PasswordVisibilityToggle'
 import { PhoneField } from './PhoneField'
 
 export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormProps) {
@@ -48,15 +48,7 @@ export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormP
                         {...form.register('password')}
                         className={inputClasses}
                     />
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        tabIndex={-1}
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
-                    >
-                        <PasswordVisibilityIcon visible={showPassword} />
-                    </Button>
+                    <PasswordVisibilityToggle visible={showPassword} onToggle={() => setShowPassword((v) => !v)} />
                 </div>
                 {form.formState.errors.password && (
                     <p className={errorClasses}>{form.formState.errors.password.message}</p>

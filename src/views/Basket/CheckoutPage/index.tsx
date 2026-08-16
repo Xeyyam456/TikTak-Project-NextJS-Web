@@ -7,9 +7,9 @@ import { Loader } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { basketQueryKey, useBasket } from '@/shared/hooks/useBasket'
 import { ordersQueryKey } from '@/shared/hooks/useOrders'
-import { profileService, orderService } from '@/services'
+import { useProfile } from '@/shared/hooks/useProfile'
+import { orderService } from '@/services'
 import { PaymentMethod } from '@/types'
-import type { User } from '@/types'
 import { ConfirmOrderModal } from './components/ConfirmOrderModal'
 import { OrderSuccessModal } from './components/OrderSuccessModal'
 import { OrderDetailsCard } from './components/OrderDetailsCard'
@@ -19,9 +19,8 @@ export function CheckoutPage() {
     const router = useRouter()
     const queryClient = useQueryClient()
     const { data: basket, isLoading: isBasketLoading } = useBasket()
+    const { data: profile, isLoading: isProfileLoading } = useProfile()
 
-    const [profile, setProfile] = useState<User | null>(null)
-    const [isProfileLoading, setIsProfileLoading] = useState(true)
     const [note, setNote] = useState('')
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.CASH)
     const [submitting, setSubmitting] = useState(false)
@@ -30,13 +29,6 @@ export function CheckoutPage() {
 
     const detailsCardRef = useRef<HTMLDivElement>(null)
     const [detailsCardHeight, setDetailsCardHeight] = useState<number>()
-
-    useEffect(() => {
-        profileService
-            .get()
-            .then((res) => setProfile(res.data))
-            .finally(() => setIsProfileLoading(false))
-    }, [])
 
     useEffect(() => {
         if (!detailsCardRef.current) return
