@@ -53,9 +53,9 @@ export function NavLinks() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={profile.img_url} alt="" className="h-[30px] w-[30px] rounded-full object-cover" />
                 ) : (
-                    <User className="h-[15px] w-[15px]" />
+                    <User className="h-[17px] w-[17px]" />
                 )}
-                Hesabım
+                {hasMounted && profile ? profile.full_name : 'Hesabım'}
             </Link>
             <Link
                 href="/favorites"
