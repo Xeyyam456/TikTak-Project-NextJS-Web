@@ -17,7 +17,7 @@ export function BasketSummary({ total }: BasketSummaryProps) {
                 <span>{total} AZN</span>
             </div>
             <Link
-                href="/basket"
+                href="/checkout"
                 className="mt-1 block w-full cursor-pointer rounded-[8px] bg-foreground py-3 text-center text-base font-semibold text-white transition-colors hover:bg-foreground-dark"
             >
                 Sifarişi tamamla
