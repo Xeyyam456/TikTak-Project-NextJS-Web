@@ -1,5 +1,5 @@
-import { BackButton } from '@/shared/components/BackButton'
-import { HeartToggle } from '@/shared/components/HeartToggle'
+import { BackButton } from '../../BackButton'
+import { HeartToggle } from '../../HeartToggle'
 import type { ProductHeaderProps } from '@/types'
 
 export function ProductHeader({ isFavorite, onBack, onToggleFavorite }: ProductHeaderProps) {

@@ -5,7 +5,7 @@ import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
 import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
 import { useHasMounted } from '@/shared/hooks/useHasMounted'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
-import { HeartToggle } from '@/shared/components/HeartToggle'
+import { HeartToggle } from '../../HeartToggle'
 import type { CategoryProductCardProps } from '@/types'
 import { QuantityStepper } from './components/QuantityStepper'
 

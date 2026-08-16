@@ -20,7 +20,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
 
     return (
         <div className="flex min-h-screen w-full">
-            <div className="relative hidden w-1/2 flex-shrink-0 overflow-hidden bg-fern text-white md:block">
+            <div className="relative hidden w-1/2 flex-shrink-0 overflow-hidden rounded-tr-[8px] rounded-br-[8px] bg-fern text-white md:block">
                 <p
                     className="absolute z-10"
                     style={{
@@ -39,14 +39,16 @@ export function AuthPage({ initialTab }: AuthPageProps) {
                 >
                     TIK TAK
                 </p>
-                <Image
-                    src="/images/auth-illustration.webp"
-                    alt=""
-                    fill
-                    priority
-                    sizes="50vw"
-                    className="object-cover"
-                />
+                <div className="absolute top-6 right-0 bottom-6 left-0">
+                    <Image
+                        src="/images/auth-illustration.webp"
+                        alt=""
+                        fill
+                        priority
+                        sizes="50vw"
+                        className="object-cover object-left"
+                    />
+                </div>
             </div>
 
             <div className="flex w-full items-center justify-center bg-white p-8 md:w-1/2 md:p-12">
