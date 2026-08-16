@@ -1,4 +1,5 @@
 import 'server-only'
+import { cache } from 'react'
 import axios from 'axios'
 import type { ApiResponse, AuthResponseData, AuthTokens, CachedSession } from '@/types'
 
@@ -63,7 +64,10 @@ async function getServiceAccessToken(forceRelogin = false): Promise<string> {
   return session.accessToken
 }
 
-export async function serviceGet<T>(path: string): Promise<T> {
+// Wrapped in React's cache() so that generateMetadata + the page component (or a
+// persistent layout + a nested page) calling serviceGet() with the same path in the
+// same request only hit the backend once, instead of twice.
+export const serviceGet = cache(async function serviceGet<T>(path: string): Promise<T> {
   const token = await getServiceAccessToken()
 
   try {
@@ -81,4 +85,4 @@ export async function serviceGet<T>(path: string): Promise<T> {
     }
     throw error
   }
-}
+})
