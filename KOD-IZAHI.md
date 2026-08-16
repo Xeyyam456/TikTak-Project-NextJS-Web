@@ -336,7 +336,7 @@ Bu layihədəki xüsusi fayl adları:
 
 Bu, bütün layihənin ən vacib konseptual fərqidir.
 
-- **Server Component** (defolt — heç nə yazmasan BUDUR): YALNIZ serverdə işə düşür, brauzerə JavaScript-i GÖNDƏRİLMİR. İçində `useState`/`useEffect`/`onClick` OLA BİLMƏZ, amma birbaşa `await` ilə data çəkə bilər (adi `async function` kimi). Nümunə: `src/views/Home/HomePage/index.tsx`:
+- **Server Component** (defolt — heç nə yazmasan BUDUR): YALNIZ serverdə işə düşür, brauzerə JavaScript-i GÖNDƏRİLMİR. İçində `useState`/`useEffect`/`onClick` OLA BİLMƏZ, amma birbaşa `await` ilə data çəkə bilər (adi `async function` kimi). Nümunə: `src/views/Home/index.tsx`:
   ```tsx
   export async function HomePage() {
     const campaigns: Campaign[] = await campaignService.list().then(res => res.data).catch(() => [])
@@ -416,6 +416,15 @@ src/views/
 ```
 
 **Qayda görürsünüzmü?** Bir domendə YALNIZ BİR səhifə/komponent varsa (Basket, Checkout, Home, Profile, Favorites), əlavə bir alt-qovluq (`Basket/BasketPage/`) YARADILMIR — domen qovluğunun ÖZÜ birbaşa `index.tsx`+`components/` daşıyır. Bir domendə BİRDƏN ÇOX ayrı səhifə/komponent varsa (Category-də 4 dənə, Account-da 2, Orders-da 2, Auth-da 3), HƏR BİRİ öz adlı alt-qovluğunu alır — çünki orda "domen qovluğu" ilə "səhifə" EYNİ ŞEY DEYİL, məsələn `Category/`-nin özü bir səhifə deyil, sadəcə 4 fərqli category-related komponentin ORTAQ EVİDİR.
+
+**Bəs niyə `Account/`, `Auth/`, `Category/`, `Orders/`, `Product/` qovluqlarının KÖKÜNDƏ birbaşa `index.tsx` YOXDUR?** Çünki bu 5 domendə BİRDƏN ÇOX, BİR-BİRİNDƏN MÜSTƏQİL ROUTE-A aid komponent var — domen qovluğunun ÖZÜ HEÇ BİR TƏK route-u TƏMSİL ETMİR:
+- `Account/` → `/account` (AccountPage) VƏ `/account/orders` (OrdersPage, AYRI `Orders/` domenində) — `AccountLayout` bunların İKİSİNİ DƏ saran ORTAQ qabıqdır, ÖZÜ bir route DEYİL.
+- `Auth/` → `AuthPage` (əsl UI) + `LoginPage`/`RegisterPage` (onu FƏRQLİ `initialTab` ilə çağıran NAZİK wrapper-lər) — 3 AYRI komponent.
+- `Category/` → 4 AYRI komponent, HƏR BİRİ FƏRQLİ bir route-a aid (`/categories`, `/categories/[id]` layout-u, `/categories/[id]`-in grid-i, `/categories/[id]/products/[id]`).
+- `Orders/` → `OrdersPage` (`/account/orders`) + `OrderDetailSection` (`/account/orders/:id`) — 2 AYRI komponent.
+- `Product/` → 3 AYRI komponent (siyahı səhifəsi, grid, detal səhifəsi).
+
+Kök səviyyəsində bir `index.tsx` YAZILSAYDI, O NƏYİ export EDƏRDİ — 2-4 həmqonşu komponentdən HANSINI? Bunun MƏNASI OLMAZDI. HƏR alt-komponent ARTIQ ÖZ `index.tsx`-İNİ daşıyır, `src/views/index.ts` BARREL-İ DƏ onların HAMISINI ayrı-ayrı export edir (bax aşağı) — deməli DOMEN kökündə əlavə bir `index.tsx`-ə EHTİYAC YOXDUR, bu QƏSDƏN belədir, boşluq/nöqsan DEYİL. **Qısaca: TƏK-səhifəli domenlər DÜZLƏŞDİRİLİR (kök = səhifə), ÇOX-səhifəli domenlər DÜZLƏŞDİRİLMİR (hər səhifə öz qovluğunda qalır, kökdə HEÇ NƏ yoxdur).**
 
 ### Qovluq adlandırma qaydası
 
@@ -556,6 +565,58 @@ export enum PaymentMethod {
 ```
 
 **Dərs:** `web.md`-nin (backend sənədi) nümunə JSON-una həmişə güvənməyin — real API cavabını `curl`/brauzer ilə yoxlamaq lazımdır. `User.email` buna konkret nümunədir.
+
+### Digər domain tipləri (qısaca)
+
+Yuxarıda göstərilməyən, amma tez-tez rast gələcəyiniz digər tiplər:
+```ts
+// category/Category.ts
+export interface Category {
+  id: number
+  name: string
+  description?: string
+  img_url: string | null
+}
+
+// campaign/Campaign.ts — /campaigns endpoint-inin qaytardığı forma
+export interface Campaign {
+  id: number
+  title: string
+  img_url: string | null
+  // ...
+}
+
+// product/ProductMeasure.ts — Product.type sahəsinin mümkün dəyərləri
+export type ProductMeasure = 'ədəd' | 'kg' | ...   // real API sahəsi, QuantityStepper-də "3 ədəd" kimi göstərilir
+
+// user/UserRole.ts — sənədləşməmiş, amma real API sahəsi (web.md-də yoxdur, User.email kimi)
+export enum UserRole { ... }
+
+// user/LoginPayload.ts, SignupPayload.ts, UpdateProfilePayload.ts — auth/profil formalarının göndərdiyi body-lər
+export interface LoginPayload { phone: string; password: string }
+export interface SignupPayload { full_name: string; phone: string; password: string }
+export interface UpdateProfilePayload { full_name?: string; address?: string; img_url?: string; password?: string; password_repeat?: string }
+
+// order/CheckoutPayload.ts — POST /orders/checkout-un body-si
+export interface CheckoutPayload { paymentMethod: PaymentMethod; note?: string; address: string; phone: string }
+
+// order/OrderItem.ts — Order.items-in hər elementi (BasketItem-ə OXŞAR, amma AYRI tip — sifariş VERİLDİKDƏN sonra məhsulun qiyməti DƏYİŞSƏ belə, sifarişin ÖZÜNDƏKİ qiymət SABİT qalmalıdır)
+export interface OrderItem {
+  id: number
+  product: Product
+  quantity: number
+  total_price: number
+}
+
+// common/ListQueryParams.ts, common/Pagination.ts — productService.list(params)-in QƏBUL ETDİYİ VƏ PaginatedResponse-un DAŞIDIĞI köməkçi tiplər
+export interface ListQueryParams { page?: number; limit?: number; ... }
+export interface Pagination { page: number; limit: number; total: number; totalPages: number }
+```
+`UserRole`/`ProductMeasure` KİMİ TİPLƏR bir layihə auditində "İSTİFADƏ OLUNMUR, SİLİNSİN Mİ?" DEYƏ SORĞULANIB — YOXLANILIB Kİ, `ProductMeasure` HƏQİQƏTƏN GÖSTƏRİLİR (`product.type` MƏTN KİMİ RENDER OLUNUR), `UserRole`/`role` İSƏ `User.email` KİMİ SƏNƏDLƏŞMƏMİŞ, AMMA REAL BİR API SAHƏSİDİR — HEÇ BİRİ SİLİNMƏYİB.
+
+### `*Props` tipləri — HANSI FAYLDA NƏ VAR
+
+Hər komponentin `Props` tipi ÖZ DOMENİNDƏ, KOMPONENTİN ADI+`Props` FAYL ADI İLƏ YAŞAYIR: `ButtonProps.ts` (`shared/`), `CategoryCardProps.ts` (`category/`), `OrderInfoGridProps.ts` (`order/`) VƏ S. — HƏR BİRİ AYRI-AYRI GÖSTƏRİLMİR (80-DƏN ÇOX FAYLDIR), AMMA QAYDA SABİTDİR: **əgər bir komponentin PROP-LARI VARSA, ONLARIN TİPİ HƏMİŞƏ `src/types/`-DƏ, KOMPONENTİN ÖZ FAYLINDA DEYİL.** Bu, Hissə 13/16-DA GÖSTƏRİLƏN HƏR KOMPONENTƏ AİDDİR.
 
 ### Domain-lər arası import qaydası
 
@@ -1420,6 +1481,70 @@ const isFavorite = hasMounted
 
 Bu hook, SSR'lənə bilən İSTƏNİLƏN səhifədə, ziyarətçinin ÖZ TOKEN-İNƏ ƏSASLANAN İSTƏNİLƏN datanı OXUYAN komponentdə TƏTBİQ OLUNUR: `CategoryProductCard`, `ProductDetailContent`, `BasketSidebarPanel`, `Header`-in `NavLinks`/`AddressBadge`-i.
 
+### `src/shared/utils/` — React-siz köməkçi fayllar (tam kod)
+
+Bu qovluqdakı HƏR FAYL sadə, React-SİZ (heç bir hook, heç bir JSX) funksiyalardır — testı ASAN, İSTƏNİLƏN KOMPONENTDƏN ÇAĞIRILA BİLƏN.
+
+```ts
+// pagination.ts — bütün paginasiya edən səhifələrin (ProductsGrid, FavoritesGrid, OrdersPage) ORTAQ məntiqi
+export function paginate<T>(items: T[], page: number, pageSize: number): T[] {
+    const start = (page - 1) * pageSize
+    return items.slice(start, start + pageSize)
+}
+
+export function getTotalPages(totalItems: number, pageSize: number): number {
+    return Math.max(1, Math.ceil(totalItems / pageSize))
+}
+```
+`paginate` — BACKEND-İN ÖZÜ SƏHİFƏLƏMƏ DƏSTƏKLƏMİR/YA DA layihə ARTIQ TAM SİYAHINI SERVİS HESABI İLƏ ÇƏKDİYİ ÜÇÜN, SƏHİFƏLƏMƏ CLIENT-SIDE (BROWSER-DA, ARTIQ ÇƏKİLMİŞ MASSİV ÜZƏRİNDƏ) EDİLİR — `items.slice(start, start + pageSize)`. `getTotalPages`-DƏ `Math.max(1, ...)` — MƏHSUL/SİFARİŞ SAYI 0 OLANDA BELƏ, ƏN AZI 1 SƏHİFƏ QAYTARIR (MƏNFİ/0 SƏHİFƏ SAYI MƏNASIZDIR).
+
+```ts
+// date.ts
+export function formatDate(input: string | Date) {
+    const date = typeof input === 'string' ? new Date(input) : input
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    return `${day}.${month}.${date.getFullYear()}`
+}
+
+export function formatDateTime(iso: string) {
+    const date = new Date(iso)
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${formatDate(date)} ${hours}:${minutes}`
+}
+```
+`padStart(2, '0')` — TƏK RƏQƏMLİ GÜN/AY/SAAT/DƏQİQƏNİN ÖNÜNƏ "0" ƏLAVƏ EDİR (`5` → `"05"`) — `05.03.2026` FORMATI ÜÇÜN. `formatDateTime` `formatDate`-İ ÖZÜ ÇAĞIRIR (KODU TƏKRARLAMIR), ÜSTÜNƏ SAAT:DƏQİQƏ ƏLAVƏ EDİR. **Tarixçə:** BU FAYL, ƏVVƏLLƏR İKİ AYRI YERDƏ (`OrdersPage/utils.ts`, `OrderDetailSection/utils.ts`) TƏKRARLANMIŞ EYNİ FUNKSİYALARIN BİRLƏŞDİRİLMƏSİNDƏN YARANIB (LAYİHƏ AUDİTİNİN NƏTİCƏSİ).
+
+```ts
+// orderStatus.ts
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+    [OrderStatus.PENDING]: 'Gözləmədə',
+    [OrderStatus.CONFIRMED]: 'Təsdiqləndi',
+    [OrderStatus.PREPARING]: 'Hazırlanır',
+    [OrderStatus.READY]: 'Hazırdır',
+    [OrderStatus.DELIVERED]: 'Tamamlandı',
+    [OrderStatus.CANCELLED]: 'Ləğv edildi',
+}
+
+export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
+    [OrderStatus.PENDING]: 'text-neutral-500',
+    [OrderStatus.CONFIRMED]: 'text-blue-600',
+    ...
+    [OrderStatus.DELIVERED]: 'text-emerald',
+    [OrderStatus.CANCELLED]: 'text-red-500',
+}
+```
+`[OrderStatus.PENDING]: '...'` — KVADRAT MÖTƏRİZƏLİ AÇAR SİNTAKSİSİ ("COMPUTED PROPERTY NAME"): `OrderStatus.PENDING`-İN DƏYƏRİNİ (`'pending'` STRING-İ) OBYEKTİN AÇARI KİMİ İŞLƏDİR. `Record<OrderStatus, string>` TİPİ (bax Hissə 3) SAYƏSİNDƏ, ƏGƏR `OrderStatus`-A YENİ BİR ÜZV ƏLAVƏ OLUNSA, AMMA BU İKİ MAP-Ə UYĞUN SƏTİR ƏLAVƏ EDİLMƏSƏ, TypeScript DƏRHAL XƏTA VERƏCƏK — "UNUDULMUŞ STATUS" MÜMKÜN DEYİL. `OrdersTable`, `OrderInfoGrid` HƏR İKİSİ BU İKİ MAP-DƏN İSTİFADƏ EDİR (statusu RƏNGLİ MƏTN KİMİ GÖSTƏRMƏK ÜÇÜN).
+
+### `src/shared/constants/images.ts`
+
+```ts
+export const PRODUCT_IMAGE_FALLBACK =
+    'https://www.shutterstock.com/image-vector/mystery-contest-cardboard-box-question-260nw-2472419999.jpg'
+```
+API-dan gələn MƏHSULUN `img_url`-U `null`/BOŞ OLA BİLƏR — HƏR YERDƏ (`CategoryProductCard`, `ProductImage`, `BasketItemRow`, `SearchBar`-IN NƏTİCƏLƏRİ, `OrderItemsList`) BU KONSTANTA `src={product.img_url || PRODUCT_IMAGE_FALLBACK}` ŞƏKLİNDƏ İSTİFADƏ OLUNUR. Bu HOST (`www.shutterstock.com`) `next.config.ts`-in `remotePatterns` SİYAHISINDA DA VAR (bax Hissə 19) — BAXMAYARAQ Kİ, BU KONSTANTANI İŞLƏDƏN HƏR YER ADİ `<img>` İŞLƏDİR (`next/image` YOX) — SİYAHIDA OLMASI SADƏCƏ SƏNƏDLƏŞDİRMƏ/ARDICILLIQ ÜÇÜNDÜR, MƏCBURİ DEYİL.
+
 ---
 
 ## Hissə 13: Shared komponentlər — tək-tək
@@ -2146,6 +2271,10 @@ export const columns: FooterColumn[] = [
 **BÜTÜN ALT-LİNKLƏR (12 DƏNƏ) HAZIRDA `/`-Ə İŞARƏ EDİR** — BU, QƏSDƏN, PLACEHOLDER OLARAQ SAXLANILIB. Layihə AUDİTİNDƏ BU AÇIQ QALDIRILIB, İSTİFADƏÇİ "TOXUNMA" DEYİB (REAL ALT-SƏHİFƏLƏR HƏLƏ YOXDUR) — **YENİ FUNKSİONALLIQ ƏLAVƏ EDƏNDƏ BU LİNKLƏRİ "DÜZƏLTMƏ" CƏHDİ ETMƏYİN**, İSTİFADƏÇİDƏN AYRI TƏSDİQ TƏLƏB EDİR.
 
 `SocialLinks.tsx` — `react-icons/fa6` (Facebook, Instagram, YouTube, LinkedIn, Telegram, TikTok, WhatsApp) İKONLARI, HAMISI `#`-Ə (PLACEHOLDER) BAĞLI.
+
+`Footer/components/FooterColumn.tsx` — `columns` MASSİVİNDƏKİ BİR ELEMENTİ (BAŞLIQ + LİNKLƏR SİYAHISI) RENDER EDƏN TƏK-VƏZİFƏLİ, TƏKRAR İSTİFADƏ OLUNAN KOMPONENT (`Footer.tsx`-in ÖZÜNDƏ `columns.map(...)` İLƏ 3 DƏFƏ ÇAĞIRILIR — bax yuxarı).
+
+`Footer/components/NewsletterForm.tsx` — Footer-in GRİD-İNDƏ, DİGƏR 3 SÜTUNUN YANINDA 4-CÜ "SÜTUN" KİMİ GÖRÜNƏN E-POÇT ABUNƏ FORMASI — HEÇ BİR BACKEND ENDPOINT-İNƏ BAĞLI DEYİL (SADƏCƏ VİZUAL, `<form>`-UN ÖZÜ `onSubmit`-DƏ HEÇ BİR SORĞU GÖNDƏRMİR) — `columns` KİMİ, BU DA PLACEHOLDER-DİR.
 
 ### `Container/index.tsx`
 
