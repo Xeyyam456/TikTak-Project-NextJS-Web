@@ -1,14 +1,8 @@
 import type { Metadata } from 'next'
+import type { BuildMetadataOptions } from '@/types'
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tiktak.az'
 export const SITE_NAME = 'TIK TAK'
-
-interface BuildMetadataOptions {
-    title: string
-    description: string
-    path: string
-    robots?: { index: boolean; follow: boolean }
-}
 
 export function buildMetadata({ title, description, path, robots }: BuildMetadataOptions): Metadata {
     return {

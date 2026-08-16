@@ -1,6 +1,6 @@
 import 'server-only'
 import axios from 'axios'
-import type { ApiResponse, AuthResponseData, AuthTokens } from '@/types'
+import type { ApiResponse, AuthResponseData, AuthTokens, CachedSession } from '@/types'
 
 // Server-only client for SSR-ing public catalog data (categories/products) that the
 // backend otherwise gates behind auth. Deliberately does NOT go through httpClient.ts —
@@ -10,12 +10,6 @@ import type { ApiResponse, AuthResponseData, AuthTokens } from '@/types'
 // is viewing the page.
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-
-interface CachedSession {
-  accessToken: string
-  refreshToken: string
-  accessExpiresAt: number
-}
 
 let session: CachedSession | null = null
 

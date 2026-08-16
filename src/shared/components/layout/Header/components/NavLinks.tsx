@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
-import { LogOut } from 'lucide-react'
+import { LogOut, User, Heart, ShoppingBasket } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/shared/components/Button'
 import { ConfirmModal } from '@/shared/components/ConfirmModal'
@@ -14,7 +14,6 @@ import { useProfile } from '@/shared/hooks/useProfile'
 import { useHasMounted } from '@/shared/hooks/useHasMounted'
 import { useAuthSync } from '@/shared/hooks/useAuthSync'
 import { clearTokens } from '@/services/httpClient'
-import { UserIcon, HeartIcon, BasketIcon } from '../icons'
 
 export function NavLinks() {
     const pathname = usePathname()
@@ -54,7 +53,7 @@ export function NavLinks() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={profile.img_url} alt="" className="h-[30px] w-[30px] rounded-full object-cover" />
                 ) : (
-                    <UserIcon />
+                    <User className="h-[15px] w-[15px]" />
                 )}
                 Hesabım
             </Link>
@@ -65,7 +64,7 @@ export function NavLinks() {
                 }`}
             >
                 <span className="relative">
-                    <HeartIcon />
+                    <Heart className="h-[17px] w-[17px]" />
                     {favoritesCount > 0 && (
                         <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-mint px-1 text-[10px] font-semibold leading-none text-white">
                             {favoritesCount}
@@ -81,7 +80,7 @@ export function NavLinks() {
                 }`}
             >
                 <span className="relative">
-                    <BasketIcon />
+                    <ShoppingBasket className="h-[17px] w-[17px]" />
                     {basketCount > 0 && (
                         <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-mint px-1 text-[10px] font-semibold leading-none text-white">
                             {basketCount}

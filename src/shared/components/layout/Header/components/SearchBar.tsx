@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { Search } from 'lucide-react'
 import { useProducts } from '@/shared/hooks/useProducts'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
-import { SearchIcon } from '../icons'
 
 export function SearchBar() {
     const pathname = usePathname()
@@ -60,7 +60,7 @@ export function SearchBar() {
                 suppressHydrationWarning
             />
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
-                <SearchIcon />
+                <Search className="h-[18px] w-[18px]" strokeWidth={1.8} />
             </span>
 
             {isSearchOpen && trimmedQuery && (

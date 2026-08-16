@@ -1,8 +1,8 @@
 'use client'
 
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/shared/components'
 import type { CampaignCarouselProps } from '@/types'
-import { ChevronIcon } from './ChevronIcon'
 import { PromoBanner } from './PromoBanner'
 import { useCardCarousel } from '@/shared/hooks/useCardCarousel'
 
@@ -38,7 +38,7 @@ export function BannerCarousel({ campaigns, perPage = 2 }: CampaignCarouselProps
                     onClick={prev}
                     className="absolute z-20 left-0 top-1/2 -translate-x-3 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-700 shadow ring-1 ring-neutral-200 hover:bg-neutral-50"
                 >
-                    <ChevronIcon direction="left" />
+                    <ChevronLeft className="h-7 w-7" strokeWidth={2} />
                 </Button>
             )}
             {canNext && (
@@ -49,7 +49,7 @@ export function BannerCarousel({ campaigns, perPage = 2 }: CampaignCarouselProps
                     onClick={next}
                     className="absolute z-20 right-0 top-1/2 translate-x-3 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-700 shadow ring-1 ring-neutral-200 hover:bg-neutral-50"
                 >
-                    <ChevronIcon direction="right" />
+                    <ChevronRight className="h-7 w-7" strokeWidth={2} />
                 </Button>
             )}
         </div>
