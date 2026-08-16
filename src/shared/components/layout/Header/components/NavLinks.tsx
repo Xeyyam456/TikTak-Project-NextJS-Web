@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
-import { LogOut, User, Heart, ShoppingBasket } from 'lucide-react'
+import { LogOut, User, Heart, ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/shared/components/Button'
 import { ConfirmModal } from '@/shared/components/ConfirmModal'
@@ -80,7 +80,7 @@ export function NavLinks() {
                 }`}
             >
                 <span className="relative">
-                    <ShoppingBasket className="h-[17px] w-[17px]" />
+                    <ShoppingCart className="h-[17px] w-[17px]" />
                     {basketCount > 0 && (
                         <span className="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-mint px-1 text-[10px] font-semibold leading-none text-white">
                             {basketCount}
