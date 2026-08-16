@@ -2297,8 +2297,8 @@ Layihə-boyu TƏKRARLANAN BİR HORIZONTAL MARJ (`mx-[60px]`) — HƏR SƏHİFƏN
 src/views/Home/
   index.tsx                  → async Server Component, campaignService.list() birbaşa await edir
   components/
-    BannerCarousel.tsx        → əsas kampaniya banner-i (üst, böyük)
-    SpecialOffers.tsx         → "Xüsusi təkliflər" bölməsi (button-suz PromoBanner-lər)
+    BannerCarousel.tsx        → əsas kampaniya banner-i (üst, böyük) — mount olanda TƏSADÜFİ sıraya qarışdırılır
+    SpecialOffers.tsx         → "Xüsusi təkliflər" bölməsi (button-suz PromoBanner-lər) — mount olanda 4 TƏSADÜFİ kampaniya seçilir
     PromoBanner.tsx           → HƏR İKİ karuseldə İSTİFADƏ OLUNAN tək banner kartı
     StatCard.tsx, StatsSection.tsx → "Bizim göstəricilər" (HARDCODE data, bax Hissə 11-in stats.service.ts izahı)
 ```
@@ -2310,13 +2310,60 @@ export async function HomePage() {
     <Container className="space-y-14 py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <BannerCarousel campaigns={campaigns} />
-      <SpecialOffers campaigns={campaigns.slice(0, 4)} />
+      <SpecialOffers campaigns={campaigns} />
       <StatsSection />
     </Container>
   )
 }
 ```
-**YEGANƏ SƏHİFƏ ki, `async function` Server Component-dir VƏ `campaignService.list()`-i BİRBAŞA `await` edir** (`useEffect` YOX, `serviceGet` DA YOX) — çünki `/campaigns` YEGANƏ HƏQİQƏTƏN AÇIQ endpoint-dir (bax Hissə 11). `<script type="application/ld+json">` — STRUKTURLAŞDIRILMIŞ DATA (Organization + WebSite schema), AXTARIŞ MOTORLARININ SAYTI DAHA YAXŞI ANLAMASI ÜÇÜN (bax Hissə 17). `BannerCarousel`/`SpecialOffers` EYNİ `campaigns` MASSİVİNDƏN, FƏRQLİ HİSSƏLƏRDƏN İSTİFADƏ EDİR (`SpecialOffers` YALNIZ İLK 4-Ü).
+**YEGANƏ SƏHİFƏ ki, `async function` Server Component-dir VƏ `campaignService.list()`-i BİRBAŞA `await` edir** (`useEffect` YOX, `serviceGet` DA YOX) — çünki `/campaigns` YEGANƏ HƏQİQƏTƏN AÇIQ endpoint-dir (bax Hissə 11). `<script type="application/ld+json">` — STRUKTURLAŞDIRILMIŞ DATA (Organization + WebSite schema), AXTARIŞ MOTORLARININ SAYTI DAHA YAXŞI ANLAMASI ÜÇÜN (bax Hissə 17). `BannerCarousel`/`SpecialOffers` EYNİ TAM `campaigns` MASSİVİNİ ALIR (ARTIQ Home-un ÖZÜ `.slice(0, 4)` ETMİR) — hər komponent ÖZÜ, ÖZ TƏRƏFİNDƏ qarışdırır/seçir (bax aşağı).
+
+#### Kampaniyaların TƏSADÜFİ sırada göstərilməsi (`shuffle`)
+
+Əvvəllər `SpecialOffers` HƏMİŞƏ eyni ilk 4 kampaniyanı, EYNİ sırada göstərirdi (`campaigns.slice(0, 4)`, Home-un özündə). İndi HƏM `BannerCarousel`, HƏM DƏ `SpecialOffers` səhifə hər açılanda (hər `mount`-da) fərqli, qarışdırılmış sırada gəlir:
+
+```ts
+// src/shared/utils/shuffle.ts
+export function shuffle<T>(items: T[]): T[] {
+  const result = [...items]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+  return result
+}
+```
+Bu, klassik **Fisher–Yates** qarışdırma alqoritmidir — massivi SONDAN BAŞLAYARAQ gəzir, hər addımda cari elementi TƏSADÜFİ seçilmiş, hələ "qarışdırılmamış" bir elementlə DƏYİŞDİRİR (`[a, b] = [b, a]` — array destructuring ilə İKİ dəyişənin dəyərini VASİTƏÇİSİZ dəyişmək). Nəticə: HƏR SIRALAMA eyni ehtimalla çıxır, `.sort(() => Math.random() - 0.5)` kimi "sadə" AMMA STATİSTİK CƏHƏTDƏN QƏRƏZLİ üsullardan fərqli olaraq.
+
+`SpecialOffers.tsx`-də istifadəsi:
+```tsx
+const DISPLAY_COUNT = 4
+
+export function SpecialOffers({ campaigns, perPage = 2 }: CampaignCarouselProps) {
+    const [displayed, setDisplayed] = useState<Campaign[]>(() => campaigns.slice(0, DISPLAY_COUNT))
+
+    useEffect(() => {
+        setDisplayed(shuffle(campaigns).slice(0, DISPLAY_COUNT))
+    }, [campaigns])
+    // ...
+    {displayed.map((campaign) => ( ... ))}
+}
+```
+`BannerCarousel.tsx`-də (bütün kampaniyalar göstərilir, sadəcə SIRASI qarışdırılır — say məhdudlaşdırılmır):
+```tsx
+export function BannerCarousel({ campaigns, perPage = 2 }: CampaignCarouselProps) {
+    const [displayed, setDisplayed] = useState<Campaign[]>(campaigns)
+
+    useEffect(() => {
+        setDisplayed(shuffle(campaigns))
+    }, [campaigns])
+    // ...
+    {displayed.map((campaign, index) => ( ... ))}
+}
+```
+**Niyə birbaşa render zamanı yox, `useEffect` içində qarışdırılır?** Bu SƏHİFƏ SSR olunur (`revalidate = 300`, bax Hissə 4/8) — server, HTML-i hazırlayanda `Math.random()` çağırsaydı, server-in ÇIXARDIĞI sıra ilə brauzerin İLK render-i (hydration) FƏRQLİ olardı → React-in "hydration mismatch" xətası (bax Hissə 12/14-də `useHasMounted` izahındakı EYNİ problem). Ona görə: **ilkin `useState`** serverlə EYNİ, dəyişməz sıranı saxlayır (`SpecialOffers`-də ilk 4, `BannerCarousel`-də olduğu kimi) — bu, server-in göndərdiyi HTML-lə HƏRFİ EYNİDİR. Yalnız komponent brauzerdə mount OLDUQDAN SONRA (`useEffect`, boş asılılıq YOX, `[campaigns]` asılılığı ilə — kampaniyalar dəyişsə YENİDƏN qarışdırılsın deyə) qarışdırma İCRA OLUNUR VƏ YENİ render TƏTİQ EDİLİR. Nəticə: istifadəçi ÜÇÜN demək olar ANINDA (bir "beat" sonra) təsadüfi sıra görünür, AMMA heç bir hydration xətası/console xəbərdarlığı YARANMIR.
+
+`shuffle` funksiyası `src/shared/utils/shuffle.ts`-də YAZILIB (React-siz, plain helper — Hissə 5-in "utils" qaydasına uyğun) ki, HƏR İKİ komponent EYNİ kodu TƏKRARLAMASIN.
 
 ### Auth: `/login`, `/register`
 
