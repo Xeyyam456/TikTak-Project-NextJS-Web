@@ -33,7 +33,7 @@ export async function HomePage() {
     <Container className="space-y-14 py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <BannerCarousel campaigns={campaigns} />
-      <SpecialOffers campaigns={campaigns.slice(0, 4)} />
+      <SpecialOffers campaigns={campaigns} />
       <StatsSection />
     </Container>
   )
