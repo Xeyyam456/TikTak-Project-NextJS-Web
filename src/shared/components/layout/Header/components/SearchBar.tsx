@@ -9,12 +9,15 @@ import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 export function SearchBar() {
     const pathname = usePathname()
     const router = useRouter()
-    const { data: products } = useProducts()
 
     const [query, setQuery] = useState('')
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [prevPathname, setPrevPathname] = useState(pathname)
     const searchRef = useRef<HTMLDivElement>(null)
+
+    // Deferred: only start fetching the full product list once the visitor actually
+    // opens the search box, instead of on every Header mount (every route change).
+    const { data: products } = useProducts(isSearchOpen)
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
