@@ -391,29 +391,31 @@ src/
 src/views/
   Home/                          → index.tsx, components/ (BannerCarousel, SpecialOffers, StatsSection, PromoBanner, StatCard)
   Auth/
-    AuthPage/                    → index.tsx, constants.ts, utils.ts, components/ (LoginForm, RegisterForm, PhoneField, PasswordVisibilityToggle, PasswordVisibilityIcon)
+    AuthPage/                    → index.tsx, constants/index.ts, utils/index.ts, components/ (LoginForm, RegisterForm, PhoneField, PasswordVisibilityToggle, PasswordVisibilityIcon)
     LoginPage/                   → index.tsx (AuthPage-i initialTab="login" ilə çağırır)
     RegisterPage/                → index.tsx (AuthPage-i initialTab="register" ilə çağırır)
   Category/
     CategoriesPage/               → index.tsx (Server Component, /categories-in özü)
     CategoryDetailLayout/         → index.tsx (persistent shell, /categories/[id] üçün)
-    CategoryProductsSection/      → index.tsx (grid, /categories/[id]-nin page.tsx-i üçün)
+    CategoryProductsSection/      → index.tsx, constants/index.ts (GRID_FIT) — grid, /categories/[id]-nin page.tsx-i üçün
     CategoryProductDetailSection/ → index.tsx (/categories/[id]/products/[productId] üçün)
   Product/
     ProductsPage/                 → index.tsx (Server Component, /products)
-    ProductsGrid/                 → index.tsx (paginasiya edən Client grid)
+    ProductsGrid/                 → index.tsx, constants/index.ts (GRID_FIT) — paginasiya edən Client grid
     ProductDetailPage/            → index.tsx (/products/[id])
   Basket/                         → index.tsx, components/ (BasketPageItemRow, BasketTotalCard) — TƏK səhifə olduğu üçün əlavə "BasketPage/" nesting-i YOXDUR
-  Checkout/                       → index.tsx, constants.ts, components/ (ConfirmOrderModal, OrderDetailsCard, OrderSummaryCard, OrderSuccessModal, PaymentMethodOption) — Basket-dən AYRI domen (checkout basketin bir "alt-hissəsi" DEYİL, öz axını olan ayrı bir mərhələdir)
+  Checkout/                       → index.tsx, constants/index.ts, hooks/ (useCheckoutSubmit, useElementHeight), components/ (ConfirmOrderModal, OrderDetailsCard, OrderSummaryCard, OrderSuccessModal, PaymentMethodOption) — Basket-dən AYRI domen (checkout basketin bir "alt-hissəsi" DEYİL, öz axını olan ayrı bir mərhələdir)
   Account/
-    AccountLayout/                → index.tsx, components/ (AccountSidebarNav), constants.ts
-    AccountPage/                  → index.tsx, constants.ts, components/ (AvatarUploader, PersonalInfoFields, PasswordFields)
+    AccountLayout/                → index.tsx, constants/index.ts, components/ (AccountSidebarNav)
+    AccountPage/                  → index.tsx, constants/index.ts, hooks/ (useAvatarUpload), components/ (AvatarUploader, PersonalInfoFields, PasswordFields)
   Orders/
-    OrdersPage/                   → index.tsx, constants.ts, components/ (OrdersTable)
-    OrderDetailSection/           → index.tsx, constants.ts, components/ (OrderInfoGrid, OrderItemsList)
-  FavoritesPage/                  → index.tsx, constants.ts, utils.ts, components/ (FavoritesGrid) — TƏK səhifə, "Favorites/FavoritesPage/" nesting-i YOXDUR
+    OrdersPage/                   → index.tsx, constants/index.ts, components/ (OrdersTable)
+    OrderDetailSection/           → index.tsx, constants/index.ts, components/ (OrderInfoGrid, OrderItemsList)
+  FavoritesPage/                  → index.tsx, constants/index.ts (PANEL_HEIGHT, GRID_FIT), components/ (FavoritesGrid) — TƏK səhifə, "Favorites/FavoritesPage/" nesting-i YOXDUR. `utils/` ARTIQ YOXDUR (`clampToViewport` `src/shared/utils/viewport.ts`-Ə KÖÇÜB, bax aşağı)
   Profile/                        → index.tsx — TƏK səhifə (köhnə, ARTIQ istifadə olunmayan `/profile` route-u üçün, bax Hissə 8)
 ```
+
+**QOVLUQ-STYLE sabitlər/hook-lar (YENİ QAYDA):** əgər bir view-in öz `constants.ts` ya `utils.ts`-i, ya da yeni bir custom hook-u varsa, bunlar HƏMİŞƏ öz `constants/index.ts` / `utils/index.ts` / `hooks/useXxx.ts` ALT-QOVLUĞUNDA yaşayır — KÖK SƏVİYYƏSİNDƏ TƏK BAŞINA FAYL kimi YOX. Bu, `components/`-un artıq işlədiyi PATTERN-in EYNİSİDİR: view-in kökündə YALNIZ `index.tsx` qalır. Import YOLU DƏYİŞMİR (`from './constants'` HƏM `constants.ts` FAYLI, HƏM DƏ `constants/index.ts` QOVLUĞU ÜÇÜN EYNİ İŞLƏYİR) — YƏNİ BU DƏYİŞİKLİK HEÇ BİR İSTİFADƏÇİ KODUNU SINDIRMIR, SADƏCƏ FAYLI QOVLUĞA KÖÇÜRMƏKDİR. **QAYDA: bir view-ə YENİ bir hook/constants/utils ƏLAVƏ EDƏNDƏ, ONU BİRBAŞA `Xxx/hooks/useYyy.ts` KİMİ YAZIN, `Xxx/useYyy.ts` KİMİ YOX.**
 
 **Qayda görürsünüzmü?** Bir domendə YALNIZ BİR səhifə/komponent varsa (Basket, Checkout, Home, Profile, Favorites), əlavə bir alt-qovluq (`Basket/BasketPage/`) YARADILMIR — domen qovluğunun ÖZÜ birbaşa `index.tsx`+`components/` daşıyır. Bir domendə BİRDƏN ÇOX ayrı səhifə/komponent varsa (Category-də 4 dənə, Account-da 2, Orders-da 2, Auth-da 3), HƏR BİRİ öz adlı alt-qovluğunu alır — çünki orda "domen qovluğu" ilə "səhifə" EYNİ ŞEY DEYİL, məsələn `Category/`-nin özü bir səhifə deyil, sadəcə 4 fərqli category-related komponentin ORTAQ EVİDİR.
 
@@ -428,7 +430,7 @@ Kök səviyyəsində bir `index.tsx` YAZILSAYDI, O NƏYİ export EDƏRDİ — 2-
 
 ### Qovluq adlandırma qaydası
 
-Demək olar hər komponent/səhifə/hook öz `Ad/` qovluğunda yaşayır, içində `index.tsx` (əsas fayl) və lazım olsa `components/` (yalnız o komponentə aid alt-hissələr) və `constants.ts`/`utils.ts`. İdxal edərkən faylın öz adını yox, YALNIZ qovluğu yazırsınız: `import { Button } from '@/shared/components/Button'` — bu, `Button/index.tsx`-i tutur.
+Demək olar hər komponent/səhifə/hook öz `Ad/` qovluğunda yaşayır, içində `index.tsx` (əsas fayl) və lazım olsa `components/`, `hooks/`, `constants/`, `utils/` (HƏR BİRİ ÖZ `index.ts`/`index.tsx`-İ İLƏ ALT-QOVLUQ, TƏK BAŞINA FAYL YOX). İdxal edərkən faylın öz adını yox, YALNIZ qovluğu yazırsınız: `import { Button } from '@/shared/components/Button'` — bu, `Button/index.tsx`-i tutur.
 
 **Dairəvi import (circular import) təhlükəsi:** `src/shared/components/` daxilindəki bir fayl, EYNİ ağacın (`src/shared/components/`) içindəki BAŞQA bir komponenti işlədəndə, ƏSLA yuxarı səviyyə barrel-dən (`@/shared/components`) YOX, NİSBİ yoldan (`'../Button'`) import edir. Səbəb: barrel-in özü bu faylı transitiv olaraq YENİDƏN export edir, deməli barrel-dən import etmək faylın ÖZ AĞACINA dairəvi referans yaradır. Məsələn `ConfirmModal` daxilində `Button` belə gətirilir: `import { Button } from '../Button'`, `@/shared/components`-dən YOX. Eyni qayda `HeartToggle`, `BackButton`, `CarouselNavButton` üçün də keçərlidir.
 
@@ -738,23 +740,54 @@ export default async function Layout({ children }: { children: ReactNode }) {
 }
 ```
 ```tsx
-// src/app/categories/[id]/page.tsx
+// src/app/categories/[id]/page.tsx (YENİLƏNMİŞ VERSİYA — SEO indeksləmə VƏ BreadcrumbList ƏLAVƏ OLUNUB)
 export async function generateMetadata({ params }: CategoryPageParams): Promise<Metadata> {
   const { id } = await params
-  ...
+  const path = `/categories/${id}`
+  try {
+    const categories = await serviceGet<ApiResponse<Category[]>>('/categories').then((res) => res.data)
+    const category = categories.find((c) => c.id === Number(id))
+    return buildMetadata({
+      title: category?.name ?? 'Kateqoriyalar',
+      description: category?.description || '...',
+      path,
+      robots: { index: true, follow: true },   // ARTIQ noindex DEYİL — bax Hissə 17
+    })
+  } catch {
+    return buildMetadata({ title: 'Kateqoriyalar', description: '...', path, robots: { index: true, follow: true } })
+  }
 }
 
 export default async function Page({ params }: CategoryPageParams) {
   const { id } = await params
   const categoryId = Number(id)
+
+  const categories = await serviceGet<ApiResponse<Category[]>>('/categories').then((res) => res.data).catch(() => [])
+  const category = categories.find((c) => c.id === categoryId)
+
   const products: Product[] = await serviceGet<PaginatedResponse<Product>>('/products')
     .then((res) => res.data.filter((product) => product.category.id === categoryId))
     .catch(() => [])
 
-  return <CategoryProductsSection products={products} />
+  const jsonLd = category ? {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Ana səhifə', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Kateqoriyalar', item: `${SITE_URL}/categories` },
+      { '@type': 'ListItem', position: 3, name: category.name, item: `${SITE_URL}/categories/${categoryId}` },
+    ],
+  } : null
+
+  return (
+    <>
+      {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      <CategoryProductsSection products={products} categoryName={category?.name} />
+    </>
+  )
 }
 ```
-Diqqət: `layout.tsx` KATEQORİYA SİYAHISINI, `[id]/page.tsx` isə MƏHSUL SİYAHISINI ayrı-ayrı `serviceGet` çağırışları ilə çəkir — bunlar FƏRQLİ path-lərdir (`/categories` vs `/products`), ona görə `cache()`-in dedup-u burada tətbiq olunmur (dedup yalnız EYNİ path İKİ dəfə çağırılanda işə düşür — bax `generateMetadata` + `Page`-in İKİSİNİN də `/categories` çəkdiyi HAL).
+Diqqət: `layout.tsx` KATEQORİYA SİYAHISINI, `[id]/page.tsx` isə MƏHSUL SİYAHISINI ayrı-ayrı `serviceGet` çağırışları ilə çəkir — bunlar FƏRQLİ path-lərdir (`/categories` vs `/products`), ona görə `cache()`-in dedup-u burada tətbiq olunmur (dedup yalnız EYNİ path İKİ dəfə çağırılanda işə düşür — bax `generateMetadata` + `Page`-in İKİSİNİN də `/categories` çəkdiyi HAL). **YENİ:** `Page` İNDİ `/categories`-i BİR DƏFƏ DƏ ÖZÜ çəkir (`category.name`-i tapmaq üçün, `categoryName` prop-unu `CategoryProductsSection`-a ötürmək üçün — bu, ORADA `sr-only <h1>` kimi RENDER OLUNUR, bax Hissə 16) VƏ `BreadcrumbList` STRUKTURLAŞDIRILMIŞ DATA-SINI (`<script type="application/ld+json">`) HTML-Ə YAZIR — bu, Google-a "Ana səhifə → Kateqoriyalar → [Bu Kateqoriya]" NAVİQASİYA İYERARXİYASINI BİLDİRİR VƏ AI axtarış mühərriklərinə (GEO) DƏ FAYDALIDIR (bax Hissə 17-nin "Strukturlaşdırılmış data" bölməsi).
 
 **Kritik qayda (əməli olaraq təsdiqlənib, Playwright ilə yoxlanılıb):** bu ortaq layout MÜTLƏQ `src/app/categories/layout.tsx`-də olmalıdır, YOX `src/app/categories/[id]/layout.tsx`-də. `[id]` qovluğunun İÇİNDƏKİ bir layout, `id` DƏYİŞƏNDƏ YENƏ DƏ REMOUNT olunur (DOM identikliyi itir, effect-lər təkrar işə düşür) — bu, "persistent" olmağın bütün mənasını itirir. Dinamik `id`-ni server `params`-dan YOX, client-side `useParams()`-dan oxuyun (`CategoryDetailLayout` məhz belə edir).
 
@@ -768,19 +801,47 @@ export async function generateMetadata({ params }: ProductPageParams): Promise<M
   const path = `/products/${id}`
   try {
     const product = await serviceGet<ApiResponse<Product>>(`/products/${id}`).then((res) => res.data)
-    return buildMetadata({ title: product.title, description: product.description || '...', path })
+    return buildMetadata({ title: product.title, description: product.description || '...', path, robots: { index: true, follow: true } })
   } catch {
-    return buildMetadata({ title: 'Məhsul detalları', description: '...', path })
+    return buildMetadata({ title: 'Məhsul detalları', description: '...', path, robots: { index: true, follow: true } })
   }
 }
 
 export default async function Page({ params }: ProductPageParams) {
   const { id } = await params
   const product = await serviceGet<ApiResponse<Product>>(`/products/${id}`).then((res) => res.data).catch(() => null)
-  return <ProductDetailPage productId={Number(id)} initialProduct={product} />
+
+  const jsonLd = product ? {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Product',
+        name: product.title,
+        description: product.description,
+        image: product.img_url || undefined,
+        sku: String(product.id),
+        offers: { '@type': 'Offer', price: product.price, priceCurrency: 'AZN', availability: 'https://schema.org/InStock', url: `${SITE_URL}/products/${id}` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Ana səhifə', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: 'Məhsullar', item: `${SITE_URL}/products` },
+          { '@type': 'ListItem', position: 3, name: product.title, item: `${SITE_URL}/products/${id}` },
+        ],
+      },
+    ],
+  } : null
+
+  return (
+    <>
+      {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
+      <ProductDetailPage productId={Number(id)} initialProduct={product} />
+    </>
+  )
 }
 ```
-Diqqət: `generateMetadata` VƏ `Page` EYNİ path-i (`/products/${id}`) AYRI-AYRI çağırır — `serviceGet`-in `cache()`-lə sarılması (Hissə 4, Hissə 10) məhz bunun İKİ DƏFƏ şəbəkəyə getməsinin QARŞISINI ALIR. `try/catch` hər ikisində var — servis hesabı XƏTA versə belə (backend vaxtıcə cavab verməsə), səhifə TAM ÇÖKMƏK yerinə boş/generic bir başlıqla RENDER OLUNMAĞA davam edir.
+Diqqət: `generateMetadata` VƏ `Page` EYNİ path-i (`/products/${id}`) AYRI-AYRI çağırır — `serviceGet`-in `cache()`-lə sarılması (Hissə 4, Hissə 10) məhz bunun İKİ DƏFƏ şəbəkəyə getməsinin QARŞISINI ALIR. `try/catch` hər ikisində var — servis hesabı XƏTA versə belə (backend vaxtıcə cavab verməsə), səhifə TAM ÇÖKMƏK yerinə boş/generic bir başlıqla RENDER OLUNMAĞA davam edir. **YENİ:** `robots: { index: true, follow: true }` VƏ `@graph` İÇİNDƏ İKİ AYRI STRUKTURLAŞDIRILMIŞ OBYEKT — `Product`+`Offer` (Google-a QİYMƏT/STOK KİMİ FAKTLARI birbaşa VERİR, "rich result" — axtarış nəticəsində ULDUZ/QİYMƏT GÖSTƏRMƏK ÜÇÜN) VƏ `BreadcrumbList` (naviqasiya iyerarxiyası). `@graph` — BİR `<script>` TAG-INDA BİRDƏN ÇOX STRUKTURLAŞDIRILMIŞ OBYEKTİ EYNI ANDA ELAN ETMƏYİN JSON-LD ÜSULUDUR (bax Hissə 17).
 
 ### `src/app/basket/page.tsx`, `src/app/checkout/page.tsx`
 
@@ -885,11 +946,9 @@ export function ProfilePage() {
 
 ## Hissə 9: Auth
 
-### `src/services/httpClient/index.ts` — ən mürəkkəb servis faylı, diqqətlə oxuyun
+### `src/services/httpClient/tokenStorage.ts` — token saxlama (localStorage), `index.ts`-dən AYRI fayl
 
 ```ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-
 export const ACCESS_TOKEN_KEY = 'access_token'
 const REFRESH_TOKEN_KEY = 'refresh_token'
 
@@ -901,6 +960,13 @@ export function getAccessToken() {
 }
 ```
 `isBrowser()` YOXLAMASI VACİBDİR — bu fayl HƏM server-render zamanı (Client Component-lərin İLK render-i server-də DƏ baş verir), HƏM DƏ brauzerdə IMPORT OLUNUR. `localStorage` server-də MÖVCUD DEYİL — yoxlamasız çağırsanız, "localStorage is not defined" XƏTASI ALARSINIZ. `getAccessToken()` serverdə HƏMİŞƏ `null` qaytarır — bu, `useHasMounted()`-in HƏLL ETDİYİ hidrasiya probleminin KÖKÜDÜR (bax Hissə 12).
+
+**Niyə AYRI fayldadır (əvvəl `httpClient/index.ts`-in ÖZÜNDƏ idi):** `getAccessToken`/`getRefreshToken`/`setTokens`/`clearTokens` SIRF `localStorage` OXUYUB-YAZAN funksiyalardır — axios instance qurmaq VƏ interceptor bağlamaqdan TAMAM AYRI bir MƏSULİYYƏTDİR. Bunları AYIRMAQ `httpClient/index.ts`-i 114 sətirdən 92-yə ENDİRDİ, oxumağı ASANLAŞDIRDI. `httpClient/index.ts` bunları BELƏ İMPORT EDİR VƏ YENİDƏN EXPORT EDİR:
+```ts
+import { getAccessToken, getRefreshToken, setTokens, clearTokens } from './tokenStorage'
+export { ACCESS_TOKEN_KEY, getAccessToken, getRefreshToken, setTokens, clearTokens } from './tokenStorage'
+```
+**Bu SAYƏDƏ, hər YERDƏ `import { getAccessToken } from '@/services/httpClient'` YAZAN KÖHNƏ KOD DƏYİŞMƏDƏN İŞLƏYİR** — çünki `httpClient/index.ts` BU FUNKSİYALARI ÖZ ADINDAN YENİDƏN EXPORT EDİR (RE-EXPORT). Bu, layihədə "İÇ MƏNTİQİ AYIR, XARİCİ IMPORT YOLUNU SINDIRMA" PRINSİPİNİN BİR NÜMUNƏSİDİR.
 
 ```ts
 const axiosInstance = axios.create({
@@ -1008,18 +1074,32 @@ const onSubmit = form.handleSubmit(async (values) => {
 3. `setTokens(...)` — `localStorage`-a YAZILIR.
 4. Bundan sonra `httpClient.ts`-in interceptor-u HƏR sorğuya AVTOMATİK bu token-i əlavə edir.
 
-### `Header`-in "Çıxış" düyməsi (`NavLinks.tsx`)
+### `Header`-in "Çıxış" düyməsi — İNDİ AYRI `LogoutButton.tsx` komponentindədir
+
+Əvvəllər `handleConfirmLogout` VƏ `confirmLogoutOpen` state-i BİRBAŞA `NavLinks.tsx`-in ÖZÜNDƏ idi. İNDİ AYRI bir `src/shared/components/layout/Header/components/LogoutButton.tsx` komponentinə ÇIXARILIB — SƏBƏBİ: bu, "Çıxış" düyməsinin ÖZ-BAŞINA bir FUNKSİONAL VAHİD olması (düymə + `ConfirmModal` + logout MƏNTİQİ), `NavLinks`-in ƏSAS İŞİ (naviqasiya link-lərini göstərmək) İLƏ QARIŞMAMALI olmasıdır — BU AYIRIM `NavLinks.tsx`-i 114 sətirdən 79-a ENDİRDİ.
 
 ```tsx
-const handleConfirmLogout = () => {
-    clearTokens()
-    queryClient.clear()
-    setConfirmLogoutOpen(false)
-    toast.success('Hesabdan uğurla çıxdınız')
-    router.push('/')
+// LogoutButton.tsx
+export function LogoutButton() {
+    const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false)
+
+    const handleConfirmLogout = () => {
+        clearTokens()
+        queryClient.clear()
+        setConfirmLogoutOpen(false)
+        toast.success('Hesabdan uğurla çıxdınız')
+        router.push('/')
+    }
+
+    return (
+        <>
+            <Button onClick={() => setConfirmLogoutOpen(true)}>Çıxış</Button>
+            <ConfirmModal open={confirmLogoutOpen} onConfirm={handleConfirmLogout} onCancel={() => setConfirmLogoutOpen(false)} ... />
+        </>
+    )
 }
 ```
-`queryClient.clear()` — BÜTÜN cache-lənmiş şəxsi datanı (profil, səbət, sevimlilər) SİLİR ki, KEÇMİŞ istifadəçinin datası BİR ANLIQ da olsa GÖRÜNMƏSİN (növbəti istifadəçi EYNİ brauzerdə giriş edərsə).
+`queryClient.clear()` — BÜTÜN cache-lənmiş şəxsi datanı (profil, səbət, sevimlilər) SİLİR ki, KEÇMİŞ istifadəçinin datası BİR ANLIQ da olsa GÖRÜNMƏSİN (növbəti istifadəçi EYNİ brauzerdə giriş edərsə). `NavLinks.tsx` İNDİ SADƏCƏ `{hasMounted && profile && <LogoutButton />}` YAZIR.
 
 ---
 
@@ -1499,6 +1579,17 @@ export function getTotalPages(totalItems: number, pageSize: number): number {
 `paginate` — BACKEND-İN ÖZÜ SƏHİFƏLƏMƏ DƏSTƏKLƏMİR/YA DA layihə ARTIQ TAM SİYAHINI SERVİS HESABI İLƏ ÇƏKDİYİ ÜÇÜN, SƏHİFƏLƏMƏ CLIENT-SIDE (BROWSER-DA, ARTIQ ÇƏKİLMİŞ MASSİV ÜZƏRİNDƏ) EDİLİR — `items.slice(start, start + pageSize)`. `getTotalPages`-DƏ `Math.max(1, ...)` — MƏHSUL/SİFARİŞ SAYI 0 OLANDA BELƏ, ƏN AZI 1 SƏHİFƏ QAYTARIR (MƏNFİ/0 SƏHİFƏ SAYI MƏNASIZDIR).
 
 ```ts
+// viewport.ts — YENİ (əvvəl ProductsGrid.tsx VƏ FavoritesPage/utils.ts-də AYRI-AYRI TƏKRARLANIRDI)
+export const VIEWPORT_RESERVED = 180
+export const BASKET_PANEL_HEIGHT = 594
+
+export function clampToViewport(px: number) {
+    return `min(${px}px, calc(100vh - ${VIEWPORT_RESERVED}px))`
+}
+```
+`clampToViewport` — CSS-in `min()` FUNKSİYASINI İŞLƏDİR: PANEL HÜNDÜRLÜYÜ HƏMİŞƏ `px`-Dİr, AMMA KİÇİK VİEWPORT-LARDA (QISA EKRANLAR) `100vh - 180px`-DƏN BÖYÜK OLMASIN DEYƏ MƏHDUDLAŞDIRILIR — SADƏCƏ CSS İLƏ EDİLƏN RESPONSİV BİR MƏHDUDİYYƏT, JS-SİZ. `ProductsGrid` VƏ `FavoritesPage` HƏR İKİSİ EYNİ `594`-Ü İŞLƏDİRDİ, ONA GÖRƏ BU İKİSİ (VƏ `VIEWPORT_RESERVED`) BURAYA — HƏQİQİ PAYLAŞILAN yerə — KÖÇÜRÜLDÜ (bax Hissə 16-nın Product/Favorites bölmələri). **DİQQƏT — hər grid-in `GRID_FIT` (sütun/sətir hesablama) konfiqurasiyası BURAYA KÖÇÜRÜLMƏYİB** — o, hər view-ə görə DƏYƏRLƏRİ FƏRQLİ olduğu üçün QƏSDƏN paylaşılmır (bax "Grid pagination" bölməsi).
+
+```ts
 // date.ts
 export function formatDate(input: string | Date) {
     const date = typeof input === 'string' ? new Date(input) : input
@@ -1733,7 +1824,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, total, pageS
     ...
 }
 ```
-Bu, "AĞILLI" SƏHİFƏLƏMƏ MƏNTİQİDİR: HƏR SƏHİFƏNİ GÖSTƏRMƏK ƏVƏZİNƏ (100 SƏHİFƏ OLSA, 100 DÜYMƏ ÇOX OLARDI), YALNIZ BUNLARI GÖSTƏRİR: BİRİNCİ SƏHİFƏ, SONUNCU SƏHİFƏ, VƏ CARİ SƏHİFƏNİN ±1 QONŞULUĞU — QALAN YERLƏRDƏ TƏK BİR "..." QOYULUR (ARDI-ARDINA İKİ "..." YARANMASIN DEYƏ, `pageNumbers[pageNumbers.length - 1] !== '...'` YOXLAMASI VAR). `Pagination` bir çox səhifədə (`ProductsGrid`, `FavoritesGrid`, `OrdersPage`) İSTİFADƏ OLUNUR, HƏR BİRİ ÖZ `paginate`/`getTotalPages` (bax Hissə 5-in `pagination.ts`-i) ÇAĞIRIŞI İLƏ.
+Bu, "AĞILLI" SƏHİFƏLƏMƏ MƏNTİQİDİR: HƏR SƏHİFƏNİ GÖSTƏRMƏK ƏVƏZİNƏ (100 SƏHİFƏ OLSA, 100 DÜYMƏ ÇOX OLARDI), YALNIZ BUNLARI GÖSTƏRİR: BİRİNCİ SƏHİFƏ, SONUNCU SƏHİFƏ, VƏ CARİ SƏHİFƏNİN ±1 QONŞULUĞU — QALAN YERLƏRDƏ TƏK BİR "..." QOYULUR (ARDI-ARDINA İKİ "..." YARANMASIN DEYƏ, `pageNumbers[pageNumbers.length - 1] !== '...'` YOXLAMASI VAR). `if (totalPages <= 1) return null` — BU ÇOX VACİBDİR: cəmi BİR SƏHİFƏLİK data varsa, `Pagination` HEÇ NƏ RENDER ETMİR (mənasız tək "1" düyməsi göstərmək YERİNƏ). `Pagination` bir çox səhifədə (`CategoryProductsSection`, `ProductsGrid`, `FavoritesGrid`, `OrdersPage`) İSTİFADƏ OLUNUR, HƏR BİRİ ÖZ `paginate`/`getTotalPages` (bax Hissə 5-in `pagination.ts`-i) ÇAĞIRIŞI İLƏ — İLK ÜÇÜNDƏ `pageSize` İNDİ SABİT ƏDƏD DEYİL, `useGridFit` hook-undan DİNAMİK GƏLİR (bax Hissə 16-nın "Grid pagination" bölməsi, ƏTRAFLI).
 
 ### `Category/CategoryCard/index.tsx`
 
@@ -1908,31 +1999,15 @@ export function EmptyBasketState() {
 
 ### `ProductDetailContent/index.tsx` — 3 route-un ORTAQ komponenti, tam kod
 
+**YENİLƏNDİ:** DATA/STATE MƏNTİQİ (`useProduct`, `useBasket`, `useFavorites`, `quantity`/`isFavorite` HESABLAMASI, `handleAddToBasket`/`handleConfirmRemove`, `document.title` `useEffect`-i) AŞAĞIDAKI KİMİ BİRBAŞA KOMPONENTİN İÇİNDƏ DEYİL, AYRI BİR `ProductDetailContent/hooks/useProductDetail.ts` HOOK-UNDADIR — KOMPONENT ÖZÜ İNDİ SADƏCƏ `const { product, loading, quantity, isFavorite, ... } = useProductDetail(productId, initialProduct)` ÇAĞIRIR VƏ JSX QAYTARIR. Bu, EYNİ "STATE MƏNTİQİNİ AYRI HOOK-A ÇIXAR, KOMPONENTİ SADƏCƏ RENDER ÜÇÜN SAXLA" PATTERN-İDİR Kİ, AŞAĞIDA `AccountPage` (`useAvatarUpload`) VƏ `Checkout` (`useCheckoutSubmit`) BÖLMƏLƏRİNDƏ DƏ GÖRƏCƏKSİNİZ — DAVRANIŞ TAM EYNİDİR, SADƏCƏ FAYL TƏŞKİLATI DƏYİŞİB (bu, `ProductDetailContent`-i 107 sətirdən 84-ə ENDİRDİ). Aşağıdakı kod nümunəsi MƏNTİQİ İZAH ÜÇÜNDÜR — REAL FAYLDA bu sətirlər `useProductDetail.ts`-dədir:
+
 ```tsx
 export function ProductDetailContent({ productId, initialProduct = null, height, className = '', onBack }: ProductDetailContentProps) {
     const router = useRouter()
-    const hasMounted = useHasMounted()
-    const { data: product, isLoading: loading } = useProduct(productId, initialProduct)
-    const { data: basket } = useBasket()
-    const { add, removeAll } = useBasketMutations()
-    const { data: favorites } = useFavorites()
-    const toggleFavorite = useToggleFavorite()
-    const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false)
-
-    useEffect(() => {
-        if (product) document.title = `${product.title} | TIK TAK`
-    }, [product])
+    const { product, loading, quantity, isFavorite, confirmRemoveOpen, setConfirmRemoveOpen, handleAddToBasket, handleConfirmRemove, toggleFavorite } = useProductDetail(productId, initialProduct)
 
     if (loading) return <div style={{ height }} className={...}><Loader /></div>
     if (!product) return <div style={{ height }} className={...}><p>Mehsul tapilmadi.</p></div>
-
-    const quantity = hasMounted ? (basket?.items.find((item) => item.product.id === product.id)?.quantity ?? 0) : 0
-    const isFavorite = hasMounted ? (favorites?.some((f) => f.id === product.id) ?? product.is_favorite ?? false) : false
-
-    const handleAddToBasket = () => {
-        if (quantity > 0) { toast.info('Bu məhsul artıq səbətdədir'); return }
-        add.mutate(product.id)
-    }
 
     return (
         <div style={{ height }} className={`flex flex-col rounded-2xl bg-white shadow-sm ${className}`}>
@@ -2403,7 +2478,7 @@ Bax Hissə 8 ("Persistent Layout" NÜMUNƏSİ, TAM KODLA).
 src/views/Category/
   CategoriesPage/index.tsx               → /categories-in ÖZÜ (Server Component)
   CategoryDetailLayout/index.tsx          → persistent shell (sidebar + basket panel)
-  CategoryProductsSection/index.tsx       → grid, /categories/[id]-nin page.tsx-i üçün
+  CategoryProductsSection/                → index.tsx + constants/index.ts (GRID_FIT) — grid, /categories/[id]-nin page.tsx-i üçün
   CategoryProductDetailSection/index.tsx  → /categories/[id]/products/[productId] üçün
 ```
 
@@ -2441,25 +2516,48 @@ export async function CategoriesPage() {
 ```
 `items-stretch` (DEFOLT) — HƏR ÜÇ SÜTUNU EYNİ HÜNDÜRLÜYƏ "DARTIR". SİDEBAR — YEGANƏ SÜTUNDUR Kİ, İÇİNDƏKİ MƏZMUN NORMAL AXINDA (in-flow) YERLƏŞİB, ONA GÖRƏ ÖZ TƏBİİ HÜNDÜRLÜYÜNÜ VERİR. ORTA SÜTUN (grid) VƏ `BasketSidebarPanel` İSƏ `relative` WRAPPER-DİR, İÇİNDƏKİ HƏQİQİ MƏZMUN `absolute inset-0`-DIR — DEMƏLİ ÖZLƏRİ HEÇ BİR HÜNDÜRLÜYƏ TÖHVƏ VERMİR, SADƏCƏ SİDEBAR-IN TƏBİİ HÜNDÜRLÜYÜNƏ "DARTILIRLAR". **Bu, ƏVVƏLKİ BİR `ResizeObserver`/`requestAnimationFrame` ƏSASLI JS HƏLLİNİ (`useCategorySidebarHeight` — İNDİ SİLİNİB) ƏVƏZ EDİB** — O HƏLL SSR'LƏNMİŞ "SOYUQ" YÜKLƏMƏLƏRDƏ GÖRÜNƏN BİR "SIÇRAYIŞ" (JS HİDRASİYASI HƏLƏ ÇATMADIĞI ÜÇÜN PANEL BİR ANLIQ ÖZ TƏBİİ ÖLÇÜSÜNDƏ GÖRÜNÜB SONRA "DÜZ ÖLÇÜYƏ SIÇRAYIRDI") YARADIRDI. **Pure CSS HİDRASİYA VAXTINDAN HEÇ ASILI DEYİL, BUNU YENİDƏN GƏTİRMƏYİN.**
 
+### `CategoryProductsSection` — BUG DÜZƏLİŞİ: kartlar çoxalanda dizayn pozulurdu
+
+**ƏVVƏLKİ VƏZİYYƏT (BUG):** `CategoryProductsSection` SADƏCƏ `{products.map(...)}` idi — KATEQORİYADA MƏHSUL SAYI ARTANDA (məs. 9 məhsul), GRİD YUXARIDAKI `items-stretch` QUTUSUNUN (SİDEBAR-IN HÜNDÜRLÜYÜ QƏDƏR) HÜNDÜRLÜYÜNDƏN DAŞIRDI — KARTLAR SİDEBAR/SƏBƏT PANELİNİN ALTINDAN AŞAĞI TÖKÜLÜRDÜ, SƏHİFƏ DİZAYNI POZULURDU (`absolute inset-0`-un ÖZÜ CLİP ETMİR, sadəcə BAŞLANĞIC ÖLÇÜNÜ verir).
+
+**HƏLL — `useGridFit` (`src/shared/hooks/useGridFit.ts`), YENİ, PAYLAŞILAN HOOK:**
+```tsx
+const { boxRef, gridRef, pageSize } = useGridFit(GRID_FIT)   // GRID_FIT → ./constants
+```
+Bu hook `ResizeObserver`-lə `boxRef`-in (qutunun) EN VƏ HÜNDÜRLÜYÜNÜ ÖLÇÜR, VƏ NEÇƏ KART SIĞDIĞINI (`sütun × sətir`) HESABLAYIR:
+```ts
+const columns = Math.max(1, Math.floor((width + columnGap) / (cardMinWidth + columnGap)))
+const rows = Math.max(1, Math.floor((usableHeight + rowGap) / (cardHeight + rowGap)))
+setPageSize(columns * rows)
+```
+`cardHeight` ÖZÜ DƏ ÖLÇÜLÜR (`gridRef.current.firstElementChild.offsetHeight`) — YƏNİ KART ÖLÇÜSÜ DƏYİŞSƏ BELƏ, HESABLAMA AVTOMATİK "ÖZ-ÖZÜNƏ KALİBRLƏNİR" (self-calibrating), FALLBACK (244px) YALNIZ İLK RENDER-Ə QƏDƏR İŞLƏDİLİR. **DİQQƏT — BU, AGENTS.md-in "BU LAYOUT ÜÇÜN JS-MEASURED HEIGHT ƏLAVƏ ETMƏ" QADAĞASINI POZMUR:** hook YALNIZ BİR SAY (`pageSize`) QAYTARIR, HEÇ BİR ELEMENTİN HÜNDÜRLÜYÜNÜ ÖZÜ TƏYİN ETMİR — QUTUNUN HÜNDÜRLÜYÜ HƏLƏ DƏ TAM PURE-CSS-DİR (yuxarıdakı `items-stretch` mexanizmi), YALNIZ "NEÇƏ KART GÖSTƏRİM" SUALININ CAVABI JS-DƏN GƏLİR.
+
+Nəticə:
+- **Fluid sütunlar:** grid `grid-cols-[repeat(auto-fill,minmax(180px,1fr))]` işlədir — sabit `grid-cols-4` KİMİ BİR BREAKPOİNT YOX, EN ARTDIQCA SÜTUN SAYI ÖZÜ ARTIR/AZALIR.
+- **`content-between`** (align-content) — GRİD-İN son sətri QUTUNUN ALT KƏNARINA "OTURUR" (sidebar/səbətlə DÜZ hizalanır), YARIMÇIQ (BİR NEÇƏ KARTLIQ) SƏTİR İSƏ YUXARIDA QALIR. `reservedFooter` (52px) HƏMİŞƏ (pagination görünsün-görünməsin) HÜNDÜRLÜKDƏN ÇIXILIR — YOXSA PAGİNASİYA GÖRÜNƏNDƏ/GİZLƏNƏNDƏ SƏTIR SAYI "TİTRƏYƏRDİ" (bir görünəndə 2 sətir, gizlənəndə 3 sətir kimi).
+- **Pagination YALNIZ `totalPages > 1`-DƏ GÖRÜNÜR** — sığmayan kartlar HEÇ VAXT İTMİR YA DA SCROLL TƏLƏB ETMİR, sadəcə NÖVBƏTİ SƏHİFƏYƏ KEÇİR.
+- Ekran GENİŞLƏNİB CARİ SƏHİFƏNİN NÖMRƏSİ artıq ETİBARSIZ olsa (`?page=3` amma indi cəmi 2 səhifə var), KİÇİK bir `useEffect` `?page=`-i DÜZƏLDİR (URL-i "TƏMİZ" saxlamaq üçün).
+
+`GRID_FIT` konfiqurasiyası (`CategoryProductsSection/constants/index.ts`):
+```ts
+export const GRID_FIT = { cardMinWidth: 180, columnGap: 12, rowGap: 24, fallbackCardHeight: 244, reservedFooter: 52, defaultPageSize: 8 }
+```
+`ProductsGrid` VƏ `FavoritesGrid` DƏ EYNİ `useGridFit`-i İŞLƏDİR, AMMA ÖZ `GRID_FIT`-LƏRİ İLƏ (`columnGap: 15`, `defaultPageSize: 10`) — HƏR GRİD-İN ÖZ KONFİQURASİYASI ÖZ `constants/`-INDADIR, ORTAQ FAYLDA DEYİL (DƏYƏRLƏR FƏRQLİDİR).
+
 ### Product: `/products`, `/products/[id]`
 
 ```
 src/views/Product/
   ProductsPage/index.tsx    → Server Component, serviceGet-lə tam kataloqu çəkir
-  ProductsGrid/index.tsx    → Client, paginasiya (5×2=10), BasketSidebarPanel (height rejimi)
+  ProductsGrid/              → index.tsx + constants/index.ts (GRID_FIT) — Client, useGridFit ilə dinamik paginasiya, BasketSidebarPanel (height rejimi)
   ProductDetailPage/index.tsx → /products/[id], ProductDetailContent-i sarır
 ```
 
-`ProductsGrid/index.tsx`-in PAGİNASİYA HESABLAMASI:
+`ProductsGrid/index.tsx` — YUXARIDAKI `CategoryProductsSection` İLƏ EYNİ MƏNTİQ (`useGridFit`, `content-between`, şərti pagination), TƏK FƏRQİ: qutu `items-stretch` sətirdə DEYİL (bu səhifə `CategoryDetailLayout`-un DAXİLİNDƏ DEYİL), ONA GÖRƏ `boxRef`-ə AÇIQ BİR `height` VERİLİR:
 ```tsx
-const COLUMNS = 5
-const VISIBLE_ROWS = 2
-const PAGE_SIZE = COLUMNS * VISIBLE_ROWS   // 10
-const BASKET_PANEL_HEIGHT = 594
-const VIEWPORT_RESERVED = 180
-const clampToViewport = (px: number) => `min(${px}px, calc(100vh - ${VIEWPORT_RESERVED}px))`
+<div ref={boxRef} style={{ height: clampToViewport(BASKET_PANEL_HEIGHT) }}>
 ```
-`clampToViewport` — CSS-in `min()` FUNKSİYASINI İŞLƏDİR: PANEL HÜNDÜRLÜYÜ HƏMİŞƏ `594px`-Dİr, AMMA KİÇİK VİEWPORT-LARDA (QISA EKRANLAR) `100vh - 180px`-DƏN BÖYÜK OLMASIN DEYƏ MƏHDUDLAŞDIRILIR — BU, JS OLMADAN, SADƏCƏ CSS İLƏ EDİLƏN RESPONSİV BİR MƏHDUDİYYƏTDİR. **Bu SƏHİFƏNİN Uİ-Sİ Categories/Favorites-in VİZUAL DİLİNƏ UYĞUNLAŞDIRILIB** — köhnə `ProductCard.tsx` (PLACEHOLDER-ŞƏKİLLİ) SİLİNİB, `CategoryProductCard` BÜTÜN GRİD-LƏRDƏ (KATEQORİYA/SEVİMLİ/MƏHSUL) ORTAQ İŞLƏDİLİR.
+`clampToViewport` VƏ `BASKET_PANEL_HEIGHT` (594) `src/shared/utils/viewport.ts`-DƏN GƏLİR (bax Hissə 12-nin `utils/` bölməsi) — CSS-in `min()` FUNKSİYASINI İŞLƏDİR: PANEL HÜNDÜRLÜYÜ HƏMİŞƏ `594px`-Dİr, AMMA KİÇİK VİEWPORT-LARDA (QISA EKRANLAR) `100vh - 180px`-DƏN BÖYÜK OLMASIN DEYƏ MƏHDUDLAŞDIRILIR. **Bu SƏHİFƏNİN Uİ-Sİ Categories/Favorites-in VİZUAL DİLİNƏ UYĞUNLAŞDIRILIB** — köhnə `ProductCard.tsx` (PLACEHOLDER-ŞƏKİLLİ) SİLİNİB, `CategoryProductCard` BÜTÜN GRİD-LƏRDƏ (KATEQORİYA/SEVİMLİ/MƏHSUL) ORTAQ İŞLƏDİLİR.
 
 **Qeyd:** `/products` SƏHİFƏSİNƏ HEÇ BİR UI GİRİŞ NÖQTƏSİ (NAV LİNK, LANDING CTA) YOXDUR — YALNIZ BİRBAŞA URL İLƏ ÇATILA BİLƏR. `/categories` LANDING SƏHİFƏSİNİN PROMO BANNERLƏRİNDƏN LİNK ALIR. **Bu, AÇIQ QALDIRILIB (İSTİFADƏÇİ SƏHİFƏNİ ƏVVƏLCƏ YENİDƏN DİZAYN ETMƏYİ SEÇİB, NAV LİNK-İ SONRAYA SAXLAYIB) — SORUŞMADAN NAV LİNK ƏLAVƏ ETMƏYİN.**
 
@@ -2478,8 +2576,11 @@ src/views/Basket/
 
 ```
 src/views/Checkout/
-  index.tsx           → CheckoutPage komponenti
-  constants.ts         → CONFIRM_SECONDS (təsdiq modalının geri-sayımı), PAYMENT_METHOD_LABELS
+  index.tsx            → CheckoutPage komponenti (İNDİ SADƏCƏ JSX + iki hook çağırışı)
+  constants/index.ts   → CONFIRM_SECONDS (təsdiq modalının geri-sayımı), PAYMENT_METHOD_LABELS
+  hooks/
+    useCheckoutSubmit.ts  → YENİ — modalStep/error/submitting state-i + handleOpenConfirm/handleConfirmOrder/handleCloseConfirm
+    useElementHeight.ts   → YENİ — ResizeObserver-lə bir elementin hündürlüyünü ölçən ÜMUMİ hook
   components/
     OrderDetailsCard.tsx     → ad/ünvan/telefon (READONLY, profildən) + qeyd + ödəniş metodu + "Sifarişi tamamla"
     OrderSummaryCard.tsx     → sağ sütun, səbətin XÜLASƏSİ (miqdar × başlıq, YEKUN)
@@ -2489,7 +2590,12 @@ src/views/Checkout/
 ```
 **Bu domen Basket-dən AYRIDIR** — Checkout, səbətin sadəcə "GÖRÜNÜŞÜ" DEYİL, ÖZ AXINI (ÜNVAN+ÖDƏNİŞ+TƏSDİQ+UĞUR) OLAN AYRI BİR MƏRHƏLƏDİR, ONA GÖRƏ ÖZ DOMEN QOVLUĞUNU ALIR.
 
-`index.tsx`-in ƏSAS MƏNTİQİ:
+**YENİLƏNDİ — İKİ hook-a ÇIXARILIB:** ƏVVƏL AŞAĞIDAKI MƏNTİQ BİRBAŞA `index.tsx`-İN İÇİNDƏ İDİ. İNDİ:
+```tsx
+const { note, setNote, paymentMethod, setPaymentMethod, submitting, error, modalStep, handleOpenConfirm, handleConfirmOrder, handleCloseConfirm } = useCheckoutSubmit(profile)
+const { ref: detailsCardRef, height: detailsCardHeight } = useElementHeight<HTMLDivElement>([isBasketLoading, isProfileLoading])
+```
+`useCheckoutSubmit.ts`-İN İÇİNDƏKİ MƏNTİQ (DAVRANIŞ DƏYİŞMƏYİB, SADƏCƏ YERİ):
 ```tsx
 const [modalStep, setModalStep] = useState<'idle' | 'confirming' | 'success'>('idle')
 
@@ -2513,7 +2619,9 @@ const handleConfirmOrder = () => {
         .finally(() => setSubmitting(false))
 }
 ```
-`modalStep`-in ÜÇ VƏZİYYƏTİ — SADƏ BİR `boolean`-DAN ÇOX DAHA AYDINDIR ("MODAL AÇIQDIRMI" SUALI KİFAYƏT ETMİR, ÇÜNKİ İKİ FƏRQLİ MODAL VAR, VƏ BİRİ O BİRİNİ ƏVƏZ EDİR, EYNİ ANDA GÖRÜNMÜR). SİFARİŞ UĞURLA GEDƏNDƏ, HƏM `basket` (İNDİ BOŞDUR), HƏM `orders` (YENİ SİFARİŞ ƏLAVƏ OLUNUB) CACHE-Ləri `invalidate` EDİLİR — SONRA 2 SANİYƏLİK BİR GECİKMƏDƏN (İSTİFADƏÇİ UĞUR EKRANINI GÖRSÜN DEYƏ) `/account/orders`-A YÖNLƏNDİRİLİR. `ResizeObserver` — `detailsCardRef`-in HÜNDÜRLÜYÜNÜ İZLƏYİR, SAĞ SÜTUNDAKI `OrderSummaryCard`-A EYNİ HÜNDÜRLÜYÜ VERMƏK ÜÇÜN (BU, `CategoryDetailLayout`-UN PURE-CSS HƏLLİNDƏN FƏRQLİ OLARAQ, HƏLƏ DƏ JS-ÖLÇMƏ İŞLƏDİR — ÇÜNKİ Checkout SƏHİFƏSİ SSR'LƏNMİR, YALNIZ AUTH-QORUNAN CLIENT SƏHİFƏDİR, HİDRASİYA-VAXTLAMA RİSKİ YOXDUR).
+`modalStep`-in ÜÇ VƏZİYYƏTİ — SADƏ BİR `boolean`-DAN ÇOX DAHA AYDINDIR ("MODAL AÇIQDIRMI" SUALI KİFAYƏT ETMİR, ÇÜNKİ İKİ FƏRQLİ MODAL VAR, VƏ BİRİ O BİRİNİ ƏVƏZ EDİR, EYNİ ANDA GÖRÜNMÜR). SİFARİŞ UĞURLA GEDƏNDƏ, HƏM `basket` (İNDİ BOŞDUR), HƏM `orders` (YENİ SİFARİŞ ƏLAVƏ OLUNUB) CACHE-Ləri `invalidate` EDİLİR — SONRA 2 SANİYƏLİK BİR GECİKMƏDƏN (İSTİFADƏÇİ UĞUR EKRANINI GÖRSÜN DEYƏ) `/account/orders`-A YÖNLƏNDİRİLİR.
+
+`useElementHeight.ts` — `detailsCardRef`-in HÜNDÜRLÜYÜNÜ `ResizeObserver`-LƏ İZLƏYİR, SAĞ SÜTUNDAKI `OrderSummaryCard`-A EYNİ HÜNDÜRLÜYÜ VERMƏK ÜÇÜN (BU, `CategoryDetailLayout`-UN PURE-CSS HƏLLİNDƏN FƏRQLİ OLARAQ, HƏLƏ DƏ JS-ÖLÇMƏ İŞLƏDİR — ÇÜNKİ Checkout SƏHİFƏSİ SSR'LƏNMİR, YALNIZ AUTH-QORUNAN CLIENT SƏHİFƏDİR, HİDRASİYA-VAXTLAMA RİSKİ YOXDUR — `CategoryDetailLayout`-UN "JS-measured height ƏLAVƏ ETMƏ" QADAĞASI YALNIZ O SƏHİFƏYƏ AİDDİR, BURAYA YOX).
 
 ### Account: `/account`, `/account/orders`, `/account/orders/:id`
 
@@ -2522,10 +2630,11 @@ src/views/Account/
   AccountLayout/
     index.tsx                  → sidebar + card çərçivəsi ("Hesabım" başlığı BURADA)
     components/AccountSidebarNav.tsx
-    constants.ts                → NAV_ITEMS ([{href, label, icon}, ...])
+    constants/index.ts          → NAV_ITEMS ([{href, label, icon}, ...])
   AccountPage/
-    index.tsx                   → forma (Adınız/Telefon/Email/Ünvan + şifrə + avatar)
-    constants.ts                 → updateSchema (zod)
+    index.tsx                   → forma (Adınız/Telefon/Email/Ünvan + şifrə + avatar), İNDİ 121-DƏN 84 SƏTRƏ ENİB
+    constants/index.ts           → updateSchema (zod)
+    hooks/useAvatarUpload.ts     → YENİ — avatarPreview/uploadingAvatar state-i + handleAvatarSelect (aşağı bax)
     components/AvatarUploader.tsx, PersonalInfoFields.tsx, PasswordFields.tsx
 ```
 `AccountLayout/components/AccountSidebarNav.tsx` — AKTİV-VƏZİYYƏT UYĞUNLAŞDIRMASI ASİMMETRİKDİR:
@@ -2534,7 +2643,7 @@ const isActive = href === '/account' ? pathname === '/account' : pathname.starts
 ```
 `/account` DƏQİQ UYĞUNLUQ TƏLƏB EDİR (ƏKS HALDA `/account/orders`-DA DA "İŞIQLANARDI"), AMMA `/account/orders` `startsWith` İSTİFADƏ EDİR (ki, `/account/orders/:id` DETAL SƏHİFƏSİNDƏ DƏ AKTİV QALSIN). **Header-in "Hesabım" NAV LİNK-İ DƏ EYNİ ASİMMETRİK PATTERN-İ İŞLƏDİR** (`pathname.startsWith('/account')`).
 
-`AccountPage/index.tsx`-in AVATAR YÜKLƏMƏ AXINI (real bir BUG-DAN sonra DÜZƏLDİLİB):
+`AccountPage/hooks/useAvatarUpload.ts`-in AVATAR YÜKLƏMƏ AXINI (real bir BUG-DAN sonra DÜZƏLDİLİB, İNDİ AYRI HOOK-DA — `AccountPage/index.tsx` SADƏCƏ `const { avatarPreview, uploadingAvatar, handleAvatarSelect } = useAvatarUpload(profile, updateProfile)` ÇAĞIRIR):
 ```tsx
 const handleAvatarSelect = async (file: File) => {
     const objectUrl = URL.createObjectURL(file)
@@ -2614,11 +2723,11 @@ export function OrderDetailSection({ orderId }: OrderDetailSectionProps) {
 
 ```
 src/views/FavoritesPage/
-  index.tsx        → EYNİ komponent /favorites VƏ /favorites/[id] ÜÇÜN
-  constants.ts       → PAGE_SIZE, PANEL_HEIGHT, BASKET_PANEL_HEIGHT
-  utils.ts           → clampToViewport
-  components/FavoritesGrid.tsx
+  index.tsx           → EYNİ komponent /favorites VƏ /favorites/[id] ÜÇÜN
+  constants/index.ts  → PANEL_HEIGHT, GRID_FIT (BASKET_PANEL_HEIGHT ARTIQ BURADA DEYİL, bax aşağı)
+  components/FavoritesGrid.tsx → İNDİ TAM LİST ALIR VƏ ÖZÜ PAGİNASİYA EDİR (aşağı bax)
 ```
+**DİQQƏT — `utils/` QOVLUĞU ARTIQ YOXDUR.** ƏVVƏL `FavoritesPage/utils/index.ts` `clampToViewport`-u İXRAC EDİRDİ, AMMA BU FUNKSİYA `ProductsGrid`-DƏ DƏ EYNİ İLƏ TƏKRARLANIRDI (HƏQİQİ DUPLİKASİYA) — ONA GÖRƏ `src/shared/utils/viewport.ts`-Ə (`VIEWPORT_RESERVED`, `BASKET_PANEL_HEIGHT`, `clampToViewport`) KÖÇÜRÜLDÜ, VƏ `FavoritesPage/utils/` (ARTIQ BİR-SƏTIRLIK "RE-EXPORT" QATINA ÇEVRİLDİYİ ÜÇÜN) TAMAMİLƏ SİLİNDİ.
 
 ```tsx
 export function FavoritesPage() {
@@ -2626,6 +2735,7 @@ export function FavoritesPage() {
     const searchParams = useSearchParams()
     const selectedProductId = params.id ? Number(params.id) : null
     const currentPage = Math.max(1, Number(searchParams.get('page')) || 1)
+    const { data: favorites, isLoading } = useFavorites()
     ...
     return (
         <Container>
@@ -2636,7 +2746,7 @@ export function FavoritesPage() {
                     ) : !favorites || favorites.length === 0 ? (
                         <EmptyStateCard ... />
                     ) : (
-                        <FavoritesGrid products={pagedFavorites} onSelect={(id) => router.push(`/favorites/${id}?page=${currentPage}`)} ... />
+                        <FavoritesGrid products={favorites} currentPage={currentPage} onSelect={(id) => router.push(`/favorites/${id}?page=${currentPage}`)} onPageChange={(page) => router.replace(`/favorites?page=${page}`)} />
                     )}
                 </div>
                 <BasketSidebarPanel height={...} />
@@ -2645,6 +2755,8 @@ export function FavoritesPage() {
     )
 }
 ```
+**YENİ:** ƏVVƏL `FavoritesPage` ÖZÜ `PAGE_SIZE`/`totalPages` HESABLAYIB `FavoritesGrid`-Ə ARTIQ KƏSİLMİŞ (`pagedFavorites`) SİYAHI VERİRDİ. İNDİ İSƏ `FavoritesPage` `favorites`-in **TAM** SİYAHISINI ÖTÜRÜR, VƏ `FavoritesGrid` ÖZÜ (Category/Product grid-ləri KİMİ) `useGridFit`-LƏ NEÇƏ MƏHSUL SIĞDIĞINI HESABLAYIB PAGİNASİYA EDİR — bu, `CategoryProductsSection`-DA TAPILAN "kartlar çoxalanda dizayn pozulur" BUG-ININ EYNİ KÖKÜNÜN Favorites-DƏ DƏ OLA BİLƏCƏYİNİN QARŞISINI ALMAQ ÜÇÜNDÜR (bax yuxarı, "BUG DÜZƏLİŞİ" bölməsi).
+
 **Klik naviqasiya ETMİR (BAŞQA SƏHİFƏLƏRDƏN FƏRQLİ OLARAQ)** — `CategoryProductCard`-IN `onSelect` PROP-U İŞLƏDİLİR, GRID İNLİN `ProductDetailContent`-LƏ ƏVƏZLƏNİR, BASKET PANELİ SAĞDA UNMOUNT OLMUR (bax Hissə 8-in "Persistent" FƏLSƏFƏSİNİN AYNI, AMMA LOCAL-STATE VERSİYASI). `?page=` URL-DƏ SAXLANILIR (`router.push('/favorites/${id}?page=${currentPage}')`) MƏHZ ONUN ÜÇÜN Kİ, DETAL-A KEÇİB GERİ QAYIDANDA HANSI SƏHİFƏDƏ OLDUĞUNUZ İTMƏSİN. **`src/app/favorites/[id]/page.tsx` HƏM DƏ EYNİ `FavoritesPage`-İ RENDER EDİR** — komponent ÖZÜ `useParams().id` VƏ `useSearchParams().get('page')`-İ OXUYUR, PROP KİMİ ALMIR.
 
 ### Köhnə `/profile`
@@ -2677,7 +2789,7 @@ export function buildMetadata({ title, description, path, robots }: BuildMetadat
 `buildMetadata` — HƏR `page.tsx`-in `metadata`/`generateMetadata`-SININ KEÇMƏLİ OLDUĞU MƏRKƏZİ FUNKSİYA (BƏSİT OBYEKT LİTERALI YOX). Nə EDİR:
 - `alternates.canonical` — AXTARIŞ MOTORLARINA "BU SƏHİFƏNİN ƏSAS URL-İ BUDUR" DEYİR (DUBLIKAT MƏZMUN QARIŞIQLIĞININ QARŞISINI ALIR).
 - `openGraph`/`twitter`-Ə title/description-U AVTOMATİK KÖÇÜRÜR — Next.js BUNU AVTOMATİK ETMİR, HƏR SƏHİFƏ ÖZ `openGraph.title`-INI AYRICA YAZMALI OLARDI, BU FUNKSİYA HƏMİN TƏKRARI ARADAN QALDIRIR.
-- `robots`-un DEFOLTU `{ index: false, follow: false }`-DUR — **HƏR SƏHİFƏ İNDEKSLƏNMƏYƏ QƏSDƏN "OPT-IN" ETMƏLİDİR, ƏKSİNƏ YOX.** YALNIZ `/` (`src/app/page.tsx`) `robots: { index: true, follow: true }` ÖTÜRÜR.
+- `robots`-un DEFOLTU `{ index: false, follow: false }`-DUR — **HƏR SƏHİFƏ İNDEKSLƏNMƏYƏ QƏSDƏN "OPT-IN" ETMƏLİDİR, ƏKSİNƏ YOX.** **YENİLƏNDİ:** ƏVVƏL YALNIZ `/` `robots: { index: true, follow: true }` ÖTÜRÜRDÜ — İNDİ `/`, `/categories`, `/categories/[id]`, `/products`, `/products/[id]` DƏ ÖTÜRÜR (BUNLARIN HAMISI SERVICE-ACCOUNT-LA SSR OLUNAN, HƏR URL ÜÇÜN GERÇƏKDƏN UNİKAL MƏZMUNLU SƏHİFƏLƏRDİR — bax "SSR VƏ servis hesabı" Hissə 10). **İSTİSNA:** `/categories/[id]/products/[productId]` (İÇ-İÇƏ, KATEQORİYA ALTINDA MƏHSUL DETAL ROUTE-U) `noindex` OLARAQ QALIR VƏ ÖZ `canonical`-INI `/products/:id`-Ə İŞARƏ EDİR — ÇÜNKİ EYNİ MƏHSULU İKİNCİ BİR URL-DƏ GÖSTƏRİR, VƏ Google-A "BU DUBLİKATDIR, ƏSAS VERSİYA BAŞQA YERDƏDİR" DEYİR (DUBLIKAT MƏZMUN CƏZASININ QARŞISINI ALIR).
 
 ### `src/app/robots.ts`
 
@@ -2687,24 +2799,56 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/categories", "/products", "/favorites", "/basket", "/checkout", "/account"],
+      disallow: ["/favorites", "/basket", "/checkout", "/account"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }
 ```
-Bu, `next.config.ts`-dən DEYİL, BİR "FILE CONVENTION"DIR (bax Hissə 4) — Next.js `robots.ts`-i AVTOMATİK TANIYIR VƏ `/robots.txt`-Ə ÇEVİRİR. `disallow` SİYAHISI — botlara "bu YOLLARI CRAWL ETMƏ" DEYİR (AUTH-QORUNAN/ANONİM-ÜÇÜN-MƏNASIZ ROUTE-LAR — DİQQƏT: `/categories`, `/products` DA BURADADIR, ÇÜNKİ SERVICE-ACCOUNT SSR OLSA BELƏ, ONLARIN MƏZMUNU HƏR ZİYARƏTÇİ ÜÇÜN EYNİDİR VƏ SEO-CA "UNİKAL DƏYƏR" DAŞIMIR, bax `buildMetadata`-nın DEFOLT NOINDEX-İ).
+Bu, `next.config.ts`-dən DEYİL, BİR "FILE CONVENTION"DIR (bax Hissə 4) — Next.js `robots.ts`-i AVTOMATİK TANIYIR VƏ `/robots.txt`-Ə ÇEVİRİR. `disallow` SİYAHISI — botlara "bu YOLLARI CRAWL ETMƏ" DEYİR. **YENİLƏNDİ:** `/categories` VƏ `/products` SİYAHIDAN ÇIXARILDI — ÇÜNKİ BUNLAR ARTIQ İNDEKSLƏNƏSİ (yuxarı bax) — QALAN SİYAHI YALNIZ HƏQİQƏTƏN AUTH-QORUNAN ROUTE-LARDIR (`/favorites`, `/basket`, `/checkout`, `/account` — bunların HAMISI ZİYARƏTÇİNİN ÖZ TOKEN-İ İLƏ ÇƏKİLİR, BOT HEÇ VAXT GÖRƏ BİLMƏZ).
 
-### `src/app/sitemap.ts`
+### `src/app/sitemap.ts` — YENİLƏNDİ: İNDİ DİNAMİKDİR
 
 ```ts
+export const revalidate = 300;
 const BUILD_TIME = new Date();
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: SITE_URL, lastModified: BUILD_TIME, changeFrequency: "daily", priority: 1 }];
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [categories, products] = await Promise.all([
+    serviceGet<ApiResponse<Category[]>>("/categories").then((res) => res.data).catch(() => []),
+    serviceGet<PaginatedResponse<Product>>("/products").then((res) => res.data).catch(() => []),
+  ]);
+
+  return [
+    { url: SITE_URL, lastModified: BUILD_TIME, changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/categories`, lastModified: BUILD_TIME, changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE_URL}/products`, lastModified: BUILD_TIME, changeFrequency: "daily", priority: 0.8 },
+    ...categories.map((c) => ({ url: `${SITE_URL}/categories/${c.id}`, lastModified: BUILD_TIME, changeFrequency: "daily" as const, priority: 0.6 })),
+    ...products.map((p) => ({ url: `${SITE_URL}/products/${p.id}`, lastModified: BUILD_TIME, changeFrequency: "daily" as const, priority: 0.5 })),
+  ];
 }
 ```
-`BUILD_TIME` — MODUL YÜKLƏNƏNDƏ (SERVER PROSESİ BAŞLAYANDA) BİR DƏFƏ HESABLANIR, `new Date()` HƏR SORĞUDA YOX — BELƏLİKLƏ SITEMAP HƏR CRAWL-DA "İNDİCƏ DƏYİŞDİ" KİMİ YALAN DEMİR. Sitemap QƏSDƏN YALNIZ `/`-İ SADALAYIR — QALAN HƏR ŞEY YA AUTH-QORUNAN, YA DA (`/categories`/`/products` KİMİ) HƏR ZİYARƏTÇİ ÜÇÜN EYNİ MƏZMUNLU OLDUĞU ÜÇÜN NOINDEX-DİR.
+`BUILD_TIME` — MODUL YÜKLƏNƏNDƏ (SERVER PROSESİ BAŞLAYANDA) BİR DƏFƏ HESABLANIR, `new Date()` HƏR SORĞUDA YOX — BELƏLİKLƏ SITEMAP HƏR CRAWL-DA "İNDİCƏ DƏYİŞDİ" KİMİ YALAN DEMİR. **YENİLƏNDİ:** SITEMAP ARTIQ YALNIZ `/`-İ YOX, `/categories`, `/products`, VƏ (`serviceGet`-lə çəkilib) HƏR KATEQORİYA/MƏHSULUN ÖZ URL-İNİ DƏ SADALAYIR — BU, `serviceGet`-in DİGƏR SSR SƏHİFƏLƏRDƏ İSTİFADƏ OLUNAN EYNİ FUNKSİYASI (Hissə 10) — sitemap.ts DA SERVER-DƏ İŞLƏYİR, ONA GÖRƏ ONU BURADA DA ÇAĞIRMAQ OLAR. `revalidate = 300` — QALAN SSR SƏHİFƏLƏR KİMİ, KATALOQ 5 DƏQİQƏDƏN BİR YENİLƏNİR (bax Hissə 10-un ISR İZAHI).
+
+### `src/app/llms.txt/route.ts` — YENİ, AI axtarış mühərrikləri (GEO) üçün
+
+```ts
+export async function GET() {
+  const body = `# ${SITE_NAME}\n\n> TIK TAK — Azərbaycanda onlayn supermarket...\n\n## Sitemap\n${SITE_URL}/sitemap.xml\n`;
+  return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+}
+```
+**DİQQƏT — bu bir "FILE CONVENTION" DEYİL** (`robots.ts`/`sitemap.ts` kimi Next.js-in ÖZÜNÜN TANIDIĞI xüsusi ad DEYİL), sadəcə ADİ BİR ROUTE HANDLER-DİR (bax Hissə 4-ün "Route Handler" izahı). Qovluğun ÖZÜNÜN ADI HƏRFİ MƏNADA `llms.txt`-DİR (`src/app/llms.txt/route.ts`) — Next.js-də qovluq adı URL seqmentinə çevrilir, deməli `llms.txt` QOVLUĞU + `route.ts` = `/llms.txt` ÜNVANI. `llms.txt` — YENİ (2024-2025) BİR TREND: SAYTIN MƏZMUNUNU AI CHAT/AXTARIŞ MÜHƏRRİKLƏRİNƏ (ChatGPT, Perplexity VƏ S.) MAŞIN-OXUNAQLI (markdown) FORMATDA XÜLASƏ EDƏN BİR FAYL — "GEO" (Generative Engine Optimization) DEYİLƏN YENİ SAHƏNİN BİR HİSSƏSİDİR, ƏNƏNƏVİ SEO-NUN (Google-A YÖNƏLİK) TAMAMLAYICISIDIR.
+
+### Strukturlaşdırılmış data (JSON-LD) — SEO VƏ GEO ÜÇÜN
+
+Bir çox SƏHİFƏ İNDİ `<script type="application/ld+json">` İLƏ [schema.org](https://schema.org) FORMATINDA STRUKTURLAŞDIRILMIŞ DATA YAZIR — BU, Google-UN (VƏ AI MÜHƏRRİKLƏRİNİN) SƏHİFƏNİ SADƏCƏ MƏTN KİMİ YOX, MƏNA DAŞIYAN FAKTLAR KİMİ ("Bu bir Product-dur, adı X-dir, qiyməti Y-dir") OXUMASINI TƏMİN EDİR:
+- `HomePage` — `Organization` + `WebSite` (bax Hissə 16).
+- `/products/[id]/page.tsx` — `Product` + `Offer` (ad, təsvir, şəkil, qiymət, mövcudluq) + `BreadcrumbList` (bax yuxarı, ROUTING BÖLMƏSİ).
+- `/categories/[id]/products/[productId]/page.tsx` — EYNİ `Product` + `Offer` (canonical `/products/:id`-ə işarə edir).
+- `/categories/[id]/page.tsx` — `BreadcrumbList`.
+
+HAMISI **Server Component `page.tsx`-in ÖZÜNDƏ** RENDER OLUNUR (Client Component-də YOX) — YƏNİ İLK SSR HTML-İN ÖZÜNDƏ VAR, botun JS İŞƏ SALMASINA EHTİYAC YOXDUR (bax Hissə 10-un SSR fəlsəfəsi).
 
 ### `src/app/opengraph-image.tsx`, `twitter-image.tsx`, `icon.tsx`, `apple-icon.tsx`
 
@@ -2725,6 +2869,8 @@ export default function OpengraphImage() {
 }
 ```
 `next/og`-un `ImageResponse`-i — JSX-i SORĞU ANINDA (request-time) BİR ŞƏKİL FAYLINA ("render" EDİR) ÇEVİRƏN XÜSUSİ BİR API (STATİK BİR PNG FAYLI YÜKLƏMİR — ONU DİNAMİK "ÇƏKİR"). Brend YAŞILI (`#114F2E`) FON, SİSTEM SANS-SERİF FONT (XARİCİ FONT SORĞUSU YOXDUR — sürətli, ETİBARLI). Bu FAYLLAR YAZILIB, ÇÜNKİ LAYİHƏDƏ HEÇ BİR LOGO/BREND ŞƏKLİ ASSET-İ YOXDUR.
+
+**YENİ: `icon.tsx` (32×32) VƏ `apple-icon.tsx` (180×180)** — ƏVVƏL bu ADLAR SƏNƏDDƏ VAR İDİ, AMMA FAYLLAR FAKTİKİ OLARAQ MÖVCUD DEYİLDİ (SAYT DEFOLT FAVICON-LA ÇALIŞIRDI). İNDİ İKİSİ DƏ YARADILIB — EYNİ `ImageResponse` ÜSULU, AMMA `opengraph-image`/`twitter-image`-DƏN FƏRQLİ ÖLÇÜDƏ (1200×630 YOX, 32×32 VƏ 180×180 — BİRİ BRAUZER TAB-I/GOOGLE SƏHİFƏSİ ÜÇÜN, DİGƏRİ iOS-UN "ANA EKRANA ƏLAVƏ ET" İKONU ÜÇÜN), İÇİNDƏ SADƏCƏ "T" HƏRFİ (BREND YAŞILI FONDA). Bu, `HomePage`-in JSON-LD-sindəki `Organization.logo: '${SITE_URL}/icon'` SAHƏSİNİN DE ARTIQ REAL BİR ŞƏKİLƏ İŞARƏ ETMƏSİNİ TƏMİN EDİR (əvvəl bu link 404 idi).
 
 ### `HomePage` — YEGANƏ GENUİN SSR'LƏNMİŞ SƏHİFƏ
 
