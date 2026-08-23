@@ -1,26 +1,14 @@
-import type { ApiResponse } from "@/types";
-import type {
-  AuthResponseData,
-  AuthTokens,
-  LoginPayload,
-  SignupPayload,
-} from "@/types";
-import httpClient from "../httpClient";
+import type { ApiResponse, AuthResponseData, AuthTokens, LoginPayload, SignupPayload } from '@/types'
+import httpClient from '../httpClient'
 
 export const authService = {
   login(payload: LoginPayload) {
-    return httpClient.post<ApiResponse<AuthResponseData>>(
-      "/auth/login",
-      payload
-    );
+    return httpClient.post<ApiResponse<AuthResponseData>>('/auth/login', payload)
   },
-
   signup(payload: SignupPayload) {
-    return httpClient.post<ApiResponse<null>>("/auth/signup", payload);
+    return httpClient.post<ApiResponse<null>>('/auth/signup', payload)
   },
   refresh(refresh_token: string) {
-    return httpClient.post<ApiResponse<AuthTokens>>("/auth/refresh", {
-      refresh_token,
-    });
+    return httpClient.post<ApiResponse<AuthTokens>>('/auth/refresh', { refresh_token })
   },
-};
+}
