@@ -15,9 +15,10 @@ const CARD_MIN_WIDTH = 180
 const COLUMN_GAP = 12
 const ROW_GAP = 24
 const FALLBACK_CARD_HEIGHT = 244
-// Fixed footer space reserved for the pagination row so the measured grid-area height stays
-// stable whether or not pagination is currently shown (otherwise showing/hiding it would
-// change the available height → change pageSize → toggle it again: an oscillation loop).
+// Vertical space kept for the pagination row. Subtracted from the box height when working out
+// how many rows fit, ALWAYS (whether or not pagination ends up shown) so the row count never
+// changes when pagination appears/disappears — and since it's far smaller than a card row,
+// reserving it can never itself add/remove a row (no oscillation).
 const PAGINATION_FOOTER = 52
 // SSR / pre-measurement page size: keeps the server-rendered HTML populated with product
 // cards (SEO — crawlers see the products) and matches the client's first render so there's
@@ -30,7 +31,7 @@ export function CategoryProductsSection({ products, categoryName }: CategoryProd
     const searchParams = useSearchParams()
     const currentPage = Math.max(1, Number(searchParams.get('page')) || 1)
 
-    const gridAreaRef = useRef<HTMLDivElement>(null)
+    const boxRef = useRef<HTMLDivElement>(null)
     const gridRef = useRef<HTMLDivElement>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
 
@@ -39,21 +40,24 @@ export function CategoryProductsSection({ products, categoryName }: CategoryProd
     // stay fully fluid as the screen grows, and there's no scroll. NOTE: this measures only to
     // derive an item COUNT; it does NOT set any element's height (heights stay pure-CSS stretch),
     // so it does not reintroduce the JS-measured *height* that AGENTS.md warns against here.
-    // Runs in a layout effect (before paint) so the exact count is applied before the first frame.
+    // The box (`boxRef`) is the h-full container whose height equals the sidebar's regardless of
+    // its own content, so measuring it is stable — no feedback loop. Runs in a layout effect
+    // (before paint) so the exact count is applied before the first frame.
     useIsomorphicLayoutEffect(() => {
-        const gridArea = gridAreaRef.current
-        if (!gridArea) return
+        const box = boxRef.current
+        if (!box) return
         const measure = () => {
-            const { width, height } = gridArea.getBoundingClientRect()
+            const { width, height } = box.getBoundingClientRect()
             if (width === 0 || height === 0) return
             const cardHeight = (gridRef.current?.firstElementChild as HTMLElement | null)?.offsetHeight || FALLBACK_CARD_HEIGHT
+            const usableHeight = height - PAGINATION_FOOTER
             const columns = Math.max(1, Math.floor((width + COLUMN_GAP) / (CARD_MIN_WIDTH + COLUMN_GAP)))
-            const rows = Math.max(1, Math.floor((height + ROW_GAP) / (cardHeight + ROW_GAP)))
+            const rows = Math.max(1, Math.floor((usableHeight + ROW_GAP) / (cardHeight + ROW_GAP)))
             setPageSize(columns * rows)
         }
         measure()
         const observer = new ResizeObserver(measure)
-        observer.observe(gridArea)
+        observer.observe(box)
         return () => observer.disconnect()
     }, [])
 
@@ -69,35 +73,39 @@ export function CategoryProductsSection({ products, categoryName }: CategoryProd
     }
 
     const totalPages = getTotalPages(products.length, pageSize)
+    const showPagination = totalPages > 1
     // Resizing wider can drop totalPages below the current page — clamp so we never render an
     // empty page (and Pagination highlights a valid page).
     const safePage = Math.min(currentPage, totalPages)
     const pagedProducts = paginate(products, safePage, pageSize)
 
-    // Cards top-align in the flex-1 grid area; pagination is pinned to the bottom of the box so
-    // it keeps a consistent position (it does NOT rise up to hug the cards when a page is only
-    // partially filled — e.g. the last page with a few items).
+    // `content-between` distributes the rows down the flex-1 grid area: when the page is full
+    // (or has no pagination) the last row sits on the bottom edge, so the cards line up with the
+    // bottom of the sidebar and basket columns instead of leaving a gap. A single partial row
+    // (e.g. the last page) stays at the top. The pagination footer only renders when there is
+    // more than one page, so a single-page category reclaims that space for the cards.
     return (
-        <div className="flex h-full flex-col">
+        <div ref={boxRef} className="flex h-full flex-col">
             <h1 className="sr-only">{categoryName ?? 'Kateqoriya'}</h1>
-            <div ref={gridAreaRef} className="min-h-0 flex-1">
-                <div ref={gridRef} className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-x-[12px] gap-y-[24px]">
-                    {pagedProducts.map((product) => (
-                        <CategoryProductCard key={product.id} product={product} />
-                    ))}
-                </div>
+            <div
+                ref={gridRef}
+                className="grid min-h-0 flex-1 content-between grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-x-[12px] gap-y-[24px]"
+            >
+                {pagedProducts.map((product) => (
+                    <CategoryProductCard key={product.id} product={product} />
+                ))}
             </div>
 
-            <div className="flex flex-shrink-0 items-end" style={{ minHeight: PAGINATION_FOOTER }}>
+            {showPagination && (
                 <Pagination
                     currentPage={safePage}
                     totalPages={totalPages}
                     onPageChange={(page) => router.push(`/categories/${params.id}?page=${page}`)}
                     total={products.length}
                     pageSize={pageSize}
-                    className="w-full pt-3"
+                    className="flex-shrink-0 pt-3"
                 />
-            </div>
+            )}
         </div>
     )
 }
