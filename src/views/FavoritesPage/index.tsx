@@ -20,7 +20,7 @@ export function FavoritesPage() {
     if (isLoading) return <Loader />
 
     return (
-        <Container className="-mt-[20px] overflow-hidden py-6">
+        <Container className="-mt-[20px] py-6">
             <h2 className="mb-4 ml-[10px] text-xl font-semibold text-neutral-900">Siyahılarım</h2>
 
             <div className="mt-[-15px] flex items-start gap-4">
