@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import type { AuthPageProps, AuthTab } from '@/types'
-import { tabTextStyle } from './constants'
+import { tabTextStyle, titleTextStyle } from './constants'
 import { LoginForm } from './components/LoginForm'
 import { RegisterForm } from './components/RegisterForm'
 
@@ -21,22 +21,7 @@ export function AuthPage({ initialTab }: AuthPageProps) {
     return (
         <div className="flex min-h-screen w-full">
             <div className="relative hidden w-1/2 flex-shrink-0 overflow-hidden rounded-tr-[8px] rounded-br-[8px] bg-fern text-white md:block">
-                <p
-                    className="absolute z-10"
-                    style={{
-                        width: '400px',
-                        height: '71px',
-                        top: '30px',
-                        left: '40px',
-                        opacity: 1,
-                        fontFamily: 'var(--font-roboto)',
-                        fontWeight: 800,
-                        fontSize: '80px',
-                        lineHeight: '100%',
-                        letterSpacing: '0.03em',
-                        color: 'var(--foreground)',
-                    }}
-                >
+                <p className="absolute z-10" style={titleTextStyle}>
                     TIK TAK
                 </p>
                 <div className="absolute top-6 right-0 bottom-6 left-0">

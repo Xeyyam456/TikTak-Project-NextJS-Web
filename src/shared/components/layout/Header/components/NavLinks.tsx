@@ -1,29 +1,21 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
-import { LogOut, User, Heart, ShoppingCart } from 'lucide-react'
-import { toast } from 'sonner'
-import { Button } from '@/shared/components/Button'
-import { ConfirmModal } from '@/shared/components/ConfirmModal'
+import { usePathname } from 'next/navigation'
+import { User, Heart, ShoppingCart } from 'lucide-react'
 import { useBasket } from '@/shared/hooks/useBasket'
 import { useFavorites } from '@/shared/hooks/useFavorites'
 import { useProfile } from '@/shared/hooks/useProfile'
 import { useHasMounted } from '@/shared/hooks/useHasMounted'
 import { useAuthSync } from '@/shared/hooks/useAuthSync'
-import { clearTokens } from '@/services/httpClient'
+import { LogoutButton } from './LogoutButton'
 
 export function NavLinks() {
     const pathname = usePathname()
-    const router = useRouter()
-    const queryClient = useQueryClient()
     const hasMounted = useHasMounted()
     const { data: profile } = useProfile()
     const { data: basket } = useBasket()
     const { data: favorites } = useFavorites()
-    const [confirmLogoutOpen, setConfirmLogoutOpen] = useState(false)
 
     // Cross-tab: another tab logged in/out — clear the stale profile/basket/
     // favorites cache here too, so the header badges/avatar/logout button
@@ -32,14 +24,6 @@ export function NavLinks() {
 
     const basketCount = hasMounted ? (basket?.count ?? 0) : 0
     const favoritesCount = hasMounted ? (favorites?.length ?? 0) : 0
-
-    const handleConfirmLogout = () => {
-        clearTokens()
-        queryClient.clear()
-        setConfirmLogoutOpen(false)
-        toast.success('Hesabdan uğurla çıxdınız')
-        router.push('/')
-    }
 
     return (
         <nav className="flex items-center gap-6 text-[14px] font-normal leading-none tracking-normal text-foreground">
@@ -89,26 +73,7 @@ export function NavLinks() {
                 </span>
                 Səbətim
             </Link>
-            {hasMounted && profile && (
-                <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setConfirmLogoutOpen(true)}
-                    className="flex items-center gap-[10px] hover:text-emerald"
-                >
-                    <LogOut size={17} />
-                    Çıxış
-                </Button>
-            )}
-
-            <ConfirmModal
-                open={confirmLogoutOpen}
-                title="Hesabdan çıxmaq istəyirsiniz?"
-                confirmLabel="Bəli, çıx"
-                cancelLabel="İmtina"
-                onConfirm={handleConfirmLogout}
-                onCancel={() => setConfirmLogoutOpen(false)}
-            />
+            {hasMounted && profile && <LogoutButton />}
         </nav>
     )
 }

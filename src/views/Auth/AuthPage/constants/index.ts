@@ -22,6 +22,19 @@ export const labelStyle = {
     lineHeight: '100%',
     letterSpacing: '0%',
 }
+export const titleTextStyle = {
+    width: '400px',
+    height: '71px',
+    top: '30px',
+    left: '40px',
+    opacity: 1,
+    fontFamily: 'var(--font-roboto)',
+    fontWeight: 800,
+    fontSize: '80px',
+    lineHeight: '100%',
+    letterSpacing: '0.03em',
+    color: 'var(--foreground)',
+}
 export const tabTextStyle = {
     fontFamily: 'var(--font-roboto)',
     fontWeight: 400,

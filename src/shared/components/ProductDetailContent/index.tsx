@@ -1,18 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
 import { Loader } from '../Loader'
 import { ConfirmModal } from '../ConfirmModal'
-import { useBasket, useBasketMutations } from '@/shared/hooks/useBasket'
-import { useFavorites, useToggleFavorite } from '@/shared/hooks/useFavorites'
-import { useHasMounted } from '@/shared/hooks/useHasMounted'
-import { useProduct } from '@/shared/hooks/useProducts'
 import type { ProductDetailContentProps } from '@/types'
 import { ProductHeader } from './components/ProductHeader'
 import { ProductImage } from './components/ProductImage'
 import { AddToBasketControl } from './components/AddToBasketControl'
+import { useProductDetail } from './hooks/useProductDetail'
 
 export function ProductDetailContent({
     productId,
@@ -22,18 +17,17 @@ export function ProductDetailContent({
     onBack,
 }: ProductDetailContentProps) {
     const router = useRouter()
-    const hasMounted = useHasMounted()
-    const { data: product, isLoading: loading } = useProduct(productId, initialProduct)
-
-    const { data: basket } = useBasket()
-    const { add, removeAll } = useBasketMutations()
-    const { data: favorites } = useFavorites()
-    const toggleFavorite = useToggleFavorite()
-    const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false)
-
-    useEffect(() => {
-        if (product) document.title = `${product.title} | TIK TAK`
-    }, [product])
+    const {
+        product,
+        loading,
+        quantity,
+        isFavorite,
+        confirmRemoveOpen,
+        setConfirmRemoveOpen,
+        handleAddToBasket,
+        handleConfirmRemove,
+        toggleFavorite,
+    } = useProductDetail(productId, initialProduct)
 
     if (loading)
         return (
@@ -51,23 +45,6 @@ export function ProductDetailContent({
                 <p>Mehsul tapilmadi.</p>
             </div>
         )
-
-    const quantity = hasMounted ? (basket?.items.find((item) => item.product.id === product.id)?.quantity ?? 0) : 0
-    const isFavorite = hasMounted
-        ? (favorites?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false)
-        : false
-
-    const handleAddToBasket = () => {
-        if (quantity > 0) {
-            toast.info('Bu məhsul artıq səbətdədir')
-            return
-        }
-        add.mutate(product.id)
-    }
-    const handleConfirmRemove = () => {
-        removeAll.mutate(product.id)
-        setConfirmRemoveOpen(false)
-    }
 
     return (
         <div style={{ height }} className={`flex flex-col rounded-2xl bg-white shadow-sm ${className}`}>

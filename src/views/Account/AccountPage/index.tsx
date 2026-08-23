@@ -1,25 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
 import { Button, Loader } from '@/shared/components'
 import { useProfile, useUpdateProfile } from '@/shared/hooks/useProfile'
-import { uploadService } from '@/services'
 import type { AccountFormValues } from '@/types'
 import { updateSchema } from './constants'
 import { AvatarUploader } from './components/AvatarUploader'
 import { PersonalInfoFields } from './components/PersonalInfoFields'
 import { PasswordFields } from './components/PasswordFields'
+import { useAvatarUpload } from './hooks/useAvatarUpload'
 
 export function AccountPage() {
     const { data: profile, isLoading } = useProfile()
     const updateProfile = useUpdateProfile()
-
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-    const [uploadingAvatar, setUploadingAvatar] = useState(false)
-    const [lastSyncedImgUrl, setLastSyncedImgUrl] = useState<string | null>()
+    const { avatarPreview, uploadingAvatar, handleAvatarSelect } = useAvatarUpload(profile, updateProfile)
 
     const {
         register,
@@ -31,43 +27,10 @@ export function AccountPage() {
         defaultValues: { full_name: '', address: '', password: '', password_repeat: '' },
     })
 
-    if (profile && profile.img_url !== lastSyncedImgUrl) {
-        setLastSyncedImgUrl(profile.img_url)
-        setAvatarPreview(profile.img_url)
-    }
-
     useEffect(() => {
         if (!profile) return
         reset({ full_name: profile.full_name, address: profile.address ?? '', password: '', password_repeat: '' })
     }, [profile, reset])
-
-    const handleAvatarSelect = async (file: File) => {
-        const objectUrl = URL.createObjectURL(file)
-        setAvatarPreview(objectUrl)
-        setUploadingAvatar(true)
-
-        let uploadedUrl: string
-        try {
-            uploadedUrl = (await uploadService.upload(file)).data.url
-        } catch {
-            toast.error('Şəkil yüklənmədi, yenidən cəhd edin')
-            setAvatarPreview(profile?.img_url ?? null)
-            setUploadingAvatar(false)
-            return
-        }
-
-        try {
-            await updateProfile.mutateAsync({
-                img_url: uploadedUrl,
-                full_name: profile?.full_name,
-                address: profile?.address ?? undefined,
-            })
-        } catch {
-            setAvatarPreview(profile?.img_url ?? null)
-        } finally {
-            setUploadingAvatar(false)
-        }
-    }
 
     const onSubmit = handleSubmit(async (values) => {
         try {
