@@ -94,3 +94,75 @@ input[type="button"] {
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* ============================================================
+   Mobile responsiveness (<=639px), CSS-only.
+   Header, CategoryDetailLayout, Checkout, ProductsGrid,
+   FavoritesPage and AccountLayout have no responsive handling of
+   their own (no sm:/md: prefixes) and overflow badly below the
+   sm breakpoint. These rules target the exact Tailwind utility
+   strings already present in the DOM to stack/wrap them instead.
+   Scoped to <=639px so nothing here conflicts with the sm:/lg:
+   breakpoints CategoriesPage already uses for its own grid/banner.
+   ============================================================ */
+@media (max-width: 639px) {
+  /* Header row: logo + address badge + search + nav no longer forced onto one line */
+  [class*="flex h-10 items-center justify-between gap-6"] {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  [class*="flex h-10 items-center justify-between gap-6"] > [class="flex items-center gap-6"] {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  a[class*="text-[40px] font-extrabold"] {
+    font-size: 28px;
+  }
+  div[class*="relative w-full max-w-md flex-1"] {
+    flex-basis: 100%;
+    order: 3;
+  }
+  nav[class*="text-[14px] font-normal leading-none tracking-normal text-foreground"] {
+    gap: 16px;
+    row-gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* Shared "main content + fixed-width side panel" rows: stack vertically on mobile
+     (CategoryDetailLayout, ProductsGrid, FavoritesPage, AccountLayout, CategoriesPage) */
+  [class*="flex items-start gap-4"],
+  [class*="flex items-stretch gap-4"] {
+    flex-direction: column;
+  }
+  [class*="grid-cols-[1fr_400px]"] {
+    grid-template-columns: 1fr;
+  }
+
+  /* Fixed-width side columns (category sidebar, account nav, basket panel) become
+     full width once their row is stacked */
+  [class*="w-[280px] flex-shrink-0"],
+  [class*="w-[320px] flex-shrink-0"] {
+    width: 100%;
+  }
+
+  /* CategoryDetailLayout's middle column and BasketSidebarPanel (fill mode) size their
+     content with `absolute inset-0`, which needs a real parent height once the row is no
+     longer stretched by a sibling column (items-stretch) -- give them a floor so the
+     content isn't squashed to 0 height. Only applies where there's no inline height set
+     (ProductsGrid/FavoritesPage's BasketSidebarPanel already gets a real inline height,
+     so this floor is a harmless no-op there). */
+  [class="relative flex-1"] {
+    min-height: 700px;
+  }
+  [class*="w-[320px] flex-shrink-0"] {
+    min-height: 550px;
+  }
+
+  /* Checkout: OrderSummaryCard's height is set inline (JS-measured to match the details
+     card in the desktop 2-column layout) -- irrelevant once stacked, let it size to its
+     own content instead of being clipped/stretched to a leftover desktop measurement. */
+  [class*="grid-cols-[1fr_400px]"] > div:last-child > div:last-child {
+    height: auto !important;
+  }
+}

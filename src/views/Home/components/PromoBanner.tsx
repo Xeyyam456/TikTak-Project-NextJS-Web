@@ -31,7 +31,8 @@ export function PromoBanner({ campaign, size = 'lg', hideButton = false, priorit
                         alt={campaign.title}
                         fill
                         priority={priority}
-                        sizes="(max-width: 640px) 100vw, 50vw"
+                        quality={65}
+                        sizes="(max-width: 640px) 100vw, calc(50vw - 75px)"
                         className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-black/70" />

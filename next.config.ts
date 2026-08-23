@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     root: path.resolve(import.meta.dirname),
   },
   images: {
+    // Next.js 16 requires opting into any quality value other than the default 75 —
+    // otherwise a custom `quality` prop is silently snapped to the closest allowed value.
+    qualities: [65, 75],
     remotePatterns: [
       {
         protocol: "https",
