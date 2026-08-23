@@ -4,8 +4,8 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { BasketSidebarPanel, EmptyStateCard, Loader, ProductDetailContent } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useFavorites } from '@/shared/hooks/useFavorites'
-import { BASKET_PANEL_HEIGHT, PANEL_HEIGHT } from './constants'
-import { clampToViewport } from './utils'
+import { BASKET_PANEL_HEIGHT, clampToViewport } from '@/shared/utils/viewport'
+import { PANEL_HEIGHT } from './constants'
 import { FavoritesGrid } from './components/FavoritesGrid'
 
 export function FavoritesPage() {

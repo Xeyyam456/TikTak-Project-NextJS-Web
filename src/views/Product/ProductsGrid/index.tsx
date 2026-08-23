@@ -6,21 +6,8 @@ import { BasketSidebarPanel, CategoryProductCard, EmptyStateCard, Pagination } f
 import { useGridFit } from '@/shared/hooks/useGridFit'
 import type { ProductsGridProps } from '@/types'
 import { getTotalPages, paginate } from '@/shared/utils/pagination'
-
-const BASKET_PANEL_HEIGHT = 594
-const VIEWPORT_RESERVED = 180
-const clampToViewport = (px: number) => `min(${px}px, calc(100vh - ${VIEWPORT_RESERVED}px))`
-
-// Same fluid-fit behaviour as the category grid: 180px min columns, rows measured against the
-// panel height, cards bottom-aligned with the basket panel. Card height self-calibrates.
-const GRID_FIT = {
-  cardMinWidth: 180,
-  columnGap: 15,
-  rowGap: 24,
-  fallbackCardHeight: 244,
-  reservedFooter: 52,
-  defaultPageSize: 10,
-}
+import { BASKET_PANEL_HEIGHT, clampToViewport } from '@/shared/utils/viewport'
+import { GRID_FIT } from './constants'
 
 export function ProductsGrid({ products }: ProductsGridProps) {
   const router = useRouter()

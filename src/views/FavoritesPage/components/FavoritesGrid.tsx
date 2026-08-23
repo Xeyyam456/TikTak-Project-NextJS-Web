@@ -5,19 +5,8 @@ import { CategoryProductCard, Pagination } from '@/shared/components'
 import { useGridFit } from '@/shared/hooks/useGridFit'
 import type { FavoritesGridProps } from '@/types'
 import { getTotalPages, paginate } from '@/shared/utils/pagination'
-import { clampToViewport } from '../utils'
-import { BASKET_PANEL_HEIGHT } from '../constants'
-
-// Same fluid-fit behaviour as the other grids: 180px min columns, rows measured against the
-// panel height, cards bottom-aligned with the basket panel. Card height self-calibrates.
-const GRID_FIT = {
-    cardMinWidth: 180,
-    columnGap: 15,
-    rowGap: 24,
-    fallbackCardHeight: 244,
-    reservedFooter: 52,
-    defaultPageSize: 10,
-}
+import { BASKET_PANEL_HEIGHT, clampToViewport } from '@/shared/utils/viewport'
+import { GRID_FIT } from '../constants'
 
 export function FavoritesGrid({ products, currentPage, onSelect, onPageChange }: FavoritesGridProps) {
     const { boxRef, gridRef, pageSize } = useGridFit(GRID_FIT)
