@@ -30,7 +30,12 @@ export function PromoBanner({ campaign, size = 'lg', hideButton = false, priorit
                         src={campaign.img_url}
                         alt={campaign.title}
                         fill
-                        priority={priority}
+                        // `priority` was deprecated in Next.js 16 in favor of being explicit — for the
+                        // LCP candidate (the first banner), set loading="eager" + fetchPriority="high"
+                        // directly rather than `preload` (a preload <link> is redundant with fetchPriority
+                        // and the docs recommend against combining them).
+                        loading={priority ? 'eager' : undefined}
+                        fetchPriority={priority ? 'high' : undefined}
                         quality={65}
                         sizes="(max-width: 640px) 100vw, calc(50vw - 75px)"
                         className="object-cover"
