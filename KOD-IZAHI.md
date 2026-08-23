@@ -2850,7 +2850,7 @@ Bir çox SƏHİFƏ İNDİ `<script type="application/ld+json">` İLƏ [schema.or
 
 HAMISI **Server Component `page.tsx`-in ÖZÜNDƏ** RENDER OLUNUR (Client Component-də YOX) — YƏNİ İLK SSR HTML-İN ÖZÜNDƏ VAR, botun JS İŞƏ SALMASINA EHTİYAC YOXDUR (bax Hissə 10-un SSR fəlsəfəsi).
 
-### `src/app/opengraph-image.tsx`, `twitter-image.tsx`, `icon.tsx`, `apple-icon.tsx`
+### `src/app/opengraph-image.tsx`, `twitter-image.tsx`
 
 ```tsx
 export const size = { width: 1200, height: 630 };
@@ -2870,7 +2870,15 @@ export default function OpengraphImage() {
 ```
 `next/og`-un `ImageResponse`-i — JSX-i SORĞU ANINDA (request-time) BİR ŞƏKİL FAYLINA ("render" EDİR) ÇEVİRƏN XÜSUSİ BİR API (STATİK BİR PNG FAYLI YÜKLƏMİR — ONU DİNAMİK "ÇƏKİR"). Brend YAŞILI (`#114F2E`) FON, SİSTEM SANS-SERİF FONT (XARİCİ FONT SORĞUSU YOXDUR — sürətli, ETİBARLI). Bu FAYLLAR YAZILIB, ÇÜNKİ LAYİHƏDƏ HEÇ BİR LOGO/BREND ŞƏKLİ ASSET-İ YOXDUR.
 
-**YENİ: `icon.tsx` (32×32) VƏ `apple-icon.tsx` (180×180)** — ƏVVƏL bu ADLAR SƏNƏDDƏ VAR İDİ, AMMA FAYLLAR FAKTİKİ OLARAQ MÖVCUD DEYİLDİ (SAYT DEFOLT FAVICON-LA ÇALIŞIRDI). İNDİ İKİSİ DƏ YARADILIB — EYNİ `ImageResponse` ÜSULU, AMMA `opengraph-image`/`twitter-image`-DƏN FƏRQLİ ÖLÇÜDƏ (1200×630 YOX, 32×32 VƏ 180×180 — BİRİ BRAUZER TAB-I/GOOGLE SƏHİFƏSİ ÜÇÜN, DİGƏRİ iOS-UN "ANA EKRANA ƏLAVƏ ET" İKONU ÜÇÜN), İÇİNDƏ SADƏCƏ "T" HƏRFİ (BREND YAŞILI FONDA). Bu, `HomePage`-in JSON-LD-sindəki `Organization.logo: '${SITE_URL}/icon'` SAHƏSİNİN DE ARTIQ REAL BİR ŞƏKİLƏ İŞARƏ ETMƏSİNİ TƏMİN EDİR (əvvəl bu link 404 idi).
+### Favicon "iki dəst ikon" bug-ı — TAM HEKAYƏ
+
+Bir sessiyada `icon.tsx`/`apple-icon.tsx` (32×32 VƏ 180×180, `next/og`-un `ImageResponse`-i ilə, İÇİNDƏ SADƏCƏ YAŞIL FONDA "T" HƏRFİ) YARADILDI, ÇÜNKİ O ANDA "layihədə heç bir logo/brend şəkli yoxdur" DEYƏ DÜŞÜNÜLDÜ. SONRA MƏLUM OLDU Kİ, **BU SƏHV İDİ** — `src/app/` qovluğunda ARTIQ ƏVVƏLDƏN (16 Avqust, YƏNİ HƏMİN SEO İŞİNDƏN ÖNCƏ) REAL BİR LOQO VAR İDİ: `favicon.ico`, `icon.jpg`, `apple-icon.jpg` — TURKUAZ FONDA AĞ/SARI "TiK TAK" YAZILI, DİZAYN EDİLMİŞ BİR LOQO. Bu YOXLANMADAN (Glob axtarışı YALNIZ `icon.tsx`/`apple-icon.tsx`-i axtardı, `icon.jpg` KİMİ STATİK FAYLLARI YOX) yeni `icon.tsx` yaradıldı.
+
+**Nəticə: İKİ FƏRQLİ İKON DƏSTİ EYNİ ANDA MÖVCUD OLDU.** Next.js-in fayl-konvensiyası HƏM STATİK ŞƏKİL FAYLLARINI (`icon.jpg`, `apple-icon.jpg`, `favicon.ico`), HƏM DƏ DİNAMİK ROUTE FAYLLARINI (`icon.tsx`, `apple-icon.tsx`) EYNI ANDA TANIYIR VƏ HƏR İKİSİ ÜÇÜN AYRI-AYRI `<link rel="icon">` TAG-LARI YARADIR — BRAUZER `document.querySelectorAll('link[rel*="icon"]')`-Ə BAXANDA 5 FƏRQLİ LİNK GÖRÜRDÜ (bir NEÇƏSİ REAL LOQOYA, BİRİ MƏNİM "T" PLACEHOLDER-İMƏ İŞARƏ EDİRDİ) — İSTİFADƏÇİ TAB-DA "SƏHV FAVİCON" GÖRDÜ.
+
+**DÜZƏLİŞ:** `icon.tsx`/`apple-icon.tsx` TAMAMİLƏ SİLİNDİ (statik `icon.jpg`/`apple-icon.jpg`/`favicon.ico` KİFAYƏTDİR VƏ ARTIQ REAL LOQODUR). `HomePage`-in JSON-LD-sindəki `Organization.logo` sahəsi DƏ `${SITE_URL}/icon` (ARTIQ MÖVCUD OLMAYAN dinamik route) ƏVƏZİNƏ `${SITE_URL}/icon.jpg` (real statik fayl) GÖSTƏRİR.
+
+**DƏRS:** dinamik bir `icon.tsx`/`favicon.ico` NÖV FAYL YARATMAZDAN ƏVVƏL, HƏMİŞƏ `src/app/`-DA EYNİ ADLA (VƏ FƏRQLİ UZANTI İLƏ — `.jpg`, `.png`, `.ico`) STATİK BİR FAYLIN ARTIQ MÖVCUD OLUB-OLMADIĞINI YOXLAYIN — Next.js-in fayl-konvensiyası SADƏCƏ `icon.tsx` YOX, `icon.jpg`/`icon.png` KİMİ STATİK FAYLLARI DA "İKON" KİMİ TANIYIR.
 
 ### `HomePage` — YEGANƏ GENUİN SSR'LƏNMİŞ SƏHİFƏ
 
@@ -2879,6 +2887,53 @@ export default function OpengraphImage() {
 ### Auth-qorunan detal SƏHİFƏLƏRİNİN "BEST-EFFORT" BAŞLIQLARI
 
 `ProductDetailContent.tsx`, `OrderDetailSection.tsx` KİMİ ŞƏXSİ ROUTE-LAR ÜÇÜN HƏQİQİ SERVER-RENDERED `<title>` (`generateMetadata`) ALINMIR (EYNİ `localStorage`-ONLY-AUTH PROBLEMİ) — ONA GÖRƏ `document.title`-İ CLIENT-SIDE, BİR `useEffect`-DƏ, DATA YÜKLƏNƏNDƏ SİNXRONLAŞDIRIRLAR (bax Hissə 13/16). **BU, QƏSDƏN BİR "BEST-EFFORT" ÜSULDUR** (BROWSER TAB BAŞLIĞI ÜÇÜN), `generateMetadata`-NIN "SINDIĞININ" ƏLAMƏTİ DEYİL.
+
+### LCP performansı — Google PageSpeed Insights (Lighthouse) ilə TAPILAN İKİ BUG
+
+Layihə `pagespeed.web.dev` İLƏ (Semrush units bitdiyi üçün ALTERNATİV OLARAQ) yoxlanıldı — SEO 100/100 ÇIXDI, AMMA **LCP (Largest Contentful Paint — EKRANDA GÖRÜNƏN ƏN BÖYÜK ELEMENTİN NƏ VAXT TAM YÜKLƏNDİYİ)** performansda İKİ AYRI PROBLEM TAPILDI:
+
+**Bug 1 — Next.js 16-nın DEPRECATED `priority` prop-u.** `PromoBanner.tsx`-də `<Image priority={priority} />` İŞLƏDİLİRDİ. AMMA Next.js 16-DA `priority` DEPRECATED EDİLİB (`node_modules/next/dist/docs/`-dəki RƏSMİ SƏNƏD BUNU AÇIQ YAZIR) — ƏVƏZİNƏ `loading="eager"` + `fetchPriority="high"`-İ AÇIQ ŞƏKİLDƏ YAZMAQ TÖVSİYƏ OLUNUR. `fetchpriority` — BRAUZERƏ "BU ŞƏKLİ HƏR ŞEYDƏN ƏVVƏL YÜKLƏ" DEYƏN HTML ATRİBUTUDUR. Köhnə `priority` prop-u İSTİFADƏ OLUNANDA bu atribut HEÇ VAXT HTML-Ə YAZILMIRDI (SƏSSİZCƏ, XƏTA VERMƏDƏN) — Lighthouse MƏHZ BUNU TUTDU. **DÜZƏLİŞ:**
+```tsx
+// ƏVVƏL:
+<Image priority={priority} ... />
+// SONRA:
+<Image
+    loading={priority ? 'eager' : undefined}
+    fetchPriority={priority ? 'high' : undefined}
+    ...
+/>
+```
+
+**Bug 2 — shuffle VƏ LCP prioritetinin TOQQUŞMASI (DAHA DƏRİN BUG).** `BannerCarousel.tsx`-də kampaniyalar HİDRATASİYADAN SONRA `shuffle()` İLƏ QARIŞDIRILIR (bax Hissə 12-nin `useHasMounted` İZAHI). ƏVVƏLKİ KOD `priority={index === 0}` YAZIRDI — YƏNİ "HAZIRKI (ARTIQ QARIŞDIRILMIŞ) MASSİVDƏ BİRİNCİ OLAN KAMPANİYA". PROBLEM: SERVER İLK BANNER-İ `priority=true` İLƏ RENDER EDİR, AMMA HİDRATASİYADAN SONRA `shuffle` FƏRQLİ BİR KAMPANİYANI VİZUAL BİRİNCİ YERƏ GƏTİRİR — VƏ O KAMPANİYA HEÇ VAXT "EAGER" BAŞLAMADIĞI ÜÇÜN, BRAUZER ARTIQ ONU "LAZY" REJİMDƏ YÜKLƏMƏYƏ BAŞLAMIŞDI. React SONRADAN ATRİBUTU `loading="eager"`-Ə DƏYİŞSƏ BELƏ, BU **GECDİR** — BRAUZER BİR ŞƏKLİN FETCH PRİORİTETİNİ, O ARTIQ DOM-A ƏLAVƏ OLUNDUQDAN SONRA, ETİBARLI ŞƏKİLDƏ YENİDƏN QALDIRMIR. Lighthouse-un TUTDUĞU MƏHZ BU İDİ: LCP ELEMENTİ (VİZUAL BİRİNCİ BANNER) `loading="lazy"` İLƏ TAPILDI, `priority={index===0}` KODDA OLMASINA BAXMAYARAQ.
+
+**DÜZƏLİŞ — prioriteti "HAZIRKI İNDEKS"Ə YOX, "ORİJİNAL (SERVER, QARIŞDIRILMAMIŞ) SIRADA İLK `perPage` YERDƏ OLUB-OLMAMASINA" GÖRƏ TƏYİN ET:**
+```tsx
+// priorityIds: kampaniya ID-lərinin SABİT dəsti — ORİJİNAL (qarışdırılmamış) massivin
+// ilk `perPage` (2) ELEMENTİNDƏN hesablanır, `displayed` (qarışdırılmış) massivdən YOX:
+const priorityIds = useMemo(
+    () => new Set(campaigns.slice(0, perPage).map((c) => c.id)),
+    [campaigns, perPage],
+)
+// ...
+<PromoBanner campaign={campaign} priority={priorityIds.has(campaign.id)} />
+```
+BUNUN NİYƏ İŞLƏDİYİNİ ANLAMAQ ÜÇÜN: `priorityIds` KAMPANİYA **KİMLİYİNƏ** (ID-sinə) BAĞLIDIR, MASSİVDƏKİ **YERİNƏ** YOX. YƏNİ ORİJİNAL SIRADA İLK 2 KAMPANİYA (`campaigns.slice(0,2)`) — shuffle NƏ QƏDƏR SIRALARINI DƏYİŞSƏ BELƏ — HƏMİŞƏ `priority=true` ALIR, ÇÜNKİ ONLARIN ID-Sİ `priorityIds`-DƏ VAR. DEMƏLİ SERVER-DƏ (İLK RENDER-DƏ) HƏR İKİSİ ARTIQ `eager`/`high` İLƏ BAŞLAYIR — shuffle SONRADAN BUNLARIN SIRASINI DƏYİŞSƏ BELƏ, VİZUAL BİRİNCİ YERƏ ÇIXAN İSTƏNİLƏN KAMPANİYA ARTIQ ƏVVƏLDƏN DÜZGÜN PRİORİTETLƏ YÜKLƏNMƏYƏ BAŞLAMIŞ OLUR. Brauzerdə 3 DƏFƏ YENİDƏN YÜKLƏYİB YOXLANILDI — HƏR DƏFƏ EYNİ 2 ORİJİNAL KAMPANİYA `fetchpriority="high"` ALIR, DİGƏRLƏRİ `lazy` QALIR.
+
+### `next.config.ts`-in YENİ `images.qualities` TƏLƏBİ (Next.js 16 breaking change)
+
+`PromoBanner.tsx`-ə `quality={65}` (DEFOLT 75-DƏN AZ, DAHA ÇOX SIXILMA = DAHA AZ BAYT) ƏLAVƏ EDİLƏNDƏ, ŞƏKİL HƏLƏ DƏ 75 KEYFİYYƏTİNDƏ SERVİS OLUNURDU — SƏSSİZCƏ, HEÇ BİR XƏTA VERMƏDƏN. SƏBƏB: Next.js 16-DA `next.config.ts`-in `images.qualities` SİYAHISI **MƏCBURİDİR** VƏ DEFOLTU YALNIZ `[75]`-DİR — SİYAHIDA OLMAYAN BİR `quality` DƏYƏRİ SƏSSİZCƏ ONA ƏN YAXIN İCAZƏLİ DƏYƏRƏ ("SNAP") EDİLİR. DÜZƏLİŞ:
+```ts
+// next.config.ts
+images: {
+  qualities: [65, 75],  // 65 — PromoBanner-in kampaniya bannerləri üçün
+  remotePatterns: [...],
+}
+```
+**DƏRS:** `<Image quality={N} />` İŞLƏDƏNDƏ, N DƏYƏRİ `next.config.ts`-in `images.qualities` SİYAHISINDA OLMASA, DƏYİŞİKLİK SƏSSİZCƏ HEÇ BİR TƏSİR ETMİR (build XƏTASI DA, TYPESCRIPT XƏTASI DA VERMİR) — BU, Next 16-nın "sənədə baxmadan kod yazma" QAYDASININ (bax faylın ƏN BAŞI) TİPİK BİR NÜMUNƏSİDİR.
+
+### `sizes` prop-unun DƏQİQLƏŞDİRİLMƏSİ
+
+`PromoBanner.tsx`-in `sizes="(max-width: 640px) 100vw, 50vw"` DƏYƏRİ `"(max-width: 640px) 100vw, calc(50vw - 75px)"`-Ə DƏYİŞDİRİLDİ. SƏBƏB: `Container`-in `mx-[60px]` MARGİN-İ (120px CƏMİ) + karusel-in İKİ BANNER ARASINDAKI `gap-[29px]` NƏZƏRƏ ALINMADAN, `50vw` HƏQİQİ RENDER OLUNAN ENDƏN BİR AZ ARTIQ İDİ — GENİŞ EKRANLARDA Next.js LAZIM OLANDAN BİR AZ BÖYÜK ŞƏKİL SORĞULAYIRDI (ARTIQ BAYT). Düzəldilmiş DƏYƏR HƏQİQİ RENDER ENİNƏ (`(100vw - 120px - 29px) / 2` = `50vw - 74.5px`, YUVARLAQLAŞDIRILARAQ `75px`) UYĞUNDUR.
 
 ---
 
@@ -2947,6 +3002,31 @@ YENİ BİR DÜYMƏ ƏLAVƏ EDƏNDƏ, DEFOLT OLARAQ `rounded-[8px]` SEÇİN, YALN
 ### Fontlar
 
 `Roboto` (SAYT-BOYU DEFOLT, `--font-roboto` → `--font-sans`) **MÜTLƏQ** `subsets: ["latin", "latin-ext"]` İLƏ YÜKLƏNMƏLİDİR, YALNIZ `["latin"]` YOX — AZƏRBAYCAN HƏRFLƏRİ (ə, ş, ç, ğ, ö, ü) `latin-ext`-DƏ YAŞAYIR VƏ SƏSSİZCƏ FƏRQLİ BİR SİSTEM FONTUNA "FALLBACK" EDİR. `Poppins` (`--font-poppins`) YALNIZ YAŞIL PROMO BANNERLƏRİN İÇİNDƏKİ DİSPLAY MƏTNİ ÜÇÜN İŞLƏDİLİR (INLINE `style={{ fontFamily: 'var(--font-poppins)' }}` İLƏ) — ORİJİNAL DİZAYN MAKETLƏRİNDƏKİ (LİSENZİYASIZ, YÜKLƏNƏ BİLMƏYƏN) "Codec Pro" FONTUNUN ƏVƏZİNƏ SEÇİLİB.
+
+### Mobil responsivlik — CSS-ONLY DÜZƏLİŞ (`globals.css`, komponentə TOXUNULMADAN)
+
+Header, `CategoryDetailLayout`, `Checkout`, `ProductsGrid`, `FavoritesPage`, `AccountLayout` — bunların HEÇ BİRİNDƏ mobil üçün ÖZƏL BİR CSS QAYDASI (`sm:`/`md:` PREFİKSİ) YOX İDİ — DAR EKRANDA (mobil telefon) BU LAYOUT-LAR ÜST-ÜSTƏ DÜŞÜB DAŞIRDI (məsələn Header-də loqo+ünvan+axtarış+naviqasiya BİR SƏTİRDƏ SIXILIB EKRANDAN DAŞIRDI). İSTİFADƏÇİ QƏSDƏN "CSS-də düzəlt, KOMPONENT FAYLLARINA TOXUNMA" TƏLƏB ETDİ — BU, ADƏTƏN Tailwind LAYİHƏLƏRİNDƏ GÖRÜLMƏYƏN QEYRİ-ADİ, AMMA MARAQLI BİR TEXNİKA TƏLƏB ETDİ.
+
+**Necə edildi:** `src/app/globals.css`-ə `@media (max-width: 639px) { ... }` BLOKU ƏLAVƏ OLUNDU. BU BLOKUN İÇİNDƏ, KOMPONENTLƏRİN JSX-İNDƏ ARTIQ MÖVCUD OLAN Tailwind `className` STRİNQ-LƏRİNİ **ATTRIBUTE SELECTOR** İLƏ HƏDƏF ALIRIQ:
+```css
+@media (max-width: 639px) {
+  [class*="flex items-start gap-4"],
+  [class*="flex items-stretch gap-4"] {
+    flex-direction: column;
+  }
+  [class*="w-[280px] flex-shrink-0"],
+  [class*="w-[320px] flex-shrink-0"] {
+    width: 100%;
+  }
+}
+```
+`[class*="..."]` — CSS-in "ATTRIBUTE CONTAINS" SEÇİCİSİDİR: "class ATRİBUTUNUN İÇİNDƏ BU SUBSTRING VARSA, TƏTBİQ ET" DEMƏKDİR. Bunun ADİ `.classname` NÖQTƏ-NOTASİYASINDAN ÜSTÜNLÜYÜ: Tailwind-in "arbitrary value" SİNİFLƏRİ (`w-[280px]` KİMİ) KÖŞƏLİ MÖTƏRİZƏ (`[`, `]`) DAŞIYIR — ADİ CSS SİNİF SEÇİCİSİNDƏ (`.w-\[280px\]`) BU SİMVOLLARI **BACKSLASH İLƏ ESCAPE ETMƏK** LAZIMDIR (asan SƏHV EDİLƏN, ÇAŞDIRICI SİNTAKSİS) — ATTRIBUTE SELECTOR-DA İSƏ SADƏCƏ DIRNAQ İÇİNDƏ LİTERAL MƏTN OLDUĞU ÜÇÜN HEÇ BİR ESCAPE LAZIM DEYİL.
+
+**Niyə `639px` (YOX 767px)?** `CategoriesPage`-in ÖZ GRID-İ ARTIQ `sm:grid-cols-3 lg:grid-cols-6` İŞLƏDİR (`sm` = 640px-dən BAŞLAYIR) — ƏGƏR MOBİL DÜZƏLİŞ 767px-Ə QƏDƏR AKTİV OLSAYDI, 640-767px ARASINDA İKİ FƏRQLİ QAYDA (Tailwind-in ÖZ `sm:`-i VƏ MƏNİM YENİ QAYDAM) EYNİ ELEMENTƏ TƏSİR EDƏRDİ VƏ BİR-BİRİLƏ VURUŞARDI. `639px` SƏRHƏDİ BUNU TAM QARŞISINI ALIR — MƏNİM QAYDALARIM YALNIZ Tailwind-in ÖZ `sm:` PREFİKSİNİN BAŞLADIĞI YERDƏN (640px) DƏRHAL ƏVVƏL BİTİR.
+
+**`absolute inset-0` PROBLEMİ:** `CategoryDetailLayout`-un ORTA SÜTUNU VƏ `BasketSidebarPanel` (`fill` REJİMİ) ÖZ MƏZMUNUNU `absolute inset-0` İLƏ YERLƏŞDİRİR (bax Hissə 16-nın "Categories feature" İZAHI) — BU, VALİDEYNİN HÜNDÜRLÜYÜNÜ (`items-stretch` İLƏ SİDEBAR-DAN) TƏLƏB EDİR. MOBİLDƏ SƏTİR SÜTUNA ÇEVRİLƏNDƏ (`flex-direction: column`), ARTIQ HEÇ BİR "SİDEBAR-DAN GƏLƏN HÜNDÜRLÜK" YOXDUR — VALİDEYN 0 HÜNDÜRLÜYÜNDƏ QALARDI VƏ `absolute inset-0` MƏZMUNU GÖRÜNMƏZ OLARDI. DÜZƏLİŞ: BU İKİ ELEMENTƏ `min-height` "DÖŞƏMƏSİ" (700px / 550px) VERİLDİ ki, STACK OLANDA MƏZMUN SIXILIB İTMƏSİN.
+
+**Test METODU — VACIB QEYD:** BU LAYİHƏNİN QURULDUĞU BRAUZER-AVTOMATLAŞDIRMA MÜHİTİ (`resize_window` ALƏTİ) HEÇ VAXT VİEWPORT-U HƏQİQƏTƏN KİÇİLDƏ BİLMƏDİ (HƏMİŞƏ ~1536px QALDI — DEYƏSƏN PƏNCƏRƏ MAKSİMALLAŞDIRILMIŞ VƏZİYYƏTDƏDİR VƏ MÜHİT BUNU DƏYİŞMƏYƏ İCAZƏ VERMİR). ONA GÖRƏ, DOĞRULAMA ÜÇÜN BİR "SAXTA" ÜSUL İŞLƏDİLDİ: EYNİ CSS QAYDALARI `@media` OLMADAN (HƏMİŞƏ AKTİV) BİR `<style>` TAG-I İLƏ JS VASİTƏSİLƏ SƏHİFƏYƏ ƏLAVƏ EDİLDİ, `document.body.style.width = '390px'` İLƏ SAYT-IN ÖZÜ DAR GÖSTƏRİLDİ, EKRAN GÖRÜNTÜSÜ ÇƏKİLDİ, SONRA HƏR ŞEY GERİ QAYTARILDI (SƏHİFƏ YENİDƏN YÜKLƏNDİ). Bu, SEÇİCİLƏRİN DÜZGÜN ELEMENTƏ DÜŞDÜYÜNÜ VƏ VİZUAL NƏTİCƏNİN DOĞRU OLDUĞUNU SÜBUT EDİR, AMMA HƏQİQİ `@media` SORĞUSUNUN HƏQİQİ DAR BİR CİHAZDA DA EYNİ İŞLƏDİYİNİ 100% SÜBUT ETMİR (BU, STANDART, YAXŞI-SINANMIŞ CSS DAVRANIŞI OLDUĞU ÜÇÜN RİSK AZDIR, AMMA REAL TELEFONDA/DevTools CİHAZ EMULYASİYASINDA YOXLAMAQ TÖVSİYƏ OLUNUR).
 
 ---
 
