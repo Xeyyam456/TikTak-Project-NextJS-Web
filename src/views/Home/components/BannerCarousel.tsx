@@ -15,6 +15,18 @@ export function BannerCarousel({ campaigns, perPage = 2 }: CampaignCarouselProps
     const hasMounted = useHasMounted()
     const displayed = useMemo(() => (hasMounted ? shuffle(campaigns) : campaigns), [hasMounted, campaigns])
 
+    // Eager-loading must key off which campaign was first in the ORIGINAL (unshuffled, SSR)
+    // order, not the current shuffled index — the shuffle re-render happens post-hydration,
+    // often before a throttled LCP image finishes downloading, so whichever campaign the
+    // shuffle promotes into the visual-first slot becomes the real LCP element. If priority
+    // were keyed off the shuffled index, that promoted campaign would only just now be
+    // switching from lazy to eager — too late, since a browser doesn't reliably re-prioritize
+    // a fetch after `loading`/`fetchPriority` change post-insertion. Keying off campaign
+    // identity instead means every campaign that could ever land in the first `perPage` slots
+    // (i.e. was there in the original SSR order) was already eager/high-priority from the very
+    // first paint, so the shuffle can only ever swap between already-prioritized candidates.
+    const priorityIds = useMemo(() => new Set(campaigns.slice(0, perPage).map((c) => c.id)), [campaigns, perPage])
+
     const { trackRef, canPrev, canNext, onScroll, prev, next } = useCardCarousel(displayed.length)
 
     if (campaigns.length === 0) return null
@@ -27,13 +39,13 @@ export function BannerCarousel({ campaigns, perPage = 2 }: CampaignCarouselProps
                 className="flex h-full gap-[29px] overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden"
                 style={{ scrollbarWidth: 'none' }}
             >
-                {displayed.map((campaign, index) => (
+                {displayed.map((campaign) => (
                     <div
                         key={campaign.id}
                         className="h-full shrink-0"
                         style={{ width: `calc((100% - ${(perPage - 1) * 29}px) / ${perPage})` }}
                     >
-                        <PromoBanner campaign={campaign} size="lg" priority={index === 0} />
+                        <PromoBanner campaign={campaign} size="lg" priority={priorityIds.has(campaign.id)} />
                     </div>
                 ))}
             </div>
