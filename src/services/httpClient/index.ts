@@ -3,35 +3,11 @@ import axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from 'axios'
+import { getAccessToken, getRefreshToken, setTokens, clearTokens } from './tokenStorage'
+
+export { ACCESS_TOKEN_KEY, getAccessToken, getRefreshToken, setTokens, clearTokens } from './tokenStorage'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
-
-export const ACCESS_TOKEN_KEY = 'access_token'
-const REFRESH_TOKEN_KEY = 'refresh_token'
-
-const isBrowser = () => typeof window !== 'undefined'
-
-export function getAccessToken() {
-  if (!isBrowser()) return null
-  return localStorage.getItem(ACCESS_TOKEN_KEY)
-}
-
-export function getRefreshToken() {
-  if (!isBrowser()) return null
-  return localStorage.getItem(REFRESH_TOKEN_KEY)
-}
-
-export function setTokens(accessToken: string, refreshToken: string) {
-  if (!isBrowser()) return
-  localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
-  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
-}
-
-export function clearTokens() {
-  if (!isBrowser()) return
-  localStorage.removeItem(ACCESS_TOKEN_KEY)
-  localStorage.removeItem(REFRESH_TOKEN_KEY)
-}
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -49,6 +25,8 @@ axiosInstance.interceptors.request.use((config) => {
   return config
 })
 
+// Shared across all in-flight requests: if several requests 401 at once, they all await
+// this same promise instead of each firing their own /auth/refresh call.
 let refreshPromise: Promise<string> | null = null
 
 async function refreshAccessToken() {
