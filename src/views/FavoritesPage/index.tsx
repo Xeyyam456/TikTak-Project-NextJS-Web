@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { BasketSidebarPanel, EmptyStateCard, Loader, ProductDetailContent } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import { useFavorites } from '@/shared/hooks/useFavorites'
-import { getTotalPages, paginate } from '@/shared/utils/pagination'
-import { BASKET_PANEL_HEIGHT, PAGE_SIZE, PANEL_HEIGHT } from './constants'
+import { BASKET_PANEL_HEIGHT, PANEL_HEIGHT } from './constants'
 import { clampToViewport } from './utils'
 import { FavoritesGrid } from './components/FavoritesGrid'
 
@@ -18,15 +16,6 @@ export function FavoritesPage() {
     const currentPage = Math.max(1, Number(searchParams.get('page')) || 1)
 
     const { data: favorites, isLoading } = useFavorites()
-
-    const totalPages = getTotalPages(favorites?.length ?? 0, PAGE_SIZE)
-    const pagedFavorites = paginate(favorites ?? [], currentPage, PAGE_SIZE)
-
-    useEffect(() => {
-        if (!selectedProductId && currentPage > totalPages) {
-            router.replace(`/favorites?page=${totalPages}`)
-        }
-    }, [selectedProductId, currentPage, totalPages, router])
 
     if (isLoading) return <Loader />
 
@@ -53,10 +42,8 @@ export function FavoritesPage() {
                         />
                     ) : (
                         <FavoritesGrid
-                            products={pagedFavorites}
+                            products={favorites}
                             currentPage={currentPage}
-                            totalPages={totalPages}
-                            total={favorites.length}
                             onSelect={(id) => router.push(`/favorites/${id}?page=${currentPage}`)}
                             onPageChange={(page) => router.replace(`/favorites?page=${page}`)}
                         />
