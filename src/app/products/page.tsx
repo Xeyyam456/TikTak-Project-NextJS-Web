@@ -10,6 +10,7 @@ export const metadata: Metadata = buildMetadata({
   title: 'Məhsullar',
   description: 'TIK TAK-da bütün məhsulları kəşf edin və onlayn sifariş edin.',
   path: '/products',
+  robots: { index: true, follow: true },
 })
 
 export default function Page() {

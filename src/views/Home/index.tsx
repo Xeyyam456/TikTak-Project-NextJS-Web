@@ -32,6 +32,7 @@ export async function HomePage() {
   return (
     <Container className="space-y-14 py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <h1 className="sr-only">{SITE_NAME} | Onlayn Supermarket</h1>
       <BannerCarousel campaigns={campaigns} />
       <SpecialOffers campaigns={campaigns} />
       <StatsSection />
