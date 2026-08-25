@@ -38,7 +38,7 @@ export function CategoryDetailLayout({ children, categories }: CategoryDetailLay
                     <h2 className="absolute -top-8 left-0 text-xl font-semibold text-neutral-900">Kateqoriyalar</h2>
                     <div className="overflow-hidden">
                         <div className="rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">
-                            <ul>
+                            <ul className="max-h-[216px] overflow-y-auto scrollbar-hide">
                                 {categories.map((category) => {
                                     const isActive = category.id === categoryId
                                     return (

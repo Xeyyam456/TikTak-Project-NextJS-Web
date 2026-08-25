@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(timeout 30 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 1; done')",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(npx tsc *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(nohup npx next dev --webpack -p 3000)",
+      "Bash(disown)",
+      "Bash(export PW_DIR=\"C:/Users/Mr Frontend/AppData/Local/npm-cache/_npx/e41f203b7505f1fb/node_modules\")",
+      "Bash(node \"C:/Users/MRFRON~1/AppData/Local/Temp/claude/D--Praqramlasdirma-Homeworks-TikTak-Project-NextJS-Web/7cb1ea07-979e-4b9b-87bb-be0d9fef0021/scratchpad/card_design_test.js\" \"C:/Users/MRFRON~1/AppData/Local/Temp/claude/D--Praqramlasdirma-Homeworks-TikTak-Project-NextJS-Web/7cb1ea07-979e-4b9b-87bb-be0d9fef0021/scratchpad/card_design2.png\")",
+      "Bash(npx eslint *)",
+      "Bash(curl *)"
+    ]
+  }
+}
