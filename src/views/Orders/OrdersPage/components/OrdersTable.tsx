@@ -45,10 +45,10 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                                     <td className="whitespace-nowrap px-4 py-3 text-right">
                                         <Link
                                             href={`/account/orders/${order.id}`}
-                                            className="inline-flex items-center gap-0.5 text-neutral-500 hover:text-neutral-900"
+                                            className="group inline-flex items-center gap-1 rounded-[8px] bg-emerald-pale px-3 py-1.5 text-xs font-semibold text-emerald transition-colors hover:bg-emerald hover:text-white"
                                         >
                                             detallar
-                                            <ChevronRight size={14} />
+                                            <ChevronRight size={14} className="transition-transform group-hover:translate-x-0.5" />
                                         </Link>
                                     </td>
                                 </tr>
