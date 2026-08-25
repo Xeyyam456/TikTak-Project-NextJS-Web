@@ -6,7 +6,10 @@ import { formatDate } from '@/shared/utils/date'
 
 export function OrdersTable({ orders }: OrdersTableProps) {
     return (
-        <div className="overflow-hidden rounded-[8px] border border-neutral-100">
+        // min-h-[414px] = header row + a full PAGE_SIZE (7) of data rows — keeps the card's
+        // height constant even when the current page has fewer orders (e.g. only 1 total),
+        // so Pagination below it doesn't creep up.
+        <div className="min-h-[414px] overflow-hidden rounded-[8px] border border-neutral-100">
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead>
@@ -45,10 +48,16 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                                     <td className="whitespace-nowrap px-4 py-3 text-right">
                                         <Link
                                             href={`/account/orders/${order.id}`}
-                                            className="group inline-flex items-center gap-1 rounded-[8px] bg-emerald-pale px-3 py-1.5 text-xs font-semibold text-emerald transition-colors hover:bg-emerald hover:text-white"
+                                            className="group inline-flex w-fit items-center gap-1 rounded-[8px] bg-emerald-pale px-3 py-1.5 text-xs font-semibold text-emerald transition-colors duration-200 hover:bg-emerald hover:text-white"
                                         >
                                             detallar
-                                            <ChevronRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+                                            <span className="flex items-center">
+                                                <span className="detail-arrow-tail h-[1.5px] w-2.5 bg-current" />
+                                                <ChevronRight
+                                                    size={14}
+                                                    className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                                                />
+                                            </span>
                                         </Link>
                                     </td>
                                 </tr>

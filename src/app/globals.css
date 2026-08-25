@@ -80,6 +80,20 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+/* Plain CSS, not Tailwind's scale-x-0/origin-left utilities: the "arrow grows
+   a tail on hover" animation is scaleX-only (no width/layout properties), so
+   the pill's box size never changes and hovering a row can't shift the
+   table's column widths. */
+.detail-arrow-tail {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 200ms ease-out;
+}
+
+.group:hover .detail-arrow-tail {
+  transform: scaleX(1);
+}
+
 button,
 a,
 [role="button"],
