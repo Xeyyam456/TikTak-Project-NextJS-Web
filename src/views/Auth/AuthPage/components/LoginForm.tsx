@@ -16,6 +16,7 @@ import { PhoneField } from './PhoneField'
 export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormProps) {
     const router = useRouter()
     const [showPassword, setShowPassword] = useState(false)
+    const [rememberMe, setRememberMe] = useState(true)
 
     const form = useForm<LoginPayload>({
         resolver: zodResolver(loginSchema),
@@ -26,7 +27,7 @@ export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormP
         onError('')
         try {
             const res = await authService.login(values)
-            setTokens(res.data.tokens.access_token, res.data.tokens.refresh_token)
+            setTokens(res.data.tokens.access_token, res.data.tokens.refresh_token, rememberMe)
             toast.success('Uğurla daxil oldunuz')
             onSuccess()
             router.push('/')
@@ -54,6 +55,16 @@ export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormP
                     <p className={errorClasses}>{form.formState.errors.password.message}</p>
                 )}
             </div>
+
+            <label className="-mt-6 flex items-center gap-2 text-sm text-neutral-500">
+                <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-neutral-300 accent-primary"
+                />
+                Məni yadda saxla
+            </label>
 
             <Button type="submit" disabled={form.formState.isSubmitting} className={submitClasses} style={submitStyle}>
                 {form.formState.isSubmitting ? 'Göndərilir...' : 'Tamamla'}
