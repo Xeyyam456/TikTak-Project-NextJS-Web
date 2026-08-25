@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useParams } from 'next/navigation'
+import { useEffect, useRef } from 'react'
 import { BasketSidebarPanel } from '@/shared/components'
 import { Container } from '@/shared/components/layout/Container'
 import type { CategoryDetailLayoutProps } from '@/types'
@@ -13,6 +14,11 @@ export function CategoryDetailLayout({ children, categories }: CategoryDetailLay
     const params = useParams<{ id?: string }>()
     const isIndex = pathname === '/categories'
     const categoryId = Number(params.id)
+    const activeItemRef = useRef<HTMLLIElement>(null)
+
+    useEffect(() => {
+        activeItemRef.current?.scrollIntoView({ block: 'nearest' })
+    }, [categoryId])
 
     if (isIndex) return <>{children}</>
 
@@ -42,7 +48,7 @@ export function CategoryDetailLayout({ children, categories }: CategoryDetailLay
                                 {categories.map((category) => {
                                     const isActive = category.id === categoryId
                                     return (
-                                        <li key={category.id}>
+                                        <li key={category.id} ref={isActive ? activeItemRef : undefined}>
                                             <Link
                                                 href={`/categories/${category.id}`}
                                                 className={
