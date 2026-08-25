@@ -946,7 +946,7 @@ export function ProfilePage() {
 
 ## Hissə 9: Auth
 
-### `src/services/httpClient/tokenStorage.ts` — token saxlama (localStorage), `index.ts`-dən AYRI fayl
+### `src/services/httpClient/tokenStorage.ts` — token saxlama (localStorage VƏ ya sessionStorage), `index.ts`-dən AYRI fayl
 
 ```ts
 export const ACCESS_TOKEN_KEY = 'access_token'
@@ -956,10 +956,38 @@ const isBrowser = () => typeof window !== 'undefined'
 
 export function getAccessToken() {
   if (!isBrowser()) return null
-  return localStorage.getItem(ACCESS_TOKEN_KEY)
+  return localStorage.getItem(ACCESS_TOKEN_KEY) ?? sessionStorage.getItem(ACCESS_TOKEN_KEY)
+}
+
+export function getRefreshToken() {
+  if (!isBrowser()) return null
+  return localStorage.getItem(REFRESH_TOKEN_KEY) ?? sessionStorage.getItem(REFRESH_TOKEN_KEY)
+}
+
+export function setTokens(accessToken: string, refreshToken: string, remember?: boolean) {
+  if (!isBrowser()) return
+  const useLocal = remember ?? sessionStorage.getItem(ACCESS_TOKEN_KEY) === null
+  const storage = useLocal ? localStorage : sessionStorage
+  const other = useLocal ? sessionStorage : localStorage
+  storage.setItem(ACCESS_TOKEN_KEY, accessToken)
+  storage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+  other.removeItem(ACCESS_TOKEN_KEY)
+  other.removeItem(REFRESH_TOKEN_KEY)
+}
+
+export function clearTokens() {
+  if (!isBrowser()) return
+  localStorage.removeItem(ACCESS_TOKEN_KEY)
+  localStorage.removeItem(REFRESH_TOKEN_KEY)
+  sessionStorage.removeItem(ACCESS_TOKEN_KEY)
+  sessionStorage.removeItem(REFRESH_TOKEN_KEY)
 }
 ```
-`isBrowser()` YOXLAMASI VACİBDİR — bu fayl HƏM server-render zamanı (Client Component-lərin İLK render-i server-də DƏ baş verir), HƏM DƏ brauzerdə IMPORT OLUNUR. `localStorage` server-də MÖVCUD DEYİL — yoxlamasız çağırsanız, "localStorage is not defined" XƏTASI ALARSINIZ. `getAccessToken()` serverdə HƏMİŞƏ `null` qaytarır — bu, `useHasMounted()`-in HƏLL ETDİYİ hidrasiya probleminin KÖKÜDÜR (bax Hissə 12).
+`isBrowser()` YOXLAMASI VACİBDİR — bu fayl HƏM server-render zamanı (Client Component-lərin İLK render-i server-də DƏ baş verir), HƏM DƏ brauzerdə IMPORT OLUNUR. `localStorage`/`sessionStorage` server-də MÖVCUD DEYİL — yoxlamasız çağırsanız, "localStorage is not defined" XƏTASI ALARSINIZ. `getAccessToken()` serverdə HƏMİŞƏ `null` qaytarır — bu, `useHasMounted()`-in HƏLL ETDİYİ hidrasiya probleminin KÖKÜDÜR (bax Hissə 12).
+
+**"Məni yadda saxla" — İKİ STORAGE, BİR SƏBƏB:** `setTokens`-in ÜÇÜNCÜ parametri `remember` — `true` OLANDA `localStorage`-A yazılır (brauzer BAĞLANSA DA qalır, KÖHNƏ/DEFOLT davranış), `false` OLANDA `sessionStorage`-A (tab/brauzer BAĞLANANDA silinir). HƏR YAZIDA "DİGƏR" storage TƏMİZLƏNİR (`other.removeItem(...)`) — YƏNİ token İKİ YERDƏ EYNİ ANDA "köhnə nüsxə" kimi QALA BİLMƏZ.
+
+**`remember` VERİLMƏYƏNDƏ (`remember ?? sessionStorage.getItem(...) === null`) NƏ BAŞ VERİR — BU, ƏN İNCƏ HİSSƏDİR:** `httpClient.ts`-in 401-refresh interceptor-u `setTokens(newAccess, newRefresh)`-i ÜÇÜNCÜ arqumentSİZ çağırır (bax aşağı). Əgər bu halda DEFOLT OLARAQ HƏMİŞƏ `localStorage`-a yazılsaydı, "Yadda saxlama" seçib `sessionStorage`-a düşən istifadəçinin tokeni İLK avtomatik refresh-dən SONRA SƏSSİZCƏ `localStorage`-a KEÇƏRDİ — YƏNİ checkbox-un ÖZÜ MƏNASINI İTİRƏRDİ. Ona görə `remember` OMİT olanda kod ƏVVƏLKİ seçimi YOXLAYIR: `sessionStorage`-da ARTIQ token VARSA (`!== null` YOXLAMASI TƏRSİNƏ ÇEVRİLİB, YƏNİ `=== null` YANLIŞDIRSA) `useLocal = false` OLUR VƏ YENƏ `sessionStorage`-a YAZILIR — SEÇİM QORUNUR.
 
 **Niyə AYRI fayldadır (əvvəl `httpClient/index.ts`-in ÖZÜNDƏ idi):** `getAccessToken`/`getRefreshToken`/`setTokens`/`clearTokens` SIRF `localStorage` OXUYUB-YAZAN funksiyalardır — axios instance qurmaq VƏ interceptor bağlamaqdan TAMAM AYRI bir MƏSULİYYƏTDİR. Bunları AYIRMAQ `httpClient/index.ts`-i 114 sətirdən 92-yə ENDİRDİ, oxumağı ASANLAŞDIRDI. `httpClient/index.ts` bunları BELƏ İMPORT EDİR VƏ YENİDƏN EXPORT EDİR:
 ```ts
@@ -1053,14 +1081,16 @@ export const authService = {
 ```
 `login`/`signup`-un `LoginPayload`/`SignupPayload` növü, `refresh(refresh_token)` isə ADİ bir string PARAMETR ALIR (obyekt DEYİL) — çünki YALNIZ BİR sahə lazımdır.
 
-### `LoginForm.tsx`-də token axını
+### `LoginForm.tsx`-də token axını — "Məni yadda saxla" checkbox-u İLƏ
 
 ```tsx
+const [rememberMe, setRememberMe] = useState(true)
+
 const onSubmit = form.handleSubmit(async (values) => {
     onError('')
     try {
         const res = await authService.login(values)
-        setTokens(res.data.tokens.access_token, res.data.tokens.refresh_token)
+        setTokens(res.data.tokens.access_token, res.data.tokens.refresh_token, rememberMe)
         toast.success('Uğurla daxil oldunuz')
         onSuccess()
         router.push('/')
@@ -1069,10 +1099,12 @@ const onSubmit = form.handleSubmit(async (values) => {
     }
 })
 ```
-1. İstifadəçi formu göndərir.
-2. `authService.login(values)` — backend-ə sorğu.
-3. `setTokens(...)` — `localStorage`-a YAZILIR.
-4. Bundan sonra `httpClient.ts`-in interceptor-u HƏR sorğuya AVTOMATİK bu token-i əlavə edir.
+1. İstifadəçi formu göndərir (`rememberMe` — checkbox-un state-i, DEFOLT `true`, form SCHEMA-sının/`LoginPayload`-ın BİR HİSSƏSİ DEYİL — backend-ə GÖNDƏRİLMİR, YALNIZ UI-DA saxlanılır).
+2. `authService.login(values)` — backend-ə sorğu (`values`-da `rememberMe` YOXDUR).
+3. `setTokens(..., rememberMe)` — checkbox İŞARƏLİDİRSƏ `localStorage`-a, DEYİLSƏ `sessionStorage`-a YAZILIR (bax yuxarı, `tokenStorage.ts`).
+4. Bundan sonra `httpClient.ts`-in interceptor-u HƏR sorğuya AVTOMATİK bu token-i əlavə edir (`getAccessToken()` HƏR İKİ storage-ı yoxlayır, HANSININ İŞLƏNDİYİNİ BİLMƏYƏ EHTİYAC YOXDUR).
+
+Checkbox-un ÖZÜ `<label>` DAXİLİNDƏ sadə bir `<input type="checkbox" checked={rememberMe} onChange={...} className="... accent-primary" />` — Ayrı bir shared `Checkbox` komponenti YOXDUR (layihədə HAZIRDA BAŞQA checkbox İSTİFADƏSİ YOXDUR), ona görə BURADA birbaşa native `<input>` İŞLƏDİLİB.
 
 ### `Header`-in "Çıxış" düyməsi — İNDİ AYRI `LogoutButton.tsx` komponentindədir
 
@@ -2515,6 +2547,35 @@ export async function CategoriesPage() {
 </div>
 ```
 `items-stretch` (DEFOLT) — HƏR ÜÇ SÜTUNU EYNİ HÜNDÜRLÜYƏ "DARTIR". SİDEBAR — YEGANƏ SÜTUNDUR Kİ, İÇİNDƏKİ MƏZMUN NORMAL AXINDA (in-flow) YERLƏŞİB, ONA GÖRƏ ÖZ TƏBİİ HÜNDÜRLÜYÜNÜ VERİR. ORTA SÜTUN (grid) VƏ `BasketSidebarPanel` İSƏ `relative` WRAPPER-DİR, İÇİNDƏKİ HƏQİQİ MƏZMUN `absolute inset-0`-DIR — DEMƏLİ ÖZLƏRİ HEÇ BİR HÜNDÜRLÜYƏ TÖHVƏ VERMİR, SADƏCƏ SİDEBAR-IN TƏBİİ HÜNDÜRLÜYÜNƏ "DARTILIRLAR". **Bu, ƏVVƏLKİ BİR `ResizeObserver`/`requestAnimationFrame` ƏSASLI JS HƏLLİNİ (`useCategorySidebarHeight` — İNDİ SİLİNİB) ƏVƏZ EDİB** — O HƏLL SSR'LƏNMİŞ "SOYUQ" YÜKLƏMƏLƏRDƏ GÖRÜNƏN BİR "SIÇRAYIŞ" (JS HİDRASİYASI HƏLƏ ÇATMADIĞI ÜÇÜN PANEL BİR ANLIQ ÖZ TƏBİİ ÖLÇÜSÜNDƏ GÖRÜNÜB SONRA "DÜZ ÖLÇÜYƏ SIÇRAYIRDI") YARADIRDI. **Pure CSS HİDRASİYA VAXTINDAN HEÇ ASILI DEYİL, BUNU YENİDƏN GƏTİRMƏYİN.**
+
+### `CategoryDetailLayout` sidebar-ı — 6 kateqoriya görünür, qalanı gizli-scrollbar-la scroll olur
+
+**PROBLEM:** sidebar-dakı `<ul>` HEÇ BİR HÜNDÜRLÜK MƏHDUDİYYƏTİ OLMADAN BÜTÜN kateqoriyaları render EDİRDİ. Sidebar isə (yuxarıdakı PURE-CSS `items-stretch` mexanizminə görə) `items-stretch` sətrinin YEGANƏ HÜNDÜRLÜK MƏNBƏYİDİR — YƏNİ backend-ə YENİ kateqoriya ƏLAVƏ OLUNDUQCA (məs. 6-DAN 7-yə) BÜTÜN SƏTIR (sidebar + grid + basket panel) BOYCA UZANIRDI.
+
+**HƏLL:**
+```tsx
+<ul className="max-h-[216px] overflow-y-auto scrollbar-hide">
+```
+- `216px` = 6 sətir × 36px (HƏR `<li>`-nin ÖLÇÜLMÜŞ TƏBİİ HÜNDÜRLÜYÜ, DevTools-DA YOXLANILIB) — YƏNİ DƏQİQ 6 kateqoriya GÖRÜNÜR, 7-Cİ VƏ SONRAKILAR `<ul>`-un DAXİLİNDƏ scroll OLUR.
+- `.scrollbar-hide` — PAYLAŞILAN utility class (`globals.css`, bax Hissə "Layout / chrome"), `scrollbar-width: none` + `::-webkit-scrollbar { display: none }` — SCROLL FUNKSİONAL QALIR, sadəcə VİZUAL SCROLLBAR GÖRÜNMÜR.
+- BU DƏYİŞİKLİK sidebar-ın ÖZÜNÜN HÜNDÜRLÜYÜNÜ SABİTLƏYİR, ONA GÖRƏ DƏ (yuxarıdakı `items-stretch` MEXANİZMİNƏ GÖRƏ) BÜTÜN SƏTIRİN HÜNDÜRLÜYÜNÜ DƏ SABİTLƏYİR — kateqoriya sayı NƏ QƏDƏR ARTSA DA, layout artıq BÖYÜMÜR.
+
+**İKİNCİ PROBLEM (bunun ARDINDAN ÜZƏ ÇIXDI):** sidebar SCROLL OLA BİLDİYİ ÜÇÜN, İSTİFADƏÇİ 7-Cİ (VƏ SONRAKI) kateqoriyaya KLİKLƏYƏNDƏ AKTİV kateqoriya (yaşıl, qalın YAZI) siyahının GÖRÜNMƏYƏN hissəsində QALIRDI — HEÇ BİR görünən sətir YAŞIL OLMURDU, İSTİFADƏÇİ HANSI kateqoriyanın AKTİV OLDUĞUNU GÖRMÜRDÜ.
+
+**HƏLL — aktiv `<li>`-ni AVTOMATİK scroll-la görünən sahəyə GƏTİRMƏK:**
+```tsx
+const activeItemRef = useRef<HTMLLIElement>(null)
+
+useEffect(() => {
+    activeItemRef.current?.scrollIntoView({ block: 'nearest' })
+}, [categoryId])
+// ...
+<li key={category.id} ref={isActive ? activeItemRef : undefined}>
+```
+- `ref` YALNIZ AKTİV `<li>`-YƏ VERİLİR (`isActive ? activeItemRef : undefined`) — DİGƏRLƏRİNƏ `undefined`.
+- `useEffect`, `categoryId` DƏYİŞƏNDƏ (YƏNİ MARŞRUT DƏYİŞƏNDƏ) İŞƏ DÜŞÜR — `scrollIntoView({ block: 'nearest' })` YALNIZ LAZIM OLANDA (element GÖRÜNMƏYƏNDƏ) scroll EDİR, ARTIQ GÖRÜNƏN elementi YENİDƏN scroll ETMİR.
+- BU HOOK `if (isIndex) return <>{children}</>`-DƏN ƏVVƏL YAZILIB — REACT QAYDASI: hook-lar HƏR RENDER-DƏ EYNİ SIRADA çağırılmalıdır, ERKƏN `return`-dən SONRA hook YAZMAQ OLMAZ. `/categories` (index) səhifəsində `<li>` HEÇ RENDER OLUNMUR, ONA GÖRƏ `activeItemRef.current` `null` QALIR — effect ZƏRƏRSİZ heç nə etmir.
+- BU, PERSISTENT LAYOUT (bax yuxarı — layout `/categories/[id]` DƏYİŞƏNDƏ YENİDƏN MOUNT OLMUR) SAYƏSİNDƏ HƏM SƏHİFƏ İLK YÜKLƏNƏNDƏ, HƏM DƏ sidebar-DA BAŞQA kateqoriyaya client-side KLİK EDİLƏNDƏ EYNİ ŞƏKİLDƏ İŞLƏYİR.
 
 ### `CategoryProductsSection` — BUG DÜZƏLİŞİ: kartlar çoxalanda dizayn pozulurdu
 

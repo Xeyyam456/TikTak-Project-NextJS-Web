@@ -63,7 +63,7 @@ export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormP
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-neutral-300 accent-primary"
                 />
-                Məni yadda saxla
+                Sesiyani yadda saxla 
             </label>
 
             <Button type="submit" disabled={form.formState.isSubmitting} className={submitClasses} style={submitStyle}>
