@@ -985,7 +985,7 @@ export function clearTokens() {
 ```
 `isBrowser()` YOXLAMASI VACİBDİR — bu fayl HƏM server-render zamanı (Client Component-lərin İLK render-i server-də DƏ baş verir), HƏM DƏ brauzerdə IMPORT OLUNUR. `localStorage`/`sessionStorage` server-də MÖVCUD DEYİL — yoxlamasız çağırsanız, "localStorage is not defined" XƏTASI ALARSINIZ. `getAccessToken()` serverdə HƏMİŞƏ `null` qaytarır — bu, `useHasMounted()`-in HƏLL ETDİYİ hidrasiya probleminin KÖKÜDÜR (bax Hissə 12).
 
-**"Məni yadda saxla" — İKİ STORAGE, BİR SƏBƏB:** `setTokens`-in ÜÇÜNCÜ parametri `remember` — `true` OLANDA `localStorage`-A yazılır (brauzer BAĞLANSA DA qalır, KÖHNƏ/DEFOLT davranış), `false` OLANDA `sessionStorage`-A (tab/brauzer BAĞLANANDA silinir). HƏR YAZIDA "DİGƏR" storage TƏMİZLƏNİR (`other.removeItem(...)`) — YƏNİ token İKİ YERDƏ EYNİ ANDA "köhnə nüsxə" kimi QALA BİLMƏZ.
+**"Sesiyani yadda saxla" — İKİ STORAGE, BİR SƏBƏB:** `setTokens`-in ÜÇÜNCÜ parametri `remember` — `true` OLANDA `localStorage`-A yazılır (brauzer BAĞLANSA DA qalır, KÖHNƏ/DEFOLT davranış), `false` OLANDA `sessionStorage`-A (tab/brauzer BAĞLANANDA silinir). HƏR YAZIDA "DİGƏR" storage TƏMİZLƏNİR (`other.removeItem(...)`) — YƏNİ token İKİ YERDƏ EYNİ ANDA "köhnə nüsxə" kimi QALA BİLMƏZ.
 
 **`remember` VERİLMƏYƏNDƏ (`remember ?? sessionStorage.getItem(...) === null`) NƏ BAŞ VERİR — BU, ƏN İNCƏ HİSSƏDİR:** `httpClient.ts`-in 401-refresh interceptor-u `setTokens(newAccess, newRefresh)`-i ÜÇÜNCÜ arqumentSİZ çağırır (bax aşağı). Əgər bu halda DEFOLT OLARAQ HƏMİŞƏ `localStorage`-a yazılsaydı, "Yadda saxlama" seçib `sessionStorage`-a düşən istifadəçinin tokeni İLK avtomatik refresh-dən SONRA SƏSSİZCƏ `localStorage`-a KEÇƏRDİ — YƏNİ checkbox-un ÖZÜ MƏNASINI İTİRƏRDİ. Ona görə `remember` OMİT olanda kod ƏVVƏLKİ seçimi YOXLAYIR: `sessionStorage`-da ARTIQ token VARSA (`!== null` YOXLAMASI TƏRSİNƏ ÇEVRİLİB, YƏNİ `=== null` YANLIŞDIRSA) `useLocal = false` OLUR VƏ YENƏ `sessionStorage`-a YAZILIR — SEÇİM QORUNUR.
 
@@ -1081,7 +1081,7 @@ export const authService = {
 ```
 `login`/`signup`-un `LoginPayload`/`SignupPayload` növü, `refresh(refresh_token)` isə ADİ bir string PARAMETR ALIR (obyekt DEYİL) — çünki YALNIZ BİR sahə lazımdır.
 
-### `LoginForm.tsx`-də token axını — "Məni yadda saxla" checkbox-u İLƏ
+### `LoginForm.tsx`-də token axını — "Sesiyani yadda saxla" checkbox-u İLƏ
 
 ```tsx
 const [rememberMe, setRememberMe] = useState(true)
@@ -2758,6 +2758,51 @@ src/views/Orders/
     components/OrderInfoGrid.tsx, OrderItemsList.tsx
 ```
 `OrdersTable.tsx` — ADİ HTML `<table>` (HEÇ BİR KİTABXANA YOX, bax Hissə 19-un "hansı paketdən gəlir" SUALININ CAVABI: HEÇ BİRİNDƏN, ƏL İLƏ YAZILIB). Sütunlar: `orderNumber`, `formatDate(createdAt)`, `address`, `items.reduce(sum, quantity)`, `total`/`deliveryFee`, `ORDER_STATUS_LABELS[status]` (RƏNGLİ), "detallar" LİNKİ.
+
+**"detallar" LİNKİ — sadə mətndən PILL DÜYMƏYƏ:**
+```tsx
+<Link
+    href={`/account/orders/${order.id}`}
+    className="group inline-flex w-fit items-center gap-1 rounded-[8px] bg-emerald-pale px-3 py-1.5 text-xs font-semibold text-emerald transition-colors duration-200 hover:bg-emerald hover:text-white"
+>
+    detallar
+    <span className="flex items-center">
+        <span className="detail-arrow-tail h-[1.5px] w-2.5 bg-current" />
+        <ChevronRight size={14} className="transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
+    </span>
+</Link>
+```
+- REST vəziyyətdə achıq-yaşıl (`bg-emerald-pale`) pill, HOVER-DƏ TAM `bg-emerald`-A dolur (`hover:bg-emerald hover:text-white`).
+- Chevron-un QARŞISINDA balaca bir "quyruq xətt" (`.detail-arrow-tail`) VAR — HOVER-DƏ BÖYÜYƏNDƏ ox "→" KİMİ SAĞA UZANIR TƏSİRİ VERİR.
+
+**BUG — İLK CƏHD, `width` TRANSITION İLƏ:** İLK VERSİYADA quyruq xətt `w-0` İDİ, `group-hover:w-2.5` İLƏ BÖYÜYÜRDÜ. BU, VİZUAL OLARAQ İŞLƏYİRDİ, AMMA `width` LAYOUT-A TƏSİR EDƏN XÜSUSİYYƏTDİR — HOVER OLUNAN SƏTRİN PILL-İ BİR NEÇƏ PİKSEL GENİŞLƏNİRDİ, BU DA `<td>`-nin (VƏ ONA GÖRƏ DƏ BÜTÜN SÜTUNUN) ENİNİ DƏYİŞDİRİRDİ — CƏDVƏL SƏTİR-SƏTİR "TİTRƏYİRDİ" (istifadəçi bunu BƏYƏNMƏDİ, "table uzanmasın" dedi).
+
+**DÜZƏLİŞ CƏHDİ — Tailwind `scale-x-0`/`origin-left`/`group-hover:scale-x-100`:** `width` ƏVƏZİNƏ `transform: scaleX()` İŞLƏTMƏK MƏNTİQLİ İDİ (`transform` LAYOUT-A TƏSİR ETMİR, sadəcə VİZUAL RENDER-İ DƏYİŞİR) — AMMA bu Tailwind utility-ləri BU LAYİHƏNİN Tailwind v4 QURULUŞUNDA HEÇ GENERASİYA OLUNMURDU (Chrome-DA `getComputedStyle(...).transform` DAİM `"none"` QAYTARIRDI, halbuki EYNİ FAYLDA `translate-x-0.5` KİMİ BAŞQA transform utility-ləri NORMAL İŞLƏYİRDİ — SƏBƏB DƏQİQLƏŞDİRİLMƏDİ, VAXT MƏHDUDİYYƏTİNƏ GÖRƏ PLAIN CSS-Ə KEÇİLDİ).
+
+**SON HƏLL — `globals.css`-DƏ ƏL İLƏ YAZILMIŞ PLAIN CSS:**
+```css
+.detail-arrow-tail {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 200ms ease-out;
+}
+
+.group:hover .detail-arrow-tail {
+  transform: scaleX(1);
+}
+```
+- `.group` KLASSI ARTIQ `<Link>`-İN ÖZÜNDƏ VAR (Tailwind-in `group`/`group-hover:` KONVENSİYASI, BURADA sadəcə ADİ CSS SELECTOR KİMİ TƏKRAR İSTİFADƏ OLUNUB) — YENİ BİR wrapper KLASSI ƏLAVƏ ETMƏYƏ EHTİYAC YOXDUR.
+- `transform: scaleX(0)` → `scaleX(1)` — ELEMENTİN `w-2.5` (10px) LAYOUT ENİ HƏMİŞƏ SABİTDİR, YALNIZ RENDER OLUNAN VİZUAL EN DƏYİŞİR — ONA GÖRƏ DƏ `<Link>`-in ÜMUMİ ENİ HOVER-DƏ HEÇ DƏYİŞMİR (Chrome-DA `getBoundingClientRect().width` İLƏ TƏSDİQLƏNİB: REST VƏ HOVER-DƏ EYNİ ƏDƏD).
+- **DİQQƏT — BU MİSAL, `.scrollbar-hide` İLƏ EYNİ PRİNSİPİN TƏKRARIDIR:** Tailwind utility-si GÖZLƏNİLDİYİ KİMİ İŞLƏMƏYƏNDƏ (VƏ YA TAMAMİLƏ HEÇ VARLIQ GÖSTƏRMİRSƏ), `globals.css`-Ə ƏL İLƏ KİÇİK, YENİDƏN İSTİFADƏ OLUNA BİLƏN BİR KLASS YAZMAQ QƏBUL EDİLƏN BİR PATTERN-DİR — BUNU YENİ BİR "hover-də böyüyür" EFFEKTİ LAZIM OLANDA YADA SAL.
+- **TƏHLÜKƏLİ TƏCRÜBƏ (BU PROSESDƏ BAŞ VERDİ):** `globals.css`-Ə YAZILAN İLK ŞƏRHDƏ (`/* ... scale-x-*/origin-left ... */`) SƏHVƏN `*/` ARDICILLIĞI İSTİFADƏ OLUNDU ("scale-x-*" VƏ "origin-left" arasında SLASH) — BU, CSS COMMENT-İ VAXTINDAN ƏVVƏL BAĞLADI VƏ BÜTÜN `globals.css`-i PARSE XƏTASI İLƏ SINDIRDI (Next.js dev-də "Build Error: Parsing CSS source code failed" GÖSTƏRDİ). **CSS ŞƏRHİ YAZANDA MƏTN İÇİNDƏ `*/` ARDICILLIĞINDAN QAÇIN** (məs. "scale-x utilities" YAZ, "scale-x-*/utilities" YOX).
+
+**"Sifariş Tarixçəsi" kartının SABİT HÜNDÜRLÜYÜ — PAGINATION "YUXARI SIÇRAMASIN":**
+```tsx
+// min-h-[414px] = header row + a full PAGE_SIZE (7) of data rows
+<div className="min-h-[414px] overflow-hidden rounded-[8px] border border-neutral-100">
+```
+**PROBLEM:** `OrdersTable`-in wrapper `<div>`-i HEÇ BİR HÜNDÜRLÜK MƏHDUDİYYƏTİ OLMADAN sadəcə `{orders.map(...)}` QƏDƏR HÜNDÜR OLURDU — CARİ SƏHİFƏDƏ 7-DƏN AZ SİFARİŞ OLANDA (məs. CƏMİ 36 sifarişin SON səhifəsində 1 dənə QALIR: `36 = 5×7 + 1`) cədvəl QISALIRDI VƏ altındakı `Pagination` (`mt-4`) YUXARI "SÜRÜŞÜRDÜ" — hər səhifədə fərqli Y KOORDİNATINDA görünürdü.
+**HƏLL:** wrapper-ə `min-h-[414px]` (Chrome-DA TAM 7-sətirli bir cədvəlin HƏQİQİ HÜNDÜRLÜYÜ ÖLÇÜLƏRƏK TAPILIB: `table.getBoundingClientRect().height ≈ 412.7px`, ROUND EDİLİB) VERİLİR — CƏDVƏLDƏ NEÇƏ SƏTİR OLURSA OLSUN, KART ÖZÜ HEÇ VAXT BU HÜNDÜRLÜKDƏN AŞAĞI DÜŞMÜR, `Pagination` HƏMİŞƏ EYNİ Y KOORDİNATINDA QALIR. `PAGE_SIZE` (`OrdersPage/constants/index.ts`) DƏYİŞSƏ, BU ƏDƏD DƏ YENİDƏN ÖLÇÜLMƏLİDİR.
 
 `OrderDetailSection/index.tsx`:
 ```tsx
