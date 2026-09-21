@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import axios from 'axios'
 import { Button, Input } from '@/shared/components'
 import { authService } from '@/services'
 import { setTokens } from '@/services/httpClient'
@@ -31,8 +32,12 @@ export function LoginForm({ onSuccess, onError, onSwitchToRegister }: LoginFormP
             toast.success('Uğurla daxil oldunuz')
             onSuccess()
             router.push('/')
-        } catch {
-            onError('Telefon nömrəsi və ya şifrə yanlışdır.')
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                onError('Telefon nömrəsi və ya şifrə yanlışdır.')
+            } else {
+                onError('Serverə qoşulmaq mümkün olmadı. Bir az sonra yenidən cəhd edin.')
+            }
         }
     })
 
