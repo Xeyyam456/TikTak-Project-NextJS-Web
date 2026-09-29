@@ -21,7 +21,7 @@ Bu sənəd, layihədəki **hər qatı və demək olar hər faylı** kodu ilə bi
 7. [Giriş nöqtəsi: `src/app/layout.tsx` və `globals.css`](#hissə-7-giriş-nöqtəsi)
 8. [Routing: `src/app/` faylları tək-tək](#hissə-8-routing)
 9. [Auth qatı: `httpClient.ts`, `auth.service.ts`, tokenlər](#hissə-9-auth)
-10. [SSR və "servis hesabı": `serviceAccount.ts`](#hissə-10-ssr-və-servis-hesabı)
+10. [SSR və "servis hesabı": `serviceAccount/index.ts`](#hissə-10-ssr-və-servis-hesabı)
 11. [API qatı: `src/services/` bütün fayllar](#hissə-11-api-qatı)
 12. [Data fetching: `src/shared/hooks/` bütün hook-lar](#hissə-12-data-fetching)
 13. [Ortaq (shared) komponentlər — tək-tək](#hissə-13-shared-komponentlər)
@@ -51,7 +51,7 @@ Bu, **Tik Tak** adlı bir market/e-ticarət brendinin **müştəri tərəfi (cli
 - **sonner** — toast bildirişləri.
 - **lucide-react** — ƏSAS ikon kitabxanası. **react-icons** (`fa6` alt-paketi) YALNIZ Footer-in sosial media ikonları üçün (Facebook, Instagram və s. — lucide-də brend ikonları yoxdur).
 - **Tailwind CSS 4** (`@tailwindcss/postcss` ilə) — CSS-in "utility-first" yanaşması.
-- **server-only** (`^0.0.1`) — kiçik bir paket, `serviceAccount.ts`-in başına `import 'server-only'` yazmaqla, əgər bu fayl SƏHVƏN bir Client Component-ə import olunsa, BUILD ZAMANI XƏTA versin deyə (bax Hissə 10).
+- **server-only** (`^0.0.1`) — kiçik bir paket, `serviceAccount/index.ts`-in başına `import 'server-only'` yazmaqla, əgər bu fayl SƏHVƏN bir Client Component-ə import olunsa, BUILD ZAMANI XƏTA versin deyə (bax Hissə 10).
 
 ### Bu saytın ən mühüm memarlıq qərarı
 
@@ -465,7 +465,7 @@ export interface PaginatedResponse<T> {
   pagination?: Pagination
 }
 
-// CachedSession.ts — serviceAccount.ts-in yaddaşda saxladığı sessiya
+// CachedSession.ts — serviceAccount/index.ts-in yaddaşda saxladığı sessiya
 export interface CachedSession {
   accessToken: string
   refreshToken: string
@@ -1231,7 +1231,7 @@ export const serviceGet = cache(async function serviceGet<T>(path: string): Prom
 
 ## Hissə 11: API qatı
 
-`src/services/` — hər domain üçün bir fayl, hamısı `httpClient.ts` üzərindən keçir (`serviceAccount.ts` İSTİSNADIR — o, ÖZ `axios` instansiyasını işlədir, bax Hissə 10). `src/services/index.ts` — hamısını yenidən export edən barrel.
+`src/services/` — hər domain üçün bir fayl, hamısı `httpClient.ts` üzərindən keçir (`serviceAccount/index.ts` İSTİSNADIR — o, ÖZ `axios` instansiyasını işlədir, bax Hissə 10). `src/services/index.ts` — hamısını yenidən export edən barrel.
 
 ### `Basket/basket.service.ts`
 
@@ -1318,7 +1318,7 @@ export const campaignService = {
   },
 }
 ```
-`/campaigns` — YEGANƏ HƏQİQƏTƏN AÇIQ (login TƏLƏB ETMƏYƏN) endpoint. Buna görə `HomePage` bunu `serviceAccount.ts`-in `serviceGet`-i ÜZƏRİNDƏN YOX, birbaşa `campaignService.list()` İLƏ çəkir (servis hesabına EHTİYAC yoxdur, artıq açıqdır).
+`/campaigns` — YEGANƏ HƏQİQƏTƏN AÇIQ (login TƏLƏB ETMƏYƏN) endpoint. Buna görə `HomePage` bunu `serviceAccount/index.ts`-in `serviceGet`-i ÜZƏRİNDƏN YOX, birbaşa `campaignService.list()` İLƏ çəkir (servis hesabına EHTİYAC yoxdur, artıq açıqdır).
 
 ### `Upload/upload.service.ts`
 
@@ -1376,6 +1376,7 @@ Diqqət: `httpClient`-in export FORMASI DİGƏRLƏRİNDƏN FƏRQLİDİR (`export
 
 ```ts
 export const basketQueryKey = ['basket']
+const basketMutationKey = ['basket-mutation']
 
 export function useBasket() {
     return useQuery({
@@ -1385,49 +1386,76 @@ export function useBasket() {
     })
 }
 
-export function useBasketMutations() {
+// UI updates instantly from the cache while the request runs in the background;
+// the snapshot taken in onMutate is restored if it fails.
+function useBasketMutation<V>(config: {
+    request: (variables: V) => Promise<unknown>
+    update: (basket: Basket, variables: V) => Basket
+    message: (basket: Basket | undefined, variables: V) => string
+}) {
     const queryClient = useQueryClient()
     const router = useRouter()
-    const invalidate = () => queryClient.invalidateQueries({ queryKey: basketQueryKey })
 
-    const requireAuth = () => {
-        if (getAccessToken()) return true
-        router.push('/login')
-        return false
-    }
-
-    const add = useMutation({
-        mutationFn: (productId: number) => {
-            if (!requireAuth()) return Promise.reject(new Error('AUTH_REQUIRED'))
-            return basketService.add(productId)
+    return useMutation({
+        mutationKey: basketMutationKey,
+        mutationFn: (variables: V) => {
+            if (getAccessToken()) return config.request(variables)
+            router.push('/login')
+            return Promise.reject(new Error('AUTH_REQUIRED'))
         },
-        onMutate: (productId: number) => {
-            const basket = queryClient.getQueryData<Basket>(basketQueryKey)
-            const alreadyInBasket = basket?.items.some((item) => item.product.id === productId) ?? false
-            return { alreadyInBasket }
+        onMutate: async (variables: V) => {
+            if (!getAccessToken()) return { previous: undefined }
+            await queryClient.cancelQueries({ queryKey: basketQueryKey })
+            const previous = queryClient.getQueryData<Basket>(basketQueryKey)
+            if (previous) queryClient.setQueryData(basketQueryKey, config.update(previous, variables))
+            toast.success(config.message(previous, variables))
+            return { previous }
         },
-        onSuccess: (_data, _productId, context) => {
-            invalidate()
-            toast.success(context?.alreadyInBasket ? 'Məhsulun sayı artırıldı' : 'Məhsul səbətə əlavə edildi')
+        onError: (error, _variables, context) => {
+            if (context?.previous) queryClient.setQueryData(basketQueryKey, context.previous)
+            if (error.message !== 'AUTH_REQUIRED') toast.error('Xəta baş verdi, yenidən cəhd edin')
+        },
+        onSettled: () => {
+            if (queryClient.isMutating({ mutationKey: basketMutationKey }) === 1) {
+                queryClient.invalidateQueries({ queryKey: basketQueryKey })
+            }
         },
     })
-    // remove, removeAll, clear — EYNİ ŞƏKİLDƏ, requireAuth() + invalidate() + öz toast mesajı
+}
+
+export function useBasketMutations() {
+    const add = useBasketMutation<Product>({
+        request: (product) => basketService.add(product.id),
+        update: optimistic.addProduct,
+        message: (basket, product) =>
+            optimistic.hasProduct(basket, product.id) ? 'Məhsulun sayı artırıldı' : 'Məhsul səbətə əlavə edildi',
+    })
+    const remove = useBasketMutation<number>({ request: basketService.remove, update: optimistic.decrementProduct, message: () => 'Məhsulun sayı azaldıldı' })
+    const removeAll = useBasketMutation<number>({ request: basketService.removeAll, update: optimistic.removeProduct, message: () => 'Məhsul səbətdən silindi' })
+    const clear = useBasketMutation<void>({ request: () => basketService.clear(), update: optimistic.empty, message: () => 'Səbət təmizləndi' })
 
     return { add, remove, removeAll, clear }
 }
 ```
+(Real fayl `remove`/`removeAll`/`clear`-i çoxsətirli yazır — yuxarıda yığcamlıq üçün bir sətirdə göstərilib.)
+
+Təmiz hesablama funksiyaları AYRI FAYLDADIR — `src/shared/utils/basketOptimistic.ts` (`optimistic` adı ilə import edilir): `hasProduct`, `addProduct`, `decrementProduct`, `removeProduct`, `empty`. Bunlar React-siz SADƏ funksiyalardır (`basket` → YENİ `basket`); `count` = MƏHSUL SƏTİRLƏRİNİN SAYI (ümumi miqdar DEYİL), `total` = sətirlərin `total_price`-larının cəmi, `toFixed(2)` ilə. Cache-də YOX olan YENİ məhsul üçün sətrin `id`-si `Number.MAX_SAFE_INTEGER` verilir ki, `/basket` səhifəsindəki `id`-yə görə sıralamada SONA düşsün (serverdən təzələmədən sonra REAL id gəlir).
+
 Sətir-sətir izah:
 - `queryKey = ['basket']` — TanStack Query-nin bu datanı CACHE-də TANIDIĞI "açar". Eyni `queryKey`-i işlədən İKİ ayrı komponent (məs. `Header` və `BasketSidebarPanel`) EYNİ cache girişini paylaşır — biri yeniləyəndə O BİRİ də AVTOMATİK yenilənir.
 - `enabled: !!getAccessToken()` — anonim ziyarətçidə sorğu heç GETMİR (401 almağa çalışmır). `!!` — dəyəri ZORLA `boolean`-a çevirir (`string | null` → `true`/`false`).
-- `requireAuth()` — BÜTÜN mutasiyaların BAŞINDA ÇAĞIRILAN ORTAQ QAPI: token yoxdursa `/login`-ə YÖNLƏNDİR, `false` QAYTAR (mutasiya `AUTH_REQUIRED` xətası İLƏ REJECT olunur — beləliklə TanStack Query BUNU "uğursuz mutasiya" kimi QEYDƏ ALIR, AMMA HEÇ BİR generic error toast GÖSTƏRİLMİR, çünki artıq YÖNLƏNDİRMƏ baş verib).
-- `onMutate` — mutasiya BAŞLAMAZDAN ƏVVƏL işə düşür, `add.mutate()` ÇAĞIRILAN ANDA CARİ cache-i YOXLAYIR (`alreadyInBasket`) — bu, "optimistic" DEYİL (data DƏYİŞDİRİLMİR, sadəcə OXUNUR), sadəcə `onSuccess`-ə "bu MƏHSUL ARTIQ SƏBƏTDƏ İDİMİ" məlumatını ÖTÜRMƏK üçün.
-- `onSuccess(_data, _productId, context)` — `context` = `onMutate`-in QAYTARDIĞI OBYEKT. Bununla "əlavə edildi" ("yeni MƏHSUL") vs "sayı ARTIRILDI" (ARTIQ SƏBƏTDƏ olan MƏHSULUN MİQDARI) MESAJLARI FƏRQLƏNDİRİLİR.
-- `invalidate()` — TanStack Query-yə "bu QUERY-nin datası ARTIQ KÖHNƏLİB, YENİDƏN ÇƏK" DEYİR. Sonrakı `useBasket()` ÇAĞIRIŞI (istənilən komponentdə) AVTOMATİK YENİ datanı ALACAQ.
+- `useBasketMutation` — dörd mutasiyanın (`add`/`remove`/`removeAll`/`clear`) TƏKRARLANAN mühərriki. Hər biri yalnız 3 şey verir: `request` (hansı API sorğusu), `update` (cache-i optimistik necə dəyişmək), `message` (toast mətni). Əvvəl hər mutasiya ayrıca yazılırdı (fayl 145 sətir idi), indi 83.
+- `mutationFn` daxilindəki token yoxlaması — token yoxdursa `/login`-ə YÖNLƏNDİR və `AUTH_REQUIRED` xətası İLƏ REJECT et (TanStack Query BUNU "uğursuz mutasiya" kimi QEYDƏ ALIR, AMMA `toast.error` GÖSTƏRİLMİR, çünki yönləndirmə artıq baş verib).
+- `onMutate` — sorğudan ƏVVƏL işləyir: `cancelQueries` (uçuşda olan köhnə `GET /basket` optimistik vəziyyəti ÜSTÜNDƏN YAZMASIN), cari cache-in `previous` SNAPSHOT-u, cache-in DƏRHAL yenilənməsi, toast — HAMISI klik anında. Token YOXDURSA optimistik yol ATLANIR.
+- `onError` — sorğu uğursuz olsa `previous` GERİ YAZILIR, `toast.error` GÖSTƏRİLİR.
+- `onSettled` — serverdən təzələmə (`invalidateQueries`) YALNIZ SONUNCU davam edən mutasiya bitəndə (`isMutating(...) === 1`) — sürətli ardıcıl kliklərdə ƏVVƏLKİ klikin təzələməsi HƏLƏ GÖZLƏYƏN SONRAKI klikin optimistik vəziyyətini pozmasın.
+- `add.mutate(product)` və `toggleFavorite.mutate(product)` — `id` YOX, TAM `Product` qəbul edir (YENİ sətri cache-ə yerləşdirmək üçün məlumat LAZIMDIR). `remove`/`removeAll` HƏLƏ DƏ `productId` qəbul edir.
 
 ### `useFavorites.ts`
 
 ```ts
 export const favoritesQueryKey = ['favorites']
+const favoriteMutationKey = ['favorite-mutation']
 
 export function useFavorites() {
     return useQuery({
@@ -1442,22 +1470,47 @@ export function useToggleFavorite() {
     const router = useRouter()
 
     return useMutation({
-        mutationFn: (productId: number) => {
+        mutationKey: favoriteMutationKey,
+        mutationFn: (product: Product) => {
             if (!getAccessToken()) {
                 router.push('/login')
                 return Promise.reject(new Error('AUTH_REQUIRED'))
             }
-            return productService.toggleFavorite(productId)
+            return productService.toggleFavorite(product.id)
         },
-        onSuccess: (res) => {
-            queryClient.invalidateQueries({ queryKey: favoritesQueryKey })
-            const wasAdded = res.message.toLowerCase().includes('added')
-            toast.success(wasAdded ? 'Seçilmişlərə əlavə edildi' : 'Seçilmişlərdən silindi')
+        onMutate: async (product: Product) => {
+            if (!getAccessToken()) return { previous: undefined }
+            await queryClient.cancelQueries({ queryKey: favoritesQueryKey })
+            const previous = queryClient.getQueryData<Product[]>(favoritesQueryKey)
+            const wasFavorite = previous?.some((favorite) => favorite.id === product.id) ?? product.is_favorite ?? false
+            if (previous) {
+                queryClient.setQueryData<Product[]>(
+                    favoritesQueryKey,
+                    wasFavorite
+                        ? previous.filter((favorite) => favorite.id !== product.id)
+                        : [...previous, { ...product, is_favorite: true }],
+                )
+            }
+            toast.success(wasFavorite ? 'Seçilmişlərdən silindi' : 'Seçilmişlərə əlavə edildi')
+            return { previous }
+        },
+        onError: (error, _product, context) => {
+            if (context?.previous) queryClient.setQueryData(favoritesQueryKey, context.previous)
+            if (error.message !== 'AUTH_REQUIRED') toast.error('Xəta baş verdi, yenidən cəhd edin')
+        },
+        onSettled: () => {
+            if (queryClient.isMutating({ mutationKey: favoriteMutationKey }) === 1) {
+                queryClient.invalidateQueries({ queryKey: favoritesQueryKey })
+            }
         },
     })
 }
 ```
-`res.message.toLowerCase().includes('added')` — backend-in QAYTARDIĞI TƏSVİRİ MESAJIN (`message` sahəsi) İÇİNDƏ "added" SÖZÜNÜN OLUB-OLMADIĞINA BAXARAQ, HANSI HƏRƏKƏTİN BAŞ VERDİYİNİ ANLAYIR — bu, backend "toggle" endpoint-inin `data`-sının `null` OLDUĞU (bax `product.service.ts`) üçün YEGANƏ SİQNALDIR.
+**Bu hook OPTİMİSTİKDİR** (`useBasket.ts`-dəki ilə EYNİ məntiq): ürək DÜYMƏSİNƏ BASILAN ANDA cache DƏRHAL yenilənir, sorğu ARXA FONDA gedir.
+- `mutate(product)` — artıq `id` YOX, TAM `Product` OBYEKTİ qəbul edir, çünki YENİ sevimli əlavə olunanda cache-dəki SİYAHIYA ONUN TAM MƏLUMATI (`{ ...product, is_favorite: true }`) LAZIMDIR.
+- `wasFavorite` — əvvəl backend-in mesajındakı `"added"` sözünə baxılırdı (`res.message.toLowerCase().includes('added')`); İNDİ HƏRƏKƏT KLİKDƏN ƏVVƏL cache-ə BAXILARAQ MÜƏYYƏN EDİLİR (cache YOXDURSA `product.is_favorite`-ə), ona görə cavabı GÖZLƏMƏK LAZIM DEYİL.
+- `onError` — sorğu uğursuz olsa, `onMutate`-in QAYTARDIĞI `previous` snapshot-u cache-ə GERİ YAZILIR VƏ `toast.error` GÖSTƏRİLİR (`AUTH_REQUIRED` İSTİSNA — artıq `/login`-ə yönləndirilib).
+- `onSettled` — serverdən TƏZƏLƏMƏ (`invalidateQueries`) YALNIZ SONUNCU davam edən mutasiya bitəndə (`isMutating(...) === 1`) EDİLİR. Əks halda ƏVVƏLKİ klikin təzələməsi HƏLƏ GÖZLƏYƏN SONRAKI klikin optimistik vəziyyətini ÜSTÜNDƏN YAZARDI.
 
 ### `useOrders.ts`
 
@@ -2345,7 +2398,7 @@ Bax Hissə 9 (LOGOUT AXINI) VƏ bu SESSİYADA "Hesabım" İKONUNUN/MƏTNİNİN S
 ```
 "Çıxış" DÜYMƏSİ YALNIZ `hasMounted && profile` OLANDA GÖRÜNÜR (bax Hissə 9) — SSR-lənən ANONİM RENDER-DƏ ƏSLA GÖRÜNMÜR.
 
-### `Footer/index.tsx`, `Footer/constants.ts`
+### `Footer/index.tsx`, `Footer/constants/index.ts`
 
 ```tsx
 export function Footer() {
@@ -2368,7 +2421,7 @@ export function Footer() {
 }
 ```
 ```ts
-// constants.ts
+// constants/index.ts
 export const columns: FooterColumn[] = [
     { title: 'Şirkət', links: [{ label: 'Xüsusi təkliflər', href: '/' }, { label: 'Haqqımızda', href: '/' }, ...] },
     { title: 'Digər', links: [...] },
@@ -2478,7 +2531,7 @@ export function BannerCarousel({ campaigns, perPage = 2 }: CampaignCarouselProps
 src/views/Auth/
   AuthPage/
     index.tsx        → bölünmüş ekran (sol YAŞIL illüstrasiya, sağ FORMA), tab STATE-i
-    constants.ts      → zod SXEMLƏRİ (loginSchema, registerSchema), TƏKRARLANAN CSS SİNİF STRİNQLƏRİ
+    constants/index.ts    → zod SXEMLƏRİ (loginSchema, registerSchema), TƏKRARLANAN CSS SİNİF STRİNQLƏRİ
     utils.ts          → digitsFromPhoneValue, formatPhoneValue (TELEFON FORMATLAMA)
     components/
       LoginForm.tsx, RegisterForm.tsx
@@ -2750,11 +2803,11 @@ if (profile && profile.img_url !== lastSyncedImgUrl) {
 src/views/Orders/
   OrdersPage/
     index.tsx            → cədvəl + pagination (PAGE_SIZE=7)
-    constants.ts           → PAGE_SIZE
+    constants/index.ts         → PAGE_SIZE
     components/OrdersTable.tsx
   OrderDetailSection/
     index.tsx             → tək sifarişin detalı
-    constants.ts            → PAYMENT_METHOD_LABELS
+    constants/index.ts          → PAYMENT_METHOD_LABELS
     components/OrderInfoGrid.tsx, OrderItemsList.tsx
 ```
 `OrdersTable.tsx` — ADİ HTML `<table>` (HEÇ BİR KİTABXANA YOX, bax Hissə 19-un "hansı paketdən gəlir" SUALININ CAVABI: HEÇ BİRİNDƏN, ƏL İLƏ YAZILIB). Sütunlar: `orderNumber`, `formatDate(createdAt)`, `address`, `items.reduce(sum, quantity)`, `total`/`deliveryFee`, `ORDER_STATUS_LABELS[status]` (RƏNGLİ), "detallar" LİNKİ.
@@ -3232,7 +3285,7 @@ Bunların HEÇ BİRİNDƏ RENDER-ZAMANI TƏNZİMLƏMƏ ALTERNATİVİ MÖVCUD DEY
 | **Race condition** | İki eyni-zamanlı əməliyyatın nəticəsinin sıralamadan asılı, gözlənilməz olması (`refreshPromise` bunun qarşısını alır) |
 | **Optimistic UI** | Server cavabını GÖZLƏMƏDƏN, UI-ı DƏRHAL "uğurlu" kimi yeniləmək |
 | **Persistent layout** | Naviqasiya zamanı DOM-u YENİDƏN QURULMAYAN, `layout.tsx`-də yaşayan ortaq şablon |
-| **Servis hesabı** | Bu layihəyə xas termin — bax Hissə 10, `serviceAccount.ts` |
+| **Servis hesabı** | Bu layihəyə xas termin — bax Hissə 10, `serviceAccount/index.ts` |
 | **Cache() dedup** | React-in `cache()` funksiyası ilə eyni request daxilində eyni çağırışın bir dəfə icra olunması |
 | **File convention** | Next.js-in xüsusi tanıdığı fayl adları (`page.tsx`, `robots.ts`, `icon.tsx` və s.) |
 | **Containing block** | CSS-də, `position: absolute` bir elementin `top`/`left` və s. dəyərlərinin nisbətən hesablandığı ən yaxın "positioned" əcdad |

@@ -199,7 +199,7 @@ YALNIZ **`Footer.tsx`**-in sosial media LİNKLƏRİ ÜÇÜN (`FooterSocialLink` 
 |---|---|---|---|
 | `next` | Framework | Bütün `src/app/` | SSR + client interaktivlik EYNİ kodbazada |
 | `react` / `react-dom` | UI runtime | Hər yerdə; `cache()` → `serviceAccount` | Next-in TƏMƏLİ; `cache()` sorğu dublikatını KƏSİR |
-| `axios` | HTTP klient | `httpClient.ts` (ziyarətçi), `serviceAccount.ts` (server) | Interceptor-larla AVTOMATİK token/refresh idarəsi |
+| `axios` | HTTP klient | `httpClient.ts` (ziyarətçi), `serviceAccount/index.ts` (server) | Interceptor-larla AVTOMATİK token/refresh idarəsi |
 | `@tanstack/react-query` | Server state | `useBasket`, `useOrders`, `useProfile` VƏ s. | Paylaşılan CACHE — bir yerdə dəyişən data HƏR YERDƏ yenilənir |
 | `react-hook-form` | Form state | `LoginForm`, `RegisterForm`, `AccountPage` | Performanslı, uncontrolled form idarəsi |
 | `@hookform/resolvers` | Körpü | Eyni formlar | `zod` sxemini react-hook-form-a bağlayır |
