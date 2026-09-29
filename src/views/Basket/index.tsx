@@ -28,7 +28,7 @@ export function BasketPage() {
                     <p className="mt-2 text-sm text-neutral-500">Sifariş vermək üçün səbətinizə məhsul əlavə edin</p>
                 </div>
             ) : (
-                <div className="flex items-start gap-6">
+                <div className="flex items-stretch gap-6">
                     <div className="flex-1">
                         <div className="mb-4 flex items-center justify-between">
                             <h1 className="text-xl font-semibold text-neutral-900">Səbətim</h1>

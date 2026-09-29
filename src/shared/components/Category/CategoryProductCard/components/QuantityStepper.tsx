@@ -1,4 +1,5 @@
 import { Button } from '@/shared/components'
+import { getMeasureLabel } from '@/shared/utils/productMeasure'
 import type { QuantityStepperProps } from '@/types'
 
 export function QuantityStepper({ quantity, type, onIncrease, onDecrease }: QuantityStepperProps) {
@@ -25,7 +26,7 @@ export function QuantityStepper({ quantity, type, onIncrease, onDecrease }: Quan
                 −
             </Button>
             <span className="flex h-8 flex-1 items-center justify-center rounded-[8px] bg-mint text-sm font-semibold text-white">
-                {quantity} {type}
+                {quantity} {getMeasureLabel(type)}
             </span>
             <Button
                 type="button"

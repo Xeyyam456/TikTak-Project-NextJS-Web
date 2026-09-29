@@ -3,9 +3,9 @@ import type { BasketTotalCardProps } from '@/types'
 
 export function BasketTotalCard({ total }: BasketTotalCardProps) {
     return (
-        <div className="w-[400px] flex-shrink-0">
+        <div className="flex w-[400px] flex-shrink-0 flex-col">
             <h2 className="mb-4 text-lg font-semibold text-neutral-900">Yekun məbləğ</h2>
-            <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
+            <div className="flex flex-1 flex-col rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
                     <span className="text-neutral-500">Ümumi</span>
                     <span className="font-medium text-neutral-900">{total} AZN</span>
@@ -15,7 +15,7 @@ export function BasketTotalCard({ total }: BasketTotalCardProps) {
                     <span className="font-medium text-neutral-900">Pulsuz</span>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between border-t border-neutral-100 pt-4">
+                <div className="mt-auto flex items-center justify-between border-t border-neutral-100 pt-4">
                     <span className="font-semibold text-neutral-900">Yekun məbləğ</span>
                     <span className="font-semibold text-neutral-900">{total} AZN</span>
                 </div>

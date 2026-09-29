@@ -1,4 +1,5 @@
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
+import { getMeasureLabel } from '@/shared/utils/productMeasure'
 import type { OrderItemsListProps } from '@/types'
 
 export function OrderItemsList({ items, total }: OrderItemsListProps) {
@@ -21,8 +22,7 @@ export function OrderItemsList({ items, total }: OrderItemsListProps) {
                             />
                         </div>
                         <p className="min-w-0 flex-1 truncate text-xs text-neutral-700">
-                            {item.product.title} {item.quantity}
-                            {item.product.type}
+                            {item.product.title} {item.quantity} {getMeasureLabel(item.product.type)}
                         </p>
                         <p className="w-16 flex-shrink-0 text-center text-xs tabular-nums text-neutral-500">{item.quantity}</p>
                         <p className="w-24 flex-shrink-0 text-right text-xs tabular-nums text-neutral-500">
