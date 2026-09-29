@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Search } from 'lucide-react'
+import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue'
 import { useProducts } from '@/shared/hooks/useProducts'
 import { PRODUCT_IMAGE_FALLBACK } from '@/shared/constants/images'
 
@@ -12,6 +13,7 @@ export function SearchBar() {
 
     const [query, setQuery] = useState('')
     const [isSearchOpen, setIsSearchOpen] = useState(false)
+    const debouncedQuery = useDebouncedValue(query, 300)
     const [prevPathname, setPrevPathname] = useState(pathname)
     const searchRef = useRef<HTMLDivElement>(null)
 
@@ -37,9 +39,13 @@ export function SearchBar() {
 
     if (pathname === '/') return null
 
-    const trimmedQuery = query.trim().toLowerCase()
-    const searchResults = trimmedQuery
-        ? (products ?? []).filter((product) => product.title.toLowerCase().includes(trimmedQuery))
+    // Raw query decides whether the dropdown is open (clearing the input closes it at once);
+    // the debounced one drives the filtering so it doesn't rerun on every keystroke.
+    const trimmedQuery = query.trim()
+    const searchTerm = debouncedQuery.trim().toLowerCase()
+    const isSettled = searchTerm === trimmedQuery.toLowerCase()
+    const searchResults = searchTerm
+        ? (products ?? []).filter((product) => product.title.toLowerCase().includes(searchTerm))
         : []
 
     const handleSelectProduct = (productId: number) => {
@@ -66,7 +72,7 @@ export function SearchBar() {
                 <Search className="h-[18px] w-[18px]" strokeWidth={1.8} />
             </span>
 
-            {isSearchOpen && trimmedQuery && (
+            {isSearchOpen && trimmedQuery && (searchResults.length > 0 || isSettled) && (
                 <div className="scrollbar-hide absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-2xl border border-neutral-100 bg-white p-2 text-left shadow-lg">
                     {searchResults.length === 0 ? (
                         <p className="px-3 py-4 text-center text-sm text-neutral-400">Nəticə tapılmadı</p>
