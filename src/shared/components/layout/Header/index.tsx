@@ -20,7 +20,8 @@ export function Header() {
                             href="/"
                             className="flex items-center text-[40px] font-extrabold leading-none tracking-[0.03em] text-neutral-900"
                         >
-                            TIK TAK
+                            <span className="text-primary">TIK</span>
+                            <span className="text-[#92D871]">TAK</span>
                         </Link>
 
                         <AddressBadge />

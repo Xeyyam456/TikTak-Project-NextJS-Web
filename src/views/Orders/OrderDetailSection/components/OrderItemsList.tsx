@@ -24,8 +24,10 @@ export function OrderItemsList({ items, total }: OrderItemsListProps) {
                             {item.product.title} {item.quantity}
                             {item.product.type}
                         </p>
-                        <p className="w-16 flex-shrink-0 text-center text-xs text-neutral-500">{item.quantity}</p>
-                        <p className="flex-shrink-0 text-xs text-neutral-500">{item.total_price} AZN</p>
+                        <p className="w-16 flex-shrink-0 text-center text-xs tabular-nums text-neutral-500">{item.quantity}</p>
+                        <p className="w-24 flex-shrink-0 text-right text-xs tabular-nums text-neutral-500">
+                            {item.total_price} AZN
+                        </p>
                     </div>
                 ))}
             </div>
