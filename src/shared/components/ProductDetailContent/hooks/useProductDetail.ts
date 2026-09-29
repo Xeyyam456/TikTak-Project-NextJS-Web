@@ -33,7 +33,7 @@ export function useProductDetail(productId: number, initialProduct?: Product | n
             toast.info('Bu məhsul artıq səbətdədir')
             return
         }
-        add.mutate(product.id)
+        add.mutate(product)
     }
 
     const handleConfirmRemove = () => {

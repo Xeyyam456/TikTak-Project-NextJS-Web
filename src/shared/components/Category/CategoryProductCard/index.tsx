@@ -36,7 +36,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
     }
     const handleIncrease = (e: React.MouseEvent) => {
         e.stopPropagation()
-        add.mutate(product.id)
+        add.mutate(product)
     }
     const handleDecrease = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -48,7 +48,7 @@ export function CategoryProductCard({ product, onSelect }: CategoryProductCardPr
     }
     const handleToggleFavorite = (e: React.MouseEvent) => {
         e.stopPropagation()
-        toggleFavorite.mutate(product.id)
+        toggleFavorite.mutate(product)
     }
 
     return (

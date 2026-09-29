@@ -46,7 +46,7 @@ export function BasketSidebarPanel({ height, headingOffset = -32, fill = false }
                                         key={item.id}
                                         item={item}
                                         onRemoveClick={() => setPendingRemove({ id: item.product.id, title: item.product.title })}
-                                        onIncrease={() => add.mutate(item.product.id)}
+                                        onIncrease={() => add.mutate(item.product)}
                                         onDecrease={() =>
                                             item.quantity > 1
                                                 ? remove.mutate(item.product.id)

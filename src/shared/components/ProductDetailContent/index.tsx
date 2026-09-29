@@ -51,7 +51,7 @@ export function ProductDetailContent({
             <ProductHeader
                 isFavorite={isFavorite}
                 onBack={onBack ?? (() => router.back())}
-                onToggleFavorite={() => toggleFavorite.mutate(product.id)}
+                onToggleFavorite={() => toggleFavorite.mutate(product)}
             />
 
             <div className="mt-8 flex flex-1 items-center">

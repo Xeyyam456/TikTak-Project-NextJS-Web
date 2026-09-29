@@ -50,7 +50,7 @@ export function BasketPage() {
                                         <BasketPageItemRow
                                             key={item.id}
                                             item={item}
-                                            onIncrease={() => add.mutate(item.product.id)}
+                                            onIncrease={() => add.mutate(item.product)}
                                             onDecreaseOrRemove={() =>
                                                 item.quantity > 1
                                                     ? remove.mutate(item.product.id)
