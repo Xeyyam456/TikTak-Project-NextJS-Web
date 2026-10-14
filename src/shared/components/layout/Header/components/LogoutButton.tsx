@@ -16,6 +16,10 @@ export function LogoutButton() {
 
     const handleConfirmLogout = () => {
         clearTokens()
+        // clear() alone drops queries without notifying mounted observers — on `/`
+        // router.push('/') is a no-op, so the Header kept showing the stale profile.
+        // reset() pushes the empty state to observers first (no refetch).
+        queryClient.getQueryCache().getAll().forEach((query) => query.reset())
         queryClient.clear()
         setConfirmLogoutOpen(false)
         toast.success('Hesabdan uğurla çıxdınız')
